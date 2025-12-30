@@ -1,0 +1,307 @@
+{
+  "common": {
+    "appName": "Form Builder",
+    "loading": "Carregando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "delete": "Excluir",
+    "edit": "Editar",
+    "close": "Fechar",
+    "copy": "Copiar",
+    "copied": "Copiado!",
+    "back": "Voltar",
+    "next": "Próximo",
+    "yes": "Sim",
+    "no": "Não",
+    "or": "ou",
+    "and": "e",
+    "search": "Buscar",
+    "noResults": "Nenhum resultado encontrado",
+    "error": "Erro",
+    "success": "Sucesso",
+    "add": "Adicionar",
+    "update": "Atualizar",
+    "remove": "Remover",
+    "required": "Obrigatório"
+  },
+  "landing": {
+    "hero": {
+      "badge": "Novo: Notificações em tempo real",
+      "title": "Crie formulários",
+      "titleHighlight": "incríveis",
+      "titleEnd": "em minutos",
+      "subtitle": "Construa formulários personalizados, compartilhe com um link e colete respostas de forma simples. Sem código, sem complicação.",
+      "cta": "Criar Primeiro Formulário",
+      "ctaSecondary": "Ver Recursos"
+    },
+    "features": {
+      "builder": {
+        "title": "Builder Intuitivo",
+        "description": "Adicione campos de texto, email, data, múltipla escolha e muito mais com poucos cliques."
+      },
+      "links": {
+        "title": "Links Públicos",
+        "description": "Gere um link único para cada formulário e compartilhe onde quiser."
+      },
+      "analytics": {
+        "title": "Análise de Respostas",
+        "description": "Visualize todas as respostas em uma tabela organizada e exporte para CSV."
+      },
+      "sectionTitle": "Tudo que você precisa",
+      "sectionSubtitle": "Recursos poderosos para criar, compartilhar e analisar seus formulários.",
+      "email": {
+        "title": "Notificações por Email",
+        "description": "Receba um email sempre que alguém responder seu formulário."
+      },
+      "embed": {
+        "title": "Embed em Sites",
+        "description": "Incorpore seu formulário em qualquer site com um simples código iframe."
+      },
+      "webhooks": {
+        "title": "Webhooks",
+        "description": "Integre com outros sistemas enviando dados para sua URL automaticamente."
+      },
+      "magicLink": {
+        "title": "Login sem Senha",
+        "description": "Acesse sua conta com Magic Link enviado por email. Simples e seguro."
+      },
+      "security": {
+        "title": "Segurança",
+        "description": "Proteção contra spam, rate limiting e sanitização de inputs inclusos."
+      },
+      "performance": {
+        "title": "Rápido e Leve",
+        "description": "Interface otimizada para carregar rápido em qualquer dispositivo."
+      }
+    },
+    "cta": {
+      "title": "Pronto para começar?",
+      "subtitle": "Crie sua conta gratuitamente e comece a coletar respostas em menos de 2 minutos.",
+      "button": "Começar Agora — É Grátis"
+    },
+    "nav": {
+      "login": "Entrar",
+      "getStarted": "Começar Grátis"
+    },
+    "footer": {
+      "copyright": "Feito com ❤️ por Vitor Hugo",
+      "terms": "Termos de Uso",
+      "privacy": "Privacidade"
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Entrar no Form Builder",
+      "subtitle": "Digite seu email para receber um link de acesso",
+      "emailLabel": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "submit": "Enviar Link Mágico",
+      "submitting": "Enviando...",
+      "noAccount": "Não tem conta? Ela será criada automaticamente."
+    },
+    "verify": {
+      "title": "Verifique seu email",
+      "subtitle": "Enviamos um link mágico para",
+      "instruction": "Clique no link do email para acessar sua conta.",
+      "checkSpam": "Não recebeu? Verifique sua pasta de spam.",
+      "resend": "Reenviar email",
+      "backToLogin": "Voltar para login"
+    },
+    "errors": {
+      "invalidEmail": "Email inválido",
+      "sendFailed": "Falha ao enviar email. Tente novamente."
+    }
+  },
+  "dashboard": {
+    "title": "Meus Formulários",
+    "subtitle": "Gerencie seus formulários e visualize respostas",
+    "createForm": "Novo Formulário",
+    "noForms": {
+      "title": "Nenhum formulário ainda",
+      "subtitle": "Crie seu primeiro formulário para começar a coletar respostas."
+    },
+    "formCard": {
+      "responses": "respostas",
+      "fields": "campos",
+      "draft": "Rascunho",
+      "published": "Publicado",
+      "created": "Criado em",
+      "viewResponses": "Ver Respostas",
+      "edit": "Editar"
+    },
+    "stats": {
+      "totalForms": "Total de Formulários",
+      "totalResponses": "Total de Respostas",
+      "publishedForms": "Formulários Publicados"
+    },
+    "nav": {
+      "forms": "Formulários",
+      "settings": "Configurações",
+      "logout": "Sair"
+    }
+  },
+  "formsGrid": {
+    "title": "Formulários",
+    "subtitle": "Gerencie todos os seus formulários em um só lugar",
+    "searchPlaceholder": "Buscar formulários...",
+    "createFirst": "Criar Primeiro Formulário",
+    "noResultsFor": "Nenhum formulário encontrado para",
+    "fields": "campos",
+    "viewResponses": "Ver Respostas",
+    "copyLink": "Copiar Link",
+    "openForm": "Abrir Formulário",
+    "linkCopied": "Link copiado!",
+    "linkCopiedDesc": "O link do formulário foi copiado para a área de transferência.",
+    "formDeleted": "Formulário excluído",
+    "formDeletedDesc": "O formulário foi excluído com sucesso.",
+    "deleteError": "Não foi possível excluir o formulário.",
+    "deleteTitle": "Excluir formulário",
+    "deleteConfirm": "Tem certeza que deseja excluir o formulário",
+    "deleteWarning": "Esta ação não pode ser desfeita e todas as respostas serão perdidas.",
+    "deleting": "Excluindo..."
+  },
+  "formBuilder": {
+    "title": "Editar Formulário",
+    "info": "Informações",
+    "fields": "Campos",
+    "fieldsDesc": "Adicione e organize os campos do seu formulário",
+    "addField": "Adicionar Campo",
+    "noFields": "Nenhum campo ainda. Adicione seu primeiro campo!",
+    "description": "Descrição",
+    "descriptionPlaceholder": "Adicione uma descrição para o formulário...",
+    "publishForm": "Publicar formulário",
+    "publishDesc": "Tornar o formulário acessível publicamente",
+    "addFieldTitle": "Adicionar Campo",
+    "addFieldDesc": "Configure o novo campo para seu formulário",
+    "editFieldTitle": "Editar Campo",
+    "fieldType": "Tipo",
+    "fieldName": "Nome do Campo",
+    "fieldNamePlaceholder": "Ex: Nome completo",
+    "placeholder": "Placeholder",
+    "placeholderExample": "Ex: Digite seu nome...",
+    "options": "Opções (uma por linha)",
+    "optionsPlaceholder": "Opção 1\nOpção 2\nOpção 3",
+    "requiredField": "Campo obrigatório",
+    "settingsTitle": "Configurações",
+    "settingsDesc": "Configure notificações e integrações",
+    "notifyEmail": "Email para Notificações",
+    "notifyEmailPlaceholder": "seu@email.com",
+    "notifyEmailHelp": "Receba um email a cada nova resposta",
+    "webhookUrl": "Webhook URL",
+    "webhookUrlPlaceholder": "https://...",
+    "webhookUrlHelp": "Envie as respostas para uma URL externa",
+    "shareTitle": "Compartilhar Formulário",
+    "shareDesc": "Compartilhe seu formulário via link ou incorpore em seu site",
+    "notPublishedWarning": "Este formulário ainda não está publicado. Publique-o primeiro para compartilhar.",
+    "directLink": "Link Direto",
+    "embed": "Incorporar (Embed)",
+    "embedDesc": "Copie o código abaixo e cole no HTML do seu site",
+    "embedSize": "Tamanho:",
+    "embedSmall": "Pequeno",
+    "embedMedium": "Médio",
+    "embedLarge": "Grande",
+    "height": "Altura:",
+    "share": "Compartilhar",
+    "responses": "Respostas",
+    "formSaved": "Formulário salvo!",
+    "formSavedPublished": "Seu formulário está publicado e acessível.",
+    "formSavedDraft": "Alterações salvas com sucesso.",
+    "formSaveError": "Não foi possível salvar o formulário.",
+    "fieldAdded": "Campo adicionado!",
+    "fieldAddError": "Não foi possível adicionar o campo.",
+    "fieldUpdated": "Campo atualizado!",
+    "fieldUpdateError": "Não foi possível atualizar o campo.",
+    "fieldRemoved": "Campo removido!",
+    "fieldRemoveError": "Não foi possível remover o campo.",
+    "fieldNameRequired": "O campo precisa de um nome.",
+    "optionsRequired": "Adicione pelo menos uma opção.",
+    "settingsSaved": "Configurações salvas!",
+    "settingsSaveError": "Não foi possível salvar as configurações.",
+    "linkCopied": "Copiado!",
+    "linkCopiedDesc": "Link copiado para a área de transferência.",
+    "codeCopiedDesc": "Código copiado para a área de transferência.",
+    "fieldTypes": {
+      "text": "Texto",
+      "email": "Email",
+      "number": "Número",
+      "date": "Data",
+      "select": "Múltipla Escolha",
+      "checkbox": "Checkbox"
+    },
+    "status": {
+      "draft": "Rascunho",
+      "published": "Publicado"
+    }
+  },
+  "responses": {
+    "title": "Respostas",
+    "subtitle": "Visualize todas as respostas do formulário",
+    "backToForm": "Voltar ao Formulário",
+    "exportCSV": "Exportar CSV",
+    "noResponses": {
+      "title": "Nenhuma resposta ainda",
+      "subtitle": "As respostas aparecerão aqui quando alguém preencher o formulário.",
+      "shareFormPre": "Compartilhe o link",
+      "shareFormPost": "para começar a receber respostas."
+    },
+    "table": {
+      "submittedAt": "Enviado em",
+      "actions": "Ações"
+    },
+    "responseDeleted": "Resposta excluída!",
+    "deleteError": "Não foi possível excluir a resposta.",
+    "deleteTitle": "Excluir resposta",
+    "deleteConfirm": "Tem certeza que deseja excluir esta resposta? Esta ação não pode ser desfeita.",
+    "deleting": "Excluindo..."
+  },
+  "newForm": {
+    "title": "Criar Novo Formulário",
+    "subtitle": "Dê um nome ao seu formulário para começar",
+    "nameLabel": "Nome do Formulário",
+    "namePlaceholder": "Ex: Pesquisa de Satisfação",
+    "descLabel": "Descrição (opcional)",
+    "descPlaceholder": "Descreva o propósito do formulário...",
+    "create": "Criar Formulário",
+    "creating": "Criando...",
+    "createError": "Não foi possível criar o formulário."
+  },
+  "publicForm": {
+    "submit": "Enviar",
+    "submitting": "Enviando...",
+    "success": {
+      "title": "Resposta enviada!",
+      "subtitle": "Obrigado por preencher o formulário.",
+      "another": "Enviar outra resposta"
+    },
+    "errors": {
+      "required": "Este campo é obrigatório",
+      "invalidEmail": "Email inválido",
+      "submitFailed": "Erro ao enviar resposta. Tente novamente.",
+      "notFound": "Formulário não encontrado",
+      "limitReached": "Este formulário atingiu o limite de respostas."
+    },
+    "poweredBy": "Criado com"
+  },
+  "legal": {
+    "terms": {
+      "title": "Termos de Uso",
+      "lastUpdate": "Última atualização"
+    },
+    "privacy": {
+      "title": "Política de Privacidade",
+      "lastUpdate": "Última atualização"
+    },
+    "backHome": "Voltar ao início"
+  },
+  "errors": {
+    "notFound": {
+      "title": "Página não encontrada",
+      "subtitle": "A página que você está procurando não existe.",
+      "backHome": "Voltar ao início"
+    },
+    "unauthorized": "Não autorizado",
+    "serverError": "Erro interno do servidor",
+    "formNotFound": "Formulário não encontrado",
+    "limitReached": "Limite atingido"
+  }
+}
