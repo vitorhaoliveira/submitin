@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { Button } from "@form-builder/ui/components/button";
 import { FileQuestion, ArrowLeft, Home } from "lucide-react";
@@ -21,12 +23,12 @@ export default function NotFound() {
             <ArrowLeft className="w-4 h-4" />
             Voltar
           </Button>
-          <Link href="/">
-            <Button className="gap-2">
+          <Button className="gap-2" asChild>
+            <Link href="/">
               <Home className="w-4 h-4" />
               Ir para início
-            </Button>
-          </Link>
+            </Link>
+          </Button>
         </div>
       </div>
     </div>

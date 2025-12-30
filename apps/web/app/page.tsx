@@ -31,17 +31,17 @@ export default async function HomePage() {
           </Link>
           <nav className="flex items-center gap-2">
             <LanguageSwitcher />
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/login">
                 {t("nav.login")}
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="sm">
+              </Link>
+            </Button>
+            <Button size="sm" asChild>
+              <Link href="/login">
                 {t("nav.getStarted")}
                 <ArrowRight className="w-4 h-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </nav>
         </div>
       </header>
@@ -68,17 +68,17 @@ export default async function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-300">
-              <Link href="/login">
-                <Button size="lg" className="text-base px-8">
+              <Button size="lg" className="text-base px-8" asChild>
+                <Link href="/login">
                   {t("hero.cta")}
                   <ArrowRight className="w-5 h-5" />
-                </Button>
-              </Link>
-              <Link href="#features">
-                <Button variant="outline" size="lg" className="text-base px-8">
+                </Link>
+              </Button>
+              <Button variant="outline" size="lg" className="text-base px-8" asChild>
+                <Link href="#features">
                   {t("hero.ctaSecondary")}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             </div>
           </div>
 
@@ -163,12 +163,12 @@ export default async function HomePage() {
             <p className="text-muted-foreground mb-8 max-w-xl mx-auto">
               {t("cta.subtitle")}
             </p>
-            <Link href="/login">
-              <Button size="lg" className="text-base px-8">
+            <Button size="lg" className="text-base px-8" asChild>
+              <Link href="/login">
                 {t("cta.button")}
                 <ArrowRight className="w-5 h-5" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </section>
       </main>
