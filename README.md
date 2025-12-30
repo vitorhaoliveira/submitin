@@ -66,7 +66,7 @@ pnpm install
 
 ### 2. Configure as variáveis de ambiente
 
-Crie um arquivo `.env` na pasta `apps/web/`:
+Crie um arquivo `.env` na pasta `apps/web/` baseado no `.env.example`:
 
 ```env
 # Database
@@ -80,6 +80,11 @@ AUTH_URL="http://localhost:3000"
 AUTH_RESEND_KEY="re_xxxxxxxxxxxx"
 EMAIL_FROM="Form Builder <noreply@yourdomain.com>"
 ```
+
+**⚠️ Importante para Deploy:**
+- Para gerar `AUTH_SECRET`: `openssl rand -base64 32`
+- No Vercel/ambiente de produção, configure todas as variáveis de ambiente listadas acima
+- Sem essas variáveis, o build falhará com erro relacionado ao NextAuth
 
 ### 3. Configure o banco de dados
 

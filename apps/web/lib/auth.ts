@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "@form-builder/database";
+import { env } from "./env";
 
 const authConfig = {
   adapter: PrismaAdapter(prisma),
@@ -12,11 +13,12 @@ const authConfig = {
     signIn: "/login",
     verifyRequest: "/login/verify",
   },
-  providers: [
+  providers: env.AUTH_RESEND_KEY ? [
     Resend({
-      from: process.env.EMAIL_FROM || "Form Builder <noreply@formbuilder.dev>",
+      apiKey: env.AUTH_RESEND_KEY,
+      from: env.EMAIL_FROM || "Form Builder <noreply@formbuilder.dev>",
     }),
-  ],
+  ] : [],
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
       if (token.sub && session.user) {
@@ -31,7 +33,7 @@ const authConfig = {
       return token;
     },
   },
-  secret: process.env.AUTH_SECRET,
+  secret: env.AUTH_SECRET,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
