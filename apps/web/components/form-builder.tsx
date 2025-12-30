@@ -336,7 +336,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
             <div className="flex items-center gap-2">
               <Input
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, name: e.target.value })}
                 className="text-2xl font-bold h-auto p-0 border-0 bg-transparent focus-visible:ring-0"
               />
               <Badge variant={form.published ? "success" : "secondary"}>
@@ -391,7 +391,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
             <Textarea
               placeholder={t("descriptionPlaceholder")}
               value={form.description || ""}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setForm({ ...form, description: e.target.value })}
             />
           </div>
           <div className="flex items-center justify-between">
@@ -512,7 +512,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               <Input
                 placeholder={t("fieldNamePlaceholder")}
                 value={newField.label}
-                onChange={(e) => setNewField({ ...newField, label: e.target.value })}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewField({ ...newField, label: e.target.value })}
               />
             </div>
             <div className="space-y-2">
@@ -520,7 +520,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               <Input
                 placeholder={t("placeholderExample")}
                 value={newField.placeholder || ""}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setNewField({ ...newField, placeholder: e.target.value })
                 }
               />
@@ -531,7 +531,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 <Textarea
                   placeholder={t("optionsPlaceholder")}
                   value={(newField.options || []).join("\n")}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                     setNewField({
                       ...newField,
                       options: e.target.value.split("\n").filter(Boolean),
@@ -581,7 +581,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 <Label>{t("fieldName")}</Label>
                 <Input
                   value={editingField.label}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setEditingField({ ...editingField, label: e.target.value })
                   }
                 />
@@ -590,7 +590,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 <Label>{t("placeholder")}</Label>
                 <Input
                   value={editingField.placeholder || ""}
-                  onChange={(e) =>
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setEditingField({ ...editingField, placeholder: e.target.value })
                   }
                 />
@@ -600,7 +600,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                   <Label>{t("options")}</Label>
                   <Textarea
                     value={(editingField.options || []).join("\n")}
-                    onChange={(e) =>
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                       setEditingField({
                         ...editingField,
                         options: e.target.value.split("\n").filter(Boolean),
@@ -643,7 +643,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 type="email"
                 placeholder={t("notifyEmailPlaceholder")}
                 value={settings.notifyEmail}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSettings({ ...settings, notifyEmail: e.target.value })
                 }
               />
@@ -655,7 +655,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               <Input
                 placeholder={t("webhookUrlPlaceholder")}
                 value={settings.webhookUrl}
-                onChange={(e) =>
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setSettings({ ...settings, webhookUrl: e.target.value })
                 }
               />

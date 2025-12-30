@@ -176,7 +176,7 @@ export function PublicForm({ form }: PublicFormProps) {
                       id={field.id}
                       placeholder={field.placeholder || undefined}
                       value={values[field.id] || ""}
-                      onChange={(e) => handleChange(field.id, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(field.id, e.target.value)}
                       className={cn(errors[field.id] && "border-destructive")}
                     />
                   )}
@@ -187,7 +187,7 @@ export function PublicForm({ form }: PublicFormProps) {
                       type="email"
                       placeholder={field.placeholder || "your@email.com"}
                       value={values[field.id] || ""}
-                      onChange={(e) => handleChange(field.id, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(field.id, e.target.value)}
                       className={cn(errors[field.id] && "border-destructive")}
                     />
                   )}
@@ -198,7 +198,7 @@ export function PublicForm({ form }: PublicFormProps) {
                       type="number"
                       placeholder={field.placeholder || undefined}
                       value={values[field.id] || ""}
-                      onChange={(e) => handleChange(field.id, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(field.id, e.target.value)}
                       className={cn(errors[field.id] && "border-destructive")}
                     />
                   )}
@@ -208,7 +208,7 @@ export function PublicForm({ form }: PublicFormProps) {
                       id={field.id}
                       type="date"
                       value={values[field.id] || ""}
-                      onChange={(e) => handleChange(field.id, e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange(field.id, e.target.value)}
                       className={cn(errors[field.id] && "border-destructive")}
                     />
                   )}

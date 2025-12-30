@@ -132,7 +132,7 @@ export function FormsGrid({ forms: initialForms }: FormsGridProps) {
           <Input
             placeholder={t("searchPlaceholder")}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
             className="pl-9"
           />
         </div>
