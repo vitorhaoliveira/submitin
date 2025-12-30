@@ -1,5 +1,0 @@
-{
-  "buildCommand": "cd .. && turbo build --filter=@form-builder/web",
-  "installCommand": "cd .. && pnpm install && pnpm --filter @form-builder/database db:generate",
-  "outputDirectory": ".next"
-}

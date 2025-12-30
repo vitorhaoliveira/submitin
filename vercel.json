@@ -1,0 +1,8 @@
+{
+  "buildCommand": "pnpm install && pnpm --filter @form-builder/database db:generate && turbo build --filter=@form-builder/web",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/web/.next",
+  "framework": "nextjs",
+  "rootDirectory": "apps/web"
+}
+
