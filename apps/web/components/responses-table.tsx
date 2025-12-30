@@ -174,7 +174,7 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
           <CardHeader className="pb-2">
             <CardDescription>{t("table.submittedAt")}</CardDescription>
             <CardTitle className="text-2xl">
-              {responses.length > 0
+              {responses.length > 0 && responses[0]?.submittedAt
                 ? formatRelativeDate(responses[0].submittedAt)
                 : "—"}
             </CardTitle>

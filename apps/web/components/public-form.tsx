@@ -68,7 +68,8 @@ export function PublicForm({ form }: PublicFormProps) {
 
       if (field.type === "email" && values[field.id]) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(values[field.id])) {
+        const emailValue = values[field.id];
+        if (emailValue && !emailRegex.test(emailValue)) {
           newErrors[field.id] = t("errors.invalidEmail");
         }
       }

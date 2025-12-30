@@ -3,6 +3,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Resend from "next-auth/providers/resend";
 import { prisma } from "@form-builder/database";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: {
@@ -31,4 +32,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
   },
-});
+}) as any;

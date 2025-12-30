@@ -35,5 +35,16 @@ export default async function FormPage({
     notFound();
   }
 
-  return <FormBuilder form={form} />;
+  // Transform JsonValue options to string[] | null
+  const transformedForm = {
+    ...form,
+    fields: form.fields.map((field) => ({
+      ...field,
+      options: Array.isArray(field.options) 
+        ? (field.options as string[])
+        : null,
+    })),
+  };
+
+  return <FormBuilder form={transformedForm} />;
 }

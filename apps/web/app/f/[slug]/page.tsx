@@ -39,5 +39,16 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
     notFound();
   }
 
-  return <PublicForm form={form} />;
+  // Transform JsonValue options to string[] | null
+  const transformedForm = {
+    ...form,
+    fields: form.fields.map((field) => ({
+      ...field,
+      options: Array.isArray(field.options) 
+        ? (field.options as string[])
+        : null,
+    })),
+  };
+
+  return <PublicForm form={transformedForm} />;
 }
