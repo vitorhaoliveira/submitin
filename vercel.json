@@ -1,17 +1,11 @@
 {
-  "buildCommand": "pnpm build",
-  "devCommand": "pnpm dev",
+  "buildCommand": "pnpm build --filter @form-builder/web",
+  "devCommand": "pnpm dev --filter @form-builder/web",
   "installCommand": "pnpm install",
   "framework": "nextjs",
   "functions": {
     "apps/web/app/api/**/*.ts": {
       "runtime": "@vercel/node"
     }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    }
-  ]
+  }
 }
