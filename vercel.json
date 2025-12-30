@@ -2,10 +2,5 @@
   "buildCommand": "cd ../.. && turbo build --filter=@form-builder/web",
   "devCommand": "cd ../.. && turbo dev --filter=@form-builder/web",
   "installCommand": "cd ../.. && pnpm install",
-  "framework": "nextjs",
-  "functions": {
-    "apps/web/app/api/**/*.ts": {
-      "runtime": "@vercel/node"
-    }
-  }
+  "framework": "nextjs"
 }
