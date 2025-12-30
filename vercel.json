@@ -1,7 +1,0 @@
-{
-  "buildCommand": "pnpm install --no-frozen-lockfile && pnpm --filter @form-builder/database db:generate && turbo build --filter=@form-builder/web",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "outputDirectory": "apps/web/.next",
-  "framework": "nextjs"
-}
-
