@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma, type Field } from "@form-builder/database";
+import { prisma } from "@form-builder/database";
 import { redirect, notFound } from "next/navigation";
 import { FormBuilder } from "@/components/form-builder";
 
@@ -38,7 +38,7 @@ export default async function FormPage({
   // Transform JsonValue options to string[] | null
   const transformedForm = {
     ...form,
-    fields: form.fields.map((field: Field) => ({
+    fields: form.fields.map((field: (typeof form.fields)[number]) => ({
       id: field.id,
       type: field.type,
       label: field.label,
