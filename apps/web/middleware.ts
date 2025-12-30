@@ -1,30 +1,43 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  
+  // Early return for static assets and API routes
+  if (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/f/") ||
+    pathname === "/favicon.ico"
+  ) {
+    return NextResponse.next();
+  }
+
   try {
     // Check if AUTH_SECRET is available
     if (!process.env.AUTH_SECRET) {
-      console.error("AUTH_SECRET is not configured");
-      // Allow requests to proceed if auth is not configured (for development)
+      // If no AUTH_SECRET, allow all requests (development mode)
       return NextResponse.next();
     }
 
-    const token = await getToken({ 
-      req: request,
-      secret: process.env.AUTH_SECRET,
-    });
-    const isLoggedIn = !!token;
-
-    const isOnDashboard = request.nextUrl.pathname.startsWith("/dashboard");
-    const isOnLogin = request.nextUrl.pathname.startsWith("/login");
-    const isOnPublicForm = request.nextUrl.pathname.startsWith("/f/");
-
-    // Allow public form access
-    if (isOnPublicForm) {
-      return NextResponse.next();
+    // Try to get token - use dynamic import to avoid initialization issues
+    let isLoggedIn = false;
+    try {
+      const { getToken } = await import("next-auth/jwt");
+      const token = await getToken({
+        req: request,
+        secret: process.env.AUTH_SECRET,
+      });
+      isLoggedIn = !!token;
+    } catch (tokenError) {
+      // If token check fails, assume not logged in
+      console.warn("Token check failed:", tokenError);
+      isLoggedIn = false;
     }
+
+    const isOnDashboard = pathname.startsWith("/dashboard");
+    const isOnLogin = pathname.startsWith("/login");
 
     // Redirect logged-in users away from login page
     if (isOnLogin && isLoggedIn) {
@@ -38,9 +51,9 @@ export async function middleware(request: NextRequest) {
 
     return NextResponse.next();
   } catch (error) {
+    // Log error for debugging
     console.error("Middleware error:", error);
-    // In case of error, allow the request to proceed to avoid breaking the app
-    // This is a fallback - in production you might want to redirect to an error page
+    // Always allow request to proceed - let pages handle auth
     return NextResponse.next();
   }
 }
