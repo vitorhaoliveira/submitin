@@ -4,17 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "@/lib/i18n-context";
-import { Button } from "@form-builder/ui/components/button";
-import { Input } from "@form-builder/ui/components/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@form-builder/ui/components/card";
-import { Badge } from "@form-builder/ui/components/badge";
+import { Button } from "@submitin/ui/components/button";
+import { Input } from "@submitin/ui/components/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@submitin/ui/components/card";
+import { Badge } from "@submitin/ui/components/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@form-builder/ui/components/dropdown-menu";
+} from "@submitin/ui/components/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +22,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@form-builder/ui/components/dialog";
+} from "@submitin/ui/components/dialog";
 import {
   FileText,
   MessageSquare,

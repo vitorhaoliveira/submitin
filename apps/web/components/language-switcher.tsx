@@ -1,13 +1,13 @@
 "use client";
 
 import { useLocale, useI18n } from "@/lib/i18n-context";
-import { Button } from "@form-builder/ui/components/button";
+import { Button } from "@submitin/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@form-builder/ui/components/dropdown-menu";
+} from "@submitin/ui/components/dropdown-menu";
 import { Globe } from "lucide-react";
 import { locales, localeNames, localeFlags, type Locale } from "@/i18n/config";
 

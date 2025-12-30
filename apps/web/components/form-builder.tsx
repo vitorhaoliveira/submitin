@@ -4,19 +4,19 @@ import { useState, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useTranslations } from "@/lib/i18n-context";
-import { Button } from "@form-builder/ui/components/button";
-import { Input } from "@form-builder/ui/components/input";
-import { Label } from "@form-builder/ui/components/label";
-import { Textarea } from "@form-builder/ui/components/textarea";
-import { Switch } from "@form-builder/ui/components/switch";
-import { Badge } from "@form-builder/ui/components/badge";
+import { Button } from "@submitin/ui/components/button";
+import { Input } from "@submitin/ui/components/input";
+import { Label } from "@submitin/ui/components/label";
+import { Textarea } from "@submitin/ui/components/textarea";
+import { Switch } from "@submitin/ui/components/switch";
+import { Badge } from "@submitin/ui/components/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@form-builder/ui/components/card";
+} from "@submitin/ui/components/card";
 import {
   Dialog,
   DialogContent,
@@ -24,15 +24,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@form-builder/ui/components/dialog";
+} from "@submitin/ui/components/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@form-builder/ui/components/select";
-import { Separator } from "@form-builder/ui/components/separator";
+} from "@submitin/ui/components/select";
+import { Separator } from "@submitin/ui/components/separator";
 import {
   ArrowLeft,
   Plus,

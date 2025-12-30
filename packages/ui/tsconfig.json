@@ -1,5 +1,5 @@
 {
-  "extends": "@form-builder/config/typescript/library",
+  "extends": "@submitin/config/typescript/library",
   "compilerOptions": {
     "jsx": "react-jsx",
     "outDir": "./dist",

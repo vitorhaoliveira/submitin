@@ -1,12 +1,12 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: formbuilder-db
+    container_name: submitin-db
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: formbuilder
+      POSTGRES_DB: submitin
     ports:
       - "5432:5432"
     volumes:

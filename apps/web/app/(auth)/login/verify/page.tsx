@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { getTranslations } from "@/lib/i18n";
-import { Button } from "@form-builder/ui/components/button";
+import { Button } from "@submitin/ui/components/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@form-builder/ui/components/card";
+} from "@submitin/ui/components/card";
 import { FileText, Mail, ArrowLeft } from "lucide-react";
 
 export default async function VerifyPage({

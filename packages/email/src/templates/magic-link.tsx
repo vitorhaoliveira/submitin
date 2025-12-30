@@ -23,16 +23,16 @@ export function MagicLinkEmail({ url, host }: MagicLinkEmailProps): ReactElement
   return (
     <Html>
       <Head />
-      <Preview>Seu link mágico para acessar o Form Builder</Preview>
+      <Preview>Seu link mágico para acessar o submitin</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Heading style={heading}>🔐 Form Builder</Heading>
+          <Heading style={heading}>🔐 submitin</Heading>
           <Section style={section}>
             <Text style={text}>
-              Olá! Clique no botão abaixo para acessar sua conta no Form Builder.
+              Olá! Clique no botão abaixo para acessar sua conta no submitin.
             </Text>
             <Button style={button} href={url}>
-              Entrar no Form Builder
+              Entrar no submitin
             </Button>
             <Text style={textSecondary}>
               Este link expira em 24 horas e só pode ser usado uma vez.

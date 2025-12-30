@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "@/lib/i18n-context";
-import { Button } from "@form-builder/ui/components/button";
+import { Button } from "@submitin/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +12,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@form-builder/ui/components/dropdown-menu";
+} from "@submitin/ui/components/dropdown-menu";
 import { FileText, User, LogOut, Plus, LayoutDashboard } from "lucide-react";
-import { cn } from "@form-builder/ui/lib/utils";
+import { cn } from "@submitin/ui/lib/utils";
 import { LanguageSwitcher } from "./language-switcher";
 
 interface DashboardNavProps {

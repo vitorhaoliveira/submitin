@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Política de Privacidade",
-  description: "Política de privacidade da plataforma Form Builder",
+  description: "Política de privacidade da plataforma submitin",
 };
 
 export default function PrivacidadePage() {
@@ -14,7 +14,7 @@ export default function PrivacidadePage() {
       </p>
 
       <p>
-        Esta Política de Privacidade descreve como o Form Builder coleta, usa e
+        Esta Política de Privacidade descreve como o submitin coleta, usa e
         protege suas informações pessoais quando você usa nosso serviço.
       </p>
 
@@ -137,7 +137,7 @@ export default function PrivacidadePage() {
 
       <h2>9. Menores de Idade</h2>
       <p>
-        O Form Builder não é destinado a menores de 18 anos. Não coletamos
+        O submitin não é destinado a menores de 18 anos. Não coletamos
         intencionalmente dados de menores. Se você acredita que coletamos dados
         de um menor, entre em contato conosco.
       </p>

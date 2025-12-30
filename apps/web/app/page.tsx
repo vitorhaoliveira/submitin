@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getTranslations } from "@/lib/i18n";
-import { Button } from "@form-builder/ui/components/button";
+import { Button } from "@submitin/ui/components/button";
 import {
   FileText,
   Zap,
@@ -29,7 +29,7 @@ export default async function HomePage() {
             <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
               <FileText className="w-4 h-4 text-primary" />
             </div>
-            <span className="font-semibold text-lg">Form Builder</span>
+            <span className="font-semibold text-lg">Submitin</span>
           </Link>
           <nav className="flex items-center gap-2">
             <LanguageSwitcher />
@@ -179,7 +179,7 @@ export default async function HomePage() {
       <footer className="border-t border-border/50 py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Form Builder. {t("footer.copyright")}</p>
+            <p>© {new Date().getFullYear()} Submitin. {t("footer.copyright")}</p>
             <div className="flex items-center gap-6">
               <Link href="/termos" className="hover:text-foreground transition-colors">
                 {t("footer.terms")}

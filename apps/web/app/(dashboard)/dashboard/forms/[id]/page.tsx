@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth";
-import { prisma } from "@form-builder/database";
+import { prisma } from "@submitin/database";
 import { redirect, notFound } from "next/navigation";
 import { FormBuilder } from "@/components/form-builder";
 

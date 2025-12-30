@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@form-builder/database";
+import { prisma } from "@submitin/database";
 import { createFormSchema } from "@/lib/validations";
 import { generateSlug } from "@/lib/utils";
 import { MAX_FORMS_PER_USER } from "@/lib/security";

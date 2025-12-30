@@ -1,4 +1,4 @@
-import { Skeleton } from "@form-builder/ui/components/skeleton";
+import { Skeleton } from "@submitin/ui/components/skeleton";
 
 export default function FormsLoading() {
   return (

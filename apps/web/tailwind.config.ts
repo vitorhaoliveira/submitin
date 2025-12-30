@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import baseConfig from "@form-builder/config/tailwind";
+import baseConfig from "@submitin/config/tailwind";
 
 const config: Config = {
   ...baseConfig,

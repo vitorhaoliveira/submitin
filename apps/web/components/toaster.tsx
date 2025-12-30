@@ -7,7 +7,7 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "@form-builder/ui/components/toast";
+} from "@submitin/ui/components/toast";
 import { useToast } from "@/hooks/use-toast";
 
 export function Toaster() {

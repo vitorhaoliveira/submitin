@@ -9,12 +9,12 @@ import { Toaster } from "@/components/toaster";
 
 export const metadata: Metadata = {
   title: {
-    default: "Form Builder",
-    template: "%s | Form Builder",
+    default: "Submitin",
+    template: "%s | Submitin",
   },
   description:
     "Crie formulários personalizados, compartilhe links públicos e colete respostas facilmente.",
-  keywords: ["form builder", "formulários", "forms", "pesquisa", "survey"],
+  keywords: ["Submitin", "formulários", "forms", "pesquisa", "survey"],
   authors: [{ name: "Vitor Hugo" }],
   icons: {
     icon: "/icon.svg",

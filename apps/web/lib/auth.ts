@@ -21,7 +21,7 @@ function getAdapter() {
   
   try {
     // Dynamic require to avoid build-time initialization
-    const { prisma } = require("@form-builder/database");
+    const { prisma } = require("@submitin/database");
     return prisma ? PrismaAdapter(prisma) : undefined;
   } catch (error) {
     // Silently fail - adapter will be undefined (JWT strategy doesn't require it)
@@ -41,7 +41,7 @@ const authConfig = {
   providers: hasRequiredEnvVars && process.env.AUTH_RESEND_KEY ? [
     Resend({
       apiKey: process.env.AUTH_RESEND_KEY,
-      from: process.env.EMAIL_FROM || "Form Builder <noreply@formbuilder.dev>",
+      from: process.env.EMAIL_FROM || "submitin <noreply@submitin.dev>",
     }),
   ] : [],
   callbacks: {

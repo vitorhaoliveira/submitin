@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@form-builder/database";
-import { sendEmail } from "@form-builder/email";
-import { NewResponseEmail } from "@form-builder/email/templates/new-response";
+import { prisma } from "@submitin/database";
+import { sendEmail } from "@submitin/email";
+import { NewResponseEmail } from "@submitin/email/templates/new-response";
 import {
   sanitizeFormValues,
   checkRateLimit,

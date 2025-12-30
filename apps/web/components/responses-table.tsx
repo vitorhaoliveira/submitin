@@ -3,23 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "@/lib/i18n-context";
-import { Button } from "@form-builder/ui/components/button";
-import { Input } from "@form-builder/ui/components/input";
-import { Badge } from "@form-builder/ui/components/badge";
+import { Button } from "@submitin/ui/components/button";
+import { Input } from "@submitin/ui/components/input";
+import { Badge } from "@submitin/ui/components/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@form-builder/ui/components/card";
+} from "@submitin/ui/components/card";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@form-builder/ui/components/dialog";
+} from "@submitin/ui/components/dialog";
 import {
   ArrowLeft,
   Download,

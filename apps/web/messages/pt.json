@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Form Builder",
+    "appName": "Submitin",
     "loading": "Carregando...",
     "save": "Salvar",
     "cancel": "Cancelar",
@@ -91,7 +91,7 @@
   },
   "auth": {
     "login": {
-      "title": "Entrar no Form Builder",
+      "title": "Entrar no Submitin",
       "subtitle": "Digite seu email para receber um link de acesso",
       "emailLabel": "Email",
       "emailPlaceholder": "seu@email.com",

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@form-builder/ui/components/button";
+import { Button } from "@submitin/ui/components/button";
 import { FileQuestion, ArrowLeft, Home } from "lucide-react";
 
 export default function NotFound() {

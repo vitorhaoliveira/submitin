@@ -1,4 +1,4 @@
-import { prisma } from "@form-builder/database";
+import { prisma } from "@submitin/database";
 import { notFound } from "next/navigation";
 import { PublicForm } from "@/components/public-form";
 

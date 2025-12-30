@@ -3,20 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "@/lib/i18n-context";
-import { Button } from "@form-builder/ui/components/button";
-import { Input } from "@form-builder/ui/components/input";
-import { Label } from "@form-builder/ui/components/label";
-import { Checkbox } from "@form-builder/ui/components/checkbox";
-import { RadioGroup, RadioGroupItem } from "@form-builder/ui/components/radio-group";
+import { Button } from "@submitin/ui/components/button";
+import { Input } from "@submitin/ui/components/input";
+import { Label } from "@submitin/ui/components/label";
+import { Checkbox } from "@submitin/ui/components/checkbox";
+import { RadioGroup, RadioGroupItem } from "@submitin/ui/components/radio-group";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@form-builder/ui/components/card";
+} from "@submitin/ui/components/card";
 import { FileText, Loader2, CheckCircle, ArrowRight } from "lucide-react";
-import { cn } from "@form-builder/ui/lib/utils";
+import { cn } from "@submitin/ui/lib/utils";
 import { LanguageSwitcher } from "./language-switcher";
 
 interface Field {

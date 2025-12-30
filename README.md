@@ -1,4 +1,4 @@
-# 📝 Form Builder
+# 📝 submitin
 
 Um sistema moderno para criar formulários personalizados, gerar links públicos e coletar respostas.
 
@@ -28,7 +28,7 @@ Um sistema moderno para criar formulários personalizados, gerar links públicos
 ## 📁 Estrutura do Projeto
 
 ```
-form-builder/
+submitin/
 ├── apps/
 │   └── web/                    # Aplicação Next.js principal
 │       ├── app/
@@ -60,7 +60,7 @@ form-builder/
 
 ```bash
 git clone <repo-url>
-cd form-builder
+cd submitin
 pnpm install
 ```
 
@@ -70,7 +70,7 @@ Crie um arquivo `.env` na pasta `apps/web/` baseado no `.env.example`:
 
 ```env
 # Database
-DATABASE_URL="postgresql://postgres:password@localhost:5432/formbuilder?schema=public"
+DATABASE_URL="postgresql://postgres:password@localhost:5432/submitin?schema=public"
 
 # NextAuth
 AUTH_SECRET="gere-com-openssl-rand-base64-32"
@@ -78,7 +78,7 @@ AUTH_URL="http://localhost:3000"
 
 # Email (Resend)
 AUTH_RESEND_KEY="re_xxxxxxxxxxxx"
-EMAIL_FROM="Form Builder <noreply@yourdomain.com>"
+EMAIL_FROM="submitin <noreply@yourdomain.com>"
 ```
 
 **⚠️ Importante para Deploy no Vercel:**

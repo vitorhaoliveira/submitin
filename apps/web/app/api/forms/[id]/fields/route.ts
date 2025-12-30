@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@form-builder/database";
+import { prisma } from "@submitin/database";
 import { createFieldSchema } from "@/lib/validations";
 import { MAX_FIELDS_PER_FORM } from "@/lib/security";
 

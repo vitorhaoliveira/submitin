@@ -1,5 +1,5 @@
 # 📄 Documento de Requisitos de Produto (PRD)
-**Produto:** Form Builder Simples  
+**Produto:** submitin  
 **Versão:** 0.1  
 **Autor:** Vitor Hugo
 
@@ -7,7 +7,7 @@
 
 ## 🎯 1. Visão Geral do Produto
 **Objetivo:**  
-Descrever o produto *Form Builder Simples* — um sistema que permite aos usuários criar formulários via interface web e gerar links públicos para compartilhamento e coleta de respostas.
+Descrever o produto *submitin* — um sistema que permite aos usuários criar formulários via interface web e gerar links públicos para compartilhamento e coleta de respostas.
 
 **Problema que resolve:**  
 Usuários e equipes sem backend próprio precisam de formulários funcionais com coleta de dados e armazenamento centralizado. :contentReference[oaicite:1]{index=1}

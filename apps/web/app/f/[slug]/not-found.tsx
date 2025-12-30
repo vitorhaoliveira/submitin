@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@form-builder/ui/components/button";
+import { Button } from "@submitin/ui/components/button";
 import { FileX, ArrowLeft } from "lucide-react";
 
 export default function FormNotFound() {

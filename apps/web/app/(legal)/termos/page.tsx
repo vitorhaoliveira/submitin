@@ -2,7 +2,7 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Termos de Uso",
-  description: "Termos de uso da plataforma Form Builder",
+  description: "Termos de uso da plataforma submitin",
 };
 
 export default function TermosPage() {
@@ -15,14 +15,14 @@ export default function TermosPage() {
 
       <h2>1. Aceitação dos Termos</h2>
       <p>
-        Ao acessar e usar o Form Builder, você concorda em cumprir e estar
+        Ao acessar e usar o submitin, você concorda em cumprir e estar
         vinculado a estes Termos de Uso. Se você não concordar com qualquer
         parte destes termos, não poderá acessar o serviço.
       </p>
 
       <h2>2. Descrição do Serviço</h2>
       <p>
-        O Form Builder é uma plataforma que permite aos usuários criar
+        O submitin é uma plataforma que permite aos usuários criar
         formulários personalizados, compartilhar links públicos e coletar
         respostas. O serviço inclui:
       </p>
@@ -36,7 +36,7 @@ export default function TermosPage() {
 
       <h2>3. Conta do Usuário</h2>
       <p>
-        Para usar o Form Builder, você precisa criar uma conta usando seu
+        Para usar o submitin, você precisa criar uma conta usando seu
         endereço de email. Você é responsável por:
       </p>
       <ul>
@@ -72,7 +72,7 @@ export default function TermosPage() {
 
       <h2>6. Propriedade Intelectual</h2>
       <p>
-        O serviço Form Builder e todo seu conteúdo, recursos e funcionalidades
+        O serviço submitin e todo seu conteúdo, recursos e funcionalidades
         são de propriedade do desenvolvedor. Os dados e formulários que você
         cria permanecem de sua propriedade.
       </p>
@@ -93,7 +93,7 @@ export default function TermosPage() {
 
       <h2>9. Limitação de Responsabilidade</h2>
       <p>
-        O Form Builder é fornecido &quot;como está&quot;, sem garantias de qualquer tipo.
+        O submitin é fornecido &quot;como está&quot;, sem garantias de qualquer tipo.
         Não nos responsabilizamos por:
       </p>
       <ul>

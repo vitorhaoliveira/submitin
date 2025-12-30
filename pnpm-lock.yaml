@@ -23,21 +23,21 @@ importers:
       '@auth/prisma-adapter':
         specifier: ^2.7.4
         version: 2.11.1(@prisma/client@6.19.1(prisma@6.19.1(typescript@5.9.3))(typescript@5.9.3))
-      '@form-builder/config':
-        specifier: workspace:*
-        version: link:../../packages/config
-      '@form-builder/database':
-        specifier: workspace:*
-        version: link:../../packages/database
-      '@form-builder/email':
-        specifier: workspace:*
-        version: link:../../packages/email
-      '@form-builder/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       '@hookform/resolvers':
         specifier: ^3.9.1
         version: 3.10.0(react-hook-form@7.69.0(react@18.3.1))
+      '@submitin/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@submitin/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@submitin/email':
+        specifier: workspace:*
+        version: link:../../packages/email
+      '@submitin/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.3
