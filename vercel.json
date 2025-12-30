@@ -1,5 +1,5 @@
 {
   "buildCommand": "turbo build --filter=@form-builder/web",
-  "installCommand": "pnpm install",
+  "installCommand": "pnpm install && pnpm --filter @form-builder/database db:generate",
   "framework": "nextjs"
 }
