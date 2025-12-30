@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FileText } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
 export default async function LegalLayout({

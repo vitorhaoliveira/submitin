@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { defaultLocale } from "@/i18n/config";
 import "./globals.css";
 import { Toaster } from "@/components/toaster";
 
@@ -32,15 +32,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
+  // Load messages directly without middleware
+  const messages = (await import(`@/messages/${defaultLocale}.json`)).default;
 
   return (
-    <html lang={locale} className="dark">
+    <html lang={defaultLocale} className="dark">
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} font-sans antialiased min-h-screen bg-gradient-radial`}
       >
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} locale={defaultLocale}>
           {children}
           <Toaster />
         </NextIntlClientProvider>

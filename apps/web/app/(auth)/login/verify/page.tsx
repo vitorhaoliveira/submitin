@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getTranslations } from "@/lib/i18n";
 import { Button } from "@form-builder/ui/components/button";
 import {
   Card,
