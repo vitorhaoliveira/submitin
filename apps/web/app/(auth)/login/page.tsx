@@ -81,7 +81,7 @@ export default function LoginPage() {
                     type="email"
                     placeholder={t("login.emailPlaceholder")}
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
                     className="pl-10"
                     required
                     disabled={isLoading}
