@@ -569,7 +569,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
       {/* Edit Field Dialog */}
       <Dialog
         open={!!editingField}
-        onOpenChange={(open) => !open && setEditingField(null)}
+        onOpenChange={(open: boolean) => !open && setEditingField(null)}
       >
         <DialogContent>
           <DialogHeader>

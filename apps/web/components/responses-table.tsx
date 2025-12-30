@@ -306,7 +306,7 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
       {/* Response Detail Dialog */}
       <Dialog
         open={!!selectedResponse}
-        onOpenChange={(open) => !open && setSelectedResponse(null)}
+        onOpenChange={(open: boolean) => !open && setSelectedResponse(null)}
       >
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>

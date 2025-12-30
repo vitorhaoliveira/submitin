@@ -263,7 +263,7 @@ export function FormsGrid({ forms: initialForms }: FormsGridProps) {
       {/* Delete Dialog */}
       <Dialog
         open={deleteDialog.open}
-        onOpenChange={(open) => setDeleteDialog({ open, form: null })}
+        onOpenChange={(open: boolean) => setDeleteDialog({ open, form: null })}
       >
         <DialogContent>
           <DialogHeader>
