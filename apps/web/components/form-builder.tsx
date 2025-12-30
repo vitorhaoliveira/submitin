@@ -403,7 +403,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
             </div>
             <Switch
               checked={form.published}
-              onCheckedChange={(checked) => setForm({ ...form, published: checked })}
+              onCheckedChange={(checked: boolean) => setForm({ ...form, published: checked })}
             />
           </div>
         </CardContent>
@@ -544,7 +544,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               <Switch
                 id="required"
                 checked={newField.required}
-                onCheckedChange={(checked) =>
+                onCheckedChange={(checked: boolean) =>
                   setNewField({ ...newField, required: checked })
                 }
               />
@@ -612,7 +612,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               <div className="flex items-center gap-2">
                 <Switch
                   checked={editingField.required}
-                  onCheckedChange={(checked) =>
+                  onCheckedChange={(checked: boolean) =>
                     setEditingField({ ...editingField, required: checked })
                   }
                 />
