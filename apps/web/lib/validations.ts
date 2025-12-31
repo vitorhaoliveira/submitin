@@ -61,3 +61,28 @@ export type UpdateFormInput = z.infer<typeof updateFormSchema>;
 export type CreateFieldInput = z.infer<typeof createFieldSchema>;
 export type FormSettingsInput = z.infer<typeof formSettingsSchema>;
 
+// ==========================================
+// AUTENTICAÇÃO
+// ==========================================
+
+export const passwordSchema = z
+  .string()
+  .min(8, "Mínimo 8 caracteres")
+  .regex(/[A-Z]/, "Deve conter letra maiúscula")
+  .regex(/[0-9]/, "Deve conter número")
+  .regex(/[!@#$%^&*(),.?":{}|<>]/, "Deve conter caractere especial");
+
+export const loginSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: z.string().min(1, "Senha é obrigatória"),
+});
+
+export const registerSchema = z.object({
+  email: z.string().email("Email inválido"),
+  password: passwordSchema,
+  name: z.string().min(2, "Nome muito curto").max(100, "Nome muito longo").optional(),
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+export type RegisterInput = z.infer<typeof registerSchema>;
+

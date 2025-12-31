@@ -17,6 +17,7 @@ model User {
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  password      String?
 
   accounts Account[]
   sessions Session[]
@@ -142,4 +143,3 @@ model FormSettings {
 
   @@map("form_settings")
 }
-

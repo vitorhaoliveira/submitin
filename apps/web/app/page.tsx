@@ -11,7 +11,7 @@ import {
   Code2,
   Webhook,
   Shield,
-  Sparkles,
+  Lock,
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
 
@@ -138,9 +138,9 @@ export default async function HomePage() {
               delay="200"
             />
             <FeatureCard
-              icon={<Sparkles className="w-6 h-6" />}
-              title={t("features.magicLink.title")}
-              description={t("features.magicLink.description")}
+              icon={<Lock className="w-6 h-6" />}
+              title={t("features.secureLogin.title")}
+              description={t("features.secureLogin.description")}
               delay="250"
             />
             <FeatureCard

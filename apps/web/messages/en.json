@@ -61,9 +61,9 @@
         "title": "Webhooks",
         "description": "Integrate with other systems by sending data to your URL automatically."
       },
-      "magicLink": {
-        "title": "Passwordless Login",
-        "description": "Access your account with a Magic Link sent by email. Simple and secure."
+      "secureLogin": {
+        "title": "Secure Login",
+        "description": "Access your account with email and password protected by encryption."
       },
       "security": {
         "title": "Security",
@@ -92,27 +92,41 @@
   "auth": {
     "login": {
       "title": "Sign in to Submitin",
-      "subtitle": "Enter your email to receive an access link",
+      "subtitle": "Enter your email and password to access",
       "emailLabel": "Email",
       "emailPlaceholder": "your@email.com",
-      "submit": "Send Magic Link",
-      "submitting": "Sending...",
-      "noAccount": "Don't have an account? It will be created automatically."
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "createAccount": "Create account"
     },
-    "verify": {
-      "title": "Check your email",
-      "subtitle": "We sent a magic link to",
-      "instruction": "Click the link in the email to access your account.",
-      "checkSpam": "Didn't receive it? Check your spam folder.",
-      "resend": "Resend email",
-      "backToLogin": "Back to login"
+    "register": {
+      "title": "Create Account",
+      "subtitle": "Fill in your details to create your account",
+      "nameLabel": "Name (optional)",
+      "namePlaceholder": "Your name",
+      "emailLabel": "Email",
+      "emailPlaceholder": "your@email.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a strong password",
+      "submit": "Create Account",
+      "submitting": "Creating...",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "password": {
+        "minLength": "Minimum 8 characters",
+        "uppercase": "At least one uppercase letter",
+        "number": "At least one number",
+        "special": "At least one special character (!@#$%...)"
+      }
     },
     "errors": {
       "invalidEmail": "Invalid email",
-      "sendFailed": "Failed to send email. Please try again.",
-      "configuration": "Configuration error: Please verify that AUTH_RESEND_KEY and AUTH_EMAIL_FROM are correctly configured.",
-      "accessDenied": "Access denied. Please check your permissions.",
-      "verification": "Email verification error. Please try again."
+      "invalidCredentials": "Invalid email or password",
+      "generic": "An error occurred. Please try again.",
+      "accessDenied": "Access denied. Please check your permissions."
     }
   },
   "dashboard": {

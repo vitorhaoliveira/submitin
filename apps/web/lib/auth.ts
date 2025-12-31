@@ -1,75 +1,43 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import Resend from "next-auth/providers/resend";
+import Credentials from "next-auth/providers/credentials";
+import bcrypt from "bcryptjs";
+import { loginSchema } from "./validations";
 
 const isBuildTime = process.env.NEXT_PHASE === "phase-production-build";
 
 const hasAuthEnv = !!process.env.AUTH_SECRET;
 const hasDbEnv = !!process.env.DATABASE_URL;
 
-// Validação mais rigorosa: verifica se as variáveis existem E não estão vazias
-const hasResendKey = !!(process.env.AUTH_RESEND_KEY && process.env.AUTH_RESEND_KEY.trim().length > 0);
-const hasEmailFrom = !!(process.env.AUTH_EMAIL_FROM && process.env.AUTH_EMAIL_FROM.trim().length > 0);
-const hasResendEnv = hasResendKey && hasEmailFrom;
-
-// Log de diagnóstico (apenas em desenvolvimento ou quando há problemas)
-if (!isBuildTime && process.env.NODE_ENV !== "test") {
+// Log de diagnóstico (apenas em desenvolvimento)
+if (!isBuildTime && process.env.NODE_ENV === "development") {
   console.log("\n" + "=".repeat(60));
   console.log("🔍 [NextAuth] Diagnóstico de Configuração");
   console.log("=".repeat(60));
-  
-  // Verifica DATABASE_URL
+
   if (!hasDbEnv) {
     console.error("❌ DATABASE_URL: Não configurado");
   } else {
     const dbUrl = process.env.DATABASE_URL || "";
-    if (dbUrl.includes("localhost:5432")) {
-      console.warn("⚠️  DATABASE_URL: Aponta para localhost:5432");
-      console.warn("   Se você usa Supabase, atualize para a connection string do Supabase");
-    } else if (dbUrl.includes("supabase")) {
+    if (dbUrl.includes("supabase")) {
       console.log("✅ DATABASE_URL: Configurado (Supabase)");
     } else {
       console.log("✅ DATABASE_URL: Configurado");
     }
   }
-  
-  // Verifica AUTH_SECRET
+
   if (!hasAuthEnv) {
     console.error("❌ AUTH_SECRET: Não configurado");
   } else {
     console.log("✅ AUTH_SECRET: Configurado");
   }
-  
-  // Verifica Resend
-  if (!hasResendEnv) {
-    const missing: string[] = [];
-    if (!hasResendKey) missing.push("AUTH_RESEND_KEY");
-    if (!hasEmailFrom) missing.push("AUTH_EMAIL_FROM");
-    
-    console.error(`❌ Resend: Configuração incompleta (faltando: ${missing.join(", ")})`);
-    console.error("   📝 Para corrigir:");
-    console.error("   1. Crie/edite o arquivo .env.local na pasta apps/web/");
-    console.error("   2. Adicione:");
-    console.error("      AUTH_RESEND_KEY=re_xxxxxxxxxxxx");
-    console.error('      AUTH_EMAIL_FROM="Seu Nome <noreply@seudominio.com>"');
-    console.error("   3. Reinicie o servidor (pnpm dev)");
-  } else {
-    console.log("✅ Resend: Configurado corretamente");
-    if (process.env.NODE_ENV === "development") {
-      console.log(`   AUTH_EMAIL_FROM: ${process.env.AUTH_EMAIL_FROM}`);
-    }
-  }
-  
+
+  console.log("✅ Provider: Credentials (Email/Senha)");
   console.log("=".repeat(60) + "\n");
 }
 
 function getAdapter() {
   if (isBuildTime || !hasDbEnv) {
-    if (!isBuildTime && process.env.NODE_ENV !== "test") {
-      if (!hasDbEnv) {
-        console.warn("⚠️ [NextAuth] DATABASE_URL não configurado. O adapter não será usado.");
-      }
-    }
     return undefined;
   }
 
@@ -77,22 +45,19 @@ function getAdapter() {
     const { prisma } = require("@submitin/database");
     return prisma ? PrismaAdapter(prisma) : undefined;
   } catch (error) {
-    if (process.env.NODE_ENV !== "test") {
+    if (process.env.NODE_ENV === "development") {
       console.error("❌ [NextAuth] Erro ao carregar Prisma adapter:", error);
-      
-      // Diagnóstico específico para erros de conexão
-      if (error instanceof Error) {
-        if (error.message.includes("Can't reach database server") || 
-            error.message.includes("localhost:5432")) {
-          console.error("\n   🔍 Diagnóstico:");
-          console.error("   O Prisma está tentando conectar em localhost:5432");
-          console.error("   Se você usa Supabase, atualize DATABASE_URL com a connection string do Supabase");
-          console.error("   Exemplo: postgresql://user:password@db.xxxxx.supabase.co:5432/postgres");
-          console.error("   📝 Obtenha a connection string em: Supabase Dashboard > Project Settings > Database\n");
-        }
-      }
     }
     return undefined;
+  }
+}
+
+function getPrisma() {
+  try {
+    const { prisma } = require("@submitin/database");
+    return prisma;
+  } catch {
+    return null;
   }
 }
 
@@ -101,35 +66,75 @@ const authConfig = {
   session: { strategy: "jwt" as const },
   pages: {
     signIn: "/login",
-    verifyRequest: "/login/verify",
-    error: "/login?error=Configuration", // Redireciona erros de configuração para login
+    error: "/login?error=auth",
   },
 
-  // ✅ Provider NÃO depende de DATABASE_URL
-  providers: hasResendEnv
-    ? [
-        Resend({
-          apiKey: process.env.AUTH_RESEND_KEY!,
-          from: process.env.AUTH_EMAIL_FROM!, // ex: "Submitin <no-reply@submitin.com>"
-        }),
-      ]
-    : [],
+  providers: [
+    Credentials({
+      id: "credentials",
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Senha", type: "password" },
+      },
+      async authorize(credentials) {
+        // Validação básica
+        const parsed = loginSchema.safeParse(credentials);
+        if (!parsed.success) {
+          return null;
+        }
+
+        const { email, password } = parsed.data;
+
+        // Busca usuário no banco
+        const prisma = getPrisma();
+        if (!prisma) {
+          console.error("❌ [Auth] Prisma não disponível");
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email: email.toLowerCase() },
+        });
+
+        if (!user || !user.password) {
+          // Usuário não existe ou não tem senha configurada
+          return null;
+        }
+
+        // Verifica a senha
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+          return null;
+        }
+
+        // Retorna dados do usuário (sem a senha)
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+        };
+      },
+    }),
+  ],
 
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
-      if (token.sub && session.user) session.user.id = token.sub;
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
       return session;
     },
     async jwt({ token, user }: { token: any; user: any }) {
-      if (user) token.sub = user.id;
+      if (user) {
+        token.sub = user.id;
+      }
       return token;
     },
   },
 
-  // ✅ Secret sempre real em runtime, placeholder só em build
   secret: hasAuthEnv ? process.env.AUTH_SECRET : "build-time-placeholder-secret",
-
-  // Melhor tratamento de erros
   debug: process.env.NODE_ENV === "development",
 };
 

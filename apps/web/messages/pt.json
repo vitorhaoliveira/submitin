@@ -61,9 +61,9 @@
         "title": "Webhooks",
         "description": "Integre com outros sistemas enviando dados para sua URL automaticamente."
       },
-      "magicLink": {
-        "title": "Login sem Senha",
-        "description": "Acesse sua conta com Magic Link enviado por email. Simples e seguro."
+      "secureLogin": {
+        "title": "Login Seguro",
+        "description": "Acesse sua conta com email e senha protegidos por criptografia."
       },
       "security": {
         "title": "Segurança",
@@ -92,27 +92,41 @@
   "auth": {
     "login": {
       "title": "Entrar no Submitin",
-      "subtitle": "Digite seu email para receber um link de acesso",
+      "subtitle": "Digite seu email e senha para acessar",
       "emailLabel": "Email",
       "emailPlaceholder": "seu@email.com",
-      "submit": "Enviar Link Mágico",
-      "submitting": "Enviando...",
-      "noAccount": "Não tem conta? Ela será criada automaticamente."
+      "passwordLabel": "Senha",
+      "passwordPlaceholder": "Digite sua senha",
+      "submit": "Entrar",
+      "submitting": "Entrando...",
+      "noAccount": "Não tem conta?",
+      "createAccount": "Criar conta"
     },
-    "verify": {
-      "title": "Verifique seu email",
-      "subtitle": "Enviamos um link mágico para",
-      "instruction": "Clique no link do email para acessar sua conta.",
-      "checkSpam": "Não recebeu? Verifique sua pasta de spam.",
-      "resend": "Reenviar email",
-      "backToLogin": "Voltar para login"
+    "register": {
+      "title": "Criar Conta",
+      "subtitle": "Preencha os dados para criar sua conta",
+      "nameLabel": "Nome (opcional)",
+      "namePlaceholder": "Seu nome",
+      "emailLabel": "Email",
+      "emailPlaceholder": "seu@email.com",
+      "passwordLabel": "Senha",
+      "passwordPlaceholder": "Crie uma senha forte",
+      "submit": "Criar Conta",
+      "submitting": "Criando...",
+      "hasAccount": "Já tem conta?",
+      "login": "Fazer login",
+      "password": {
+        "minLength": "Mínimo 8 caracteres",
+        "uppercase": "Pelo menos uma letra maiúscula",
+        "number": "Pelo menos um número",
+        "special": "Pelo menos um caractere especial (!@#$%...)"
+      }
     },
     "errors": {
       "invalidEmail": "Email inválido",
-      "sendFailed": "Falha ao enviar email. Tente novamente.",
-      "configuration": "Erro de configuração: Verifique se AUTH_RESEND_KEY e AUTH_EMAIL_FROM estão configurados corretamente.",
-      "accessDenied": "Acesso negado. Verifique suas permissões.",
-      "verification": "Erro ao verificar email. Tente novamente."
+      "invalidCredentials": "Email ou senha incorretos",
+      "generic": "Ocorreu um erro. Tente novamente.",
+      "accessDenied": "Acesso negado. Verifique suas permissões."
     }
   },
   "dashboard": {
