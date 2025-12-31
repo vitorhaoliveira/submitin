@@ -1,10 +1,9 @@
+export const runtime = "nodejs";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { prisma } from "@submitin/database";
 import { registerSchema } from "@/lib/validations";
 import { checkRateLimit, getClientIP } from "@/lib/security";
-
-export const runtime = "nodejs";
 
 const SALT_ROUNDS = 12;
 
