@@ -18,7 +18,7 @@ export const prisma =
 
 // Tratamento de erros de conexão
 if (process.env.NODE_ENV === "development") {
-  prisma.$connect().catch((error) => {
+  prisma.$connect().catch((error: unknown) => {
     if (error instanceof Error) {
       if (error.message.includes("Can't reach database server") || 
           error.message.includes("localhost:5432")) {
