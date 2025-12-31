@@ -31,18 +31,19 @@ export default function LoginPage() {
     const errorParam = searchParams.get("error");
     if (errorParam) {
       // Extrai o código de erro (pode vir em vários formatos)
-      let errorCode = errorParam;
+      let errorCode: string = errorParam;
       
       // Remove query strings e paths
       if (errorCode.includes("?")) {
         const urlParams = new URLSearchParams(errorCode.split("?")[1] || "");
-        errorCode = urlParams.get("error") || errorCode.split("?")[0];
+        const errorFromParams = urlParams.get("error");
+        errorCode = errorFromParams || errorCode.split("?")[0] || "Unknown";
       }
       if (errorCode.includes("=")) {
-        errorCode = errorCode.split("=")[0];
+        errorCode = errorCode.split("=")[0] || "Unknown";
       }
       if (errorCode.includes("/")) {
-        errorCode = errorCode.split("/").pop() || errorCode;
+        errorCode = errorCode.split("/").pop() || errorCode || "Unknown";
       }
       
       // Log para debug
@@ -84,18 +85,19 @@ export default function LoginPage() {
       if (result?.error) {
         // Extrai o código de erro (pode vir em vários formatos)
         // Exemplos: "Configuration", "Configuration?error=Configuration", "/login?error=Configuration"
-        let errorCode = result.error;
+        let errorCode: string = result.error;
         
         // Remove query strings e paths
         if (errorCode.includes("?")) {
           const urlParams = new URLSearchParams(errorCode.split("?")[1] || "");
-          errorCode = urlParams.get("error") || errorCode.split("?")[0];
+          const errorFromParams = urlParams.get("error");
+          errorCode = errorFromParams || errorCode.split("?")[0] || "Unknown";
         }
         if (errorCode.includes("=")) {
-          errorCode = errorCode.split("=")[0];
+          errorCode = errorCode.split("=")[0] || "Unknown";
         }
         if (errorCode.includes("/")) {
-          errorCode = errorCode.split("/").pop() || errorCode;
+          errorCode = errorCode.split("/").pop() || errorCode || "Unknown";
         }
         
         // Log detalhado para debug (apenas em desenvolvimento)
