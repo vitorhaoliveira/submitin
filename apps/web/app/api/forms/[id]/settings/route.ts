@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@submitin/database";
+import { prisma, Prisma } from "@submitin/database";
 import { formSettingsSchema } from "@/lib/validations";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -58,32 +58,44 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const validatedData = formSettingsSchema.parse(body);
     console.log("  → Dados validados:", JSON.stringify(validatedData, null, 2));
 
-    // Prepara os dados para salvar
-    const settingsData = {
-      // Notificações
-      notifyEmail: validatedData.notifyEmail || null,
-      notifyEmails: validatedData.notifyEmails || [],
-      webhookUrl: validatedData.webhookUrl || null,
-
-      // PRO: Anti-spam / CAPTCHA
-      captchaEnabled: validatedData.captchaEnabled || false,
-      captchaProvider: validatedData.captchaProvider || null,
-      captchaSiteKey: validatedData.captchaSiteKey || null,
-      captchaSecretKey: validatedData.captchaSecretKey || null,
-
-      // PRO: Branding
-      hideBranding: validatedData.hideBranding || false,
-
-      // PRO: Custom Theme
-      customTheme: validatedData.customTheme || null,
-    };
-
     const settings = await prisma.formSettings.upsert({
       where: { formId: id },
-      update: settingsData,
+      update: {
+        // Notificações
+        notifyEmail: validatedData.notifyEmail || null,
+        notifyEmails: validatedData.notifyEmails || [],
+        webhookUrl: validatedData.webhookUrl || null,
+
+        // PRO: Anti-spam / CAPTCHA
+        captchaEnabled: validatedData.captchaEnabled || false,
+        captchaProvider: validatedData.captchaProvider || null,
+        captchaSiteKey: validatedData.captchaSiteKey || null,
+        captchaSecretKey: validatedData.captchaSecretKey || null,
+
+        // PRO: Branding
+        hideBranding: validatedData.hideBranding || false,
+
+        // PRO: Custom Theme
+        customTheme: validatedData.customTheme ? validatedData.customTheme : Prisma.JsonNull,
+      },
       create: {
         formId: id,
-        ...settingsData,
+        // Notificações
+        notifyEmail: validatedData.notifyEmail || null,
+        notifyEmails: validatedData.notifyEmails || [],
+        webhookUrl: validatedData.webhookUrl || null,
+
+        // PRO: Anti-spam / CAPTCHA
+        captchaEnabled: validatedData.captchaEnabled || false,
+        captchaProvider: validatedData.captchaProvider || null,
+        captchaSiteKey: validatedData.captchaSiteKey || null,
+        captchaSecretKey: validatedData.captchaSecretKey || null,
+
+        // PRO: Branding
+        hideBranding: validatedData.hideBranding || false,
+
+        // PRO: Custom Theme
+        customTheme: validatedData.customTheme ? validatedData.customTheme : Prisma.JsonNull,
       },
     });
 
