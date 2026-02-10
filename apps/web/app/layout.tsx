@@ -9,6 +9,7 @@ import { getLocaleFromCookie } from "@/lib/i18n";
 import "./globals.css";
 import { Toaster } from "@/components/toaster";
 import { SessionProvider } from "@/components/session-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocaleFromCookie();
@@ -43,6 +44,7 @@ export default async function RootLayout({
           <I18nProvider initialLocale={locale} initialMessages={messages}>
             {children}
             <Toaster />
+            <Analytics />
           </I18nProvider>
         </SessionProvider>
       </body>
