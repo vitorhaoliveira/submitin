@@ -82,6 +82,8 @@ const section = {
   padding: "24px",
   backgroundColor: "#334155",
   borderRadius: "8px",
+  maxWidth: "100%",
+  overflow: "hidden" as const,
 };
 
 const text = {
@@ -101,10 +103,12 @@ const textSecondary = {
 const button = {
   backgroundColor: "#10b981",
   borderRadius: "8px",
+  boxSizing: "border-box" as const,
   color: "#ffffff",
   display: "block",
   fontSize: "16px",
   fontWeight: "600",
+  maxWidth: "100%",
   padding: "14px 24px",
   textAlign: "center" as const,
   textDecoration: "none",
