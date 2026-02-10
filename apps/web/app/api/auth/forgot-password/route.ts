@@ -12,8 +12,9 @@ const EXPIRES_HOURS = 1;
 
 function getBaseUrl(): string {
   const url =
+    process.env.AUTH_URL ||
     process.env.NEXTAUTH_URL ||
-    process.env.VERCEL_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null) ||
     process.env.BASE_URL;
   if (url) {
     return url.startsWith("http") ? url : `https://${url}`;
@@ -73,6 +74,21 @@ export async function POST(request: NextRequest) {
     const baseUrl = getBaseUrl();
     const resetUrl = `${baseUrl}/login/reset?token=${token}`;
 
+    // Check Resend config before attempting send (so we can log clearly in production)
+    if (!process.env.AUTH_RESEND_KEY || !process.env.AUTH_EMAIL_FROM) {
+      console.error(
+        "❌ [ForgotPassword] Email não enviado: AUTH_RESEND_KEY ou AUTH_EMAIL_FROM não configurados. " +
+          "Configure em Vercel → Settings → Environment Variables (Production)."
+      );
+      await prisma.verificationToken.deleteMany({
+        where: { identifier, token },
+      });
+      return NextResponse.json(
+        { message: "Se o email existir, você receberá um link para redefinir a senha." },
+        { status: 200 }
+      );
+    }
+
     try {
       await sendEmail({
         to: email,
@@ -82,8 +98,10 @@ export async function POST(request: NextRequest) {
           host: baseUrl.replace(/^https?:\/\//, ""),
         }),
       });
+      console.log("✅ [ForgotPassword] Email de redefinição enviado para:", email);
     } catch (emailError) {
-      console.error("❌ [ForgotPassword] Erro ao enviar email:", emailError);
+      const errMsg = emailError instanceof Error ? emailError.message : String(emailError);
+      console.error("❌ [ForgotPassword] Erro ao enviar email:", errMsg);
       await prisma.verificationToken.deleteMany({
         where: { identifier, token },
       });
