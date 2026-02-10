@@ -36,6 +36,7 @@ interface FormSettings {
   captchaEnabled?: boolean;
   captchaProvider?: CaptchaProvider | null;
   captchaSiteKey?: string | null;
+  allowMultipleResponses?: boolean;
 }
 
 interface Form {
@@ -67,6 +68,7 @@ export function PublicForm({ form }: PublicFormProps) {
   const captchaEnabled = settings?.captchaEnabled ?? false;
   const captchaProvider = settings?.captchaProvider ?? null;
   const captchaSiteKey = settings?.captchaSiteKey ?? null;
+  const allowMultipleResponses = settings?.allowMultipleResponses ?? false;
 
   // Gerar estilos do tema customizado
   const themeStyles = generateThemeStyles(customTheme);
@@ -171,9 +173,11 @@ export function PublicForm({ form }: PublicFormProps) {
             </div>
             <h2 className="text-2xl font-bold mb-2">{t("success.title")}</h2>
             <p className="text-muted-foreground mb-8">{t("success.subtitle")}</p>
-            <Button onClick={() => window.location.reload()} variant="outline">
-              {t("success.another")}
-            </Button>
+            {allowMultipleResponses && (
+              <Button onClick={() => window.location.reload()} variant="outline">
+                {t("success.another")}
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

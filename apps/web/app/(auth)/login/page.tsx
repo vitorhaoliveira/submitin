@@ -137,6 +137,14 @@ export default function LoginPage() {
                     )}
                   </button>
                 </div>
+                <div className="text-right">
+                  <Link
+                    href="/login/forgot"
+                    className="text-sm text-primary hover:underline"
+                  >
+                    {t("login.forgotPassword")}
+                  </Link>
+                </div>
               </div>
 
               {error && (

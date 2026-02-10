@@ -25,6 +25,10 @@
     "required": "Obrigatório"
   },
   "landing": {
+    "seo": {
+      "title": "Submitin – Crie formulários incríveis em minutos",
+      "keywords": "formulários online, criar formulário, pesquisa, survey, form builder, coleta de respostas, Submitin"
+    },
     "hero": {
       "badge": "Novo: Notificações em tempo real",
       "title": "Crie formulários",
@@ -80,16 +84,103 @@
       "button": "Começar Agora — É Grátis"
     },
     "nav": {
+      "pricing": "Preços",
       "login": "Entrar",
       "getStarted": "Começar Grátis"
+    },
+    "pricing": {
+      "title": "Planos Simples e Transparentes",
+      "subtitle": "Comece gratuitamente e faça upgrade quando precisar de mais recursos",
+      "free": {
+        "name": "Free",
+        "description": "Perfeito para começar",
+        "cta": "Começar Grátis",
+        "features": {
+          "0": "Até 5 formulários",
+          "1": "100 respostas/mês",
+          "2": "Notificações por email",
+          "3": "Webhook básico",
+          "4": "Branding Submitin"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "Para profissionais e empresas",
+        "badge": "Mais Popular",
+        "cta": "Upgrade para Pro",
+        "features": {
+          "0": "Tudo do Free +",
+          "1": "Formulários ilimitados",
+          "2": "Respostas ilimitadas",
+          "3": "Remover branding Submitin",
+          "4": "Tema personalizado",
+          "5": "Anti-spam (CAPTCHA)",
+          "6": "Suporte prioritário"
+        }
+      },
+      "perMonth": "/ mês"
+    },
+    "proFeatures": {
+      "badge": "Recursos Pro",
+      "title": "Desbloqueie Todo o Potencial",
+      "subtitle": "Recursos avançados para levar seus formulários ao próximo nível",
+      "customTheme": {
+        "title": "Tema Personalizado",
+        "description": "Customize cores, fontes e estilos para combinar com sua marca"
+      },
+      "captcha": {
+        "title": "Anti-Spam (CAPTCHA)",
+        "description": "Proteja seus formulários contra bots e spam com Cloudflare Turnstile"
+      },
+      "unlimitedResponses": {
+        "title": "Respostas Ilimitadas",
+        "description": "Receba quantas respostas precisar, sem limites mensais"
+      },
+      "removeBranding": {
+        "title": "Remover Branding",
+        "description": "Retire a marca Submitin e use apenas sua própria identidade"
+      },
+      "prioritySupport": {
+        "title": "Suporte Prioritário",
+        "description": "Atendimento rápido e dedicado para resolver suas dúvidas"
+      },
+      "advancedAnalytics": {
+        "title": "Analytics Avançado",
+        "description": "Insights detalhados sobre suas respostas e desempenho"
+      }
+    },
+    "comparison": {
+      "title": "Compare os Planos",
+      "subtitle": "Veja exatamente o que está incluído em cada plano",
+      "features": "Recursos",
+      "free": "Free",
+      "pro": "Pro",
+      "forms": "Formulários",
+      "formsLimit": "Até 5",
+      "formsUnlimited": "Ilimitados",
+      "responsesPerMonth": "Respostas por mês",
+      "responsesLimit": "100",
+      "responsesUnlimited": "Ilimitadas",
+      "emailNotifications": "Notificações por email",
+      "webhooks": "Webhooks",
+      "customTheme": "Tema personalizado",
+      "removeBranding": "Remover branding",
+      "captcha": "Anti-spam (CAPTCHA)",
+      "support": "Suporte",
+      "supportCommunity": "Comunidade",
+      "supportPriority": "Prioritário"
     },
     "footer": {
       "copyright": "Feito com ❤️ por Vitor Hugo",
       "terms": "Termos de Uso",
-      "privacy": "Privacidade"
+      "privacy": "Privacidade",
+      "support": "Suporte",
+      "supportContact": "Dúvidas? Fale conosco:"
     }
   },
   "auth": {
+    "accountTitle": "Conta",
+    "accountDescription": "Acesse ou crie sua conta Submitin para criar e gerenciar formulários.",
     "login": {
       "title": "Entrar no Submitin",
       "subtitle": "Digite seu email e senha para acessar",
@@ -97,10 +188,34 @@
       "emailPlaceholder": "seu@email.com",
       "passwordLabel": "Senha",
       "passwordPlaceholder": "Digite sua senha",
+      "forgotPassword": "Esqueci a senha",
       "submit": "Entrar",
       "submitting": "Entrando...",
       "noAccount": "Não tem conta?",
       "createAccount": "Criar conta"
+    },
+    "forgot": {
+      "title": "Esqueci a senha",
+      "subtitle": "Informe seu email para receber um link e redefinir a senha",
+      "submit": "Enviar link",
+      "submitting": "Enviando...",
+      "successMessage": "Se esse email estiver cadastrado, você receberá um link para redefinir a senha.",
+      "checkInbox": "Verifique sua caixa de entrada e o spam.",
+      "backToLogin": "Voltar ao login",
+      "toLogin": "ao login"
+    },
+    "reset": {
+      "title": "Redefinir senha",
+      "subtitle": "Digite sua nova senha abaixo",
+      "newPasswordLabel": "Nova senha",
+      "newPasswordPlaceholder": "Digite a nova senha",
+      "confirmPasswordLabel": "Confirmar senha",
+      "confirmPasswordPlaceholder": "Repita a nova senha",
+      "submit": "Redefinir senha",
+      "submitting": "Salvando...",
+      "successMessage": "Senha redefinida com sucesso! Redirecionando para o login...",
+      "invalidToken": "Link inválido ou expirado. Solicite um novo link para redefinir a senha.",
+      "passwordsDoNotMatch": "As senhas não coincidem"
     },
     "register": {
       "title": "Criar Conta",
@@ -130,6 +245,10 @@
     }
   },
   "dashboard": {
+    "seo": {
+      "title": "Painel",
+      "description": "Gerencie seus formulários e respostas no Submitin."
+    },
     "title": "Meus Formulários",
     "subtitle": "Gerencie seus formulários e visualize respostas",
     "createForm": "Novo Formulário",
@@ -153,9 +272,26 @@
     },
     "nav": {
       "forms": "Formulários",
+      "account": "Conta",
       "settings": "Configurações",
       "logout": "Sair"
     }
+  },
+  "account": {
+    "title": "Conta",
+    "subtitle": "Gerencie sua conta e altere sua senha",
+    "changePasswordTitle": "Alterar senha",
+    "changePasswordDescription": "Digite sua senha atual e escolha uma nova senha.",
+    "currentPasswordLabel": "Senha atual",
+    "currentPasswordPlaceholder": "Digite sua senha atual",
+    "newPasswordLabel": "Nova senha",
+    "newPasswordPlaceholder": "Digite a nova senha",
+    "confirmPasswordLabel": "Confirmar nova senha",
+    "confirmPasswordPlaceholder": "Repita a nova senha",
+    "passwordsDoNotMatch": "As senhas não coincidem",
+    "submit": "Alterar senha",
+    "submitting": "Alterando...",
+    "changePasswordSuccess": "Senha alterada com sucesso!"
   },
   "formsGrid": {
     "title": "Formulários",
@@ -188,6 +324,8 @@
     "descriptionPlaceholder": "Adicione uma descrição para o formulário...",
     "publishForm": "Publicar formulário",
     "publishDesc": "Tornar o formulário acessível publicamente",
+    "publishButton": "Publicar",
+    "unpublishButton": "Despublicar",
     "addFieldTitle": "Adicionar Campo",
     "addFieldDesc": "Configure o novo campo para seu formulário",
     "editFieldTitle": "Editar Campo",
@@ -204,9 +342,57 @@
     "notifyEmail": "Email para Notificações",
     "notifyEmailPlaceholder": "seu@email.com",
     "notifyEmailHelp": "Receba um email a cada nova resposta",
+    "behaviorSection": "Comportamento",
+    "allowMultipleResponses": "Permitir mais de uma resposta",
+    "allowMultipleResponsesHelp": "Exibir o botão \"Enviar outra resposta\" após o envio. Desative para uma resposta por pessoa.",
     "webhookUrl": "Webhook URL",
     "webhookUrlPlaceholder": "https://...",
     "webhookUrlHelp": "Envie as respostas para uma URL externa",
+    "emailNotifications": "Notificações por Email",
+    "additionalEmails": "Emails Adicionais",
+    "additionalEmailsPlaceholder": "email@exemplo.com",
+    "additionalEmailsHelp": "Notifique múltiplas pessoas a cada nova resposta (máx. 10 emails)",
+    "proFeatureLock": "Funcionalidade exclusiva do plano PRO.",
+    "proUpgrade": "Fazer upgrade",
+    "antiSpam": "Anti-spam",
+    "enableCaptcha": "Habilitar CAPTCHA",
+    "enableCaptchaHelp": "Proteja seu formulário contra spam com verificação humana",
+    "appearance": "Aparência",
+    "removeLogo": "Remover Logo do Topo",
+    "removeLogoHelp": "Oculta o logo e nome do Submitin no topo do formulário público",
+    "customThemeTitle": "Tema Personalizado",
+    "customThemeDesc": "Personalize as cores do seu formulário público",
+    "customThemeProFeature": "Recurso exclusivo do plano Pro",
+    "customThemeProUpgradeDesc": "Faça upgrade para personalizar as cores, fontes e estilo dos seus formulários.",
+    "customThemeUpgrade": "Fazer Upgrade",
+    "themePresets": "Temas Pré-definidos",
+    "primaryColor": "Cor Principal",
+    "accentColor": "Cor de Acento",
+    "backgroundColor": "Cor de Fundo",
+    "cardBackground": "Fundo do Card",
+    "textColor": "Cor do Texto",
+    "borderRadius": "Bordas Arredondadas",
+    "borderRadiusNone": "Nenhum",
+    "borderRadiusSm": "Pequeno",
+    "borderRadiusMd": "Médio",
+    "borderRadiusLg": "Grande",
+    "borderRadiusXl": "Extra Grande",
+    "borderRadiusFull": "Completo",
+    "preview": "Preview",
+    "previewFormTitle": "Preview do Formulário",
+    "previewFormSubtitle": "Assim ficará seu formulário",
+    "previewButton": "Botão Principal",
+    "previewAccent": "Acento",
+    "resetTheme": "Resetar",
+    "captchaProvider": "Provider",
+    "captchaSelectProvider": "Selecione o provider",
+    "captchaTurnstile": "Cloudflare Turnstile (Recomendado)",
+    "captchaHcaptcha": "hCaptcha",
+    "captchaSiteKey": "Site Key",
+    "captchaSiteKeyPlaceholder": "Site key do seu CAPTCHA",
+    "captchaSecretKey": "Secret Key",
+    "captchaSecretKeyPlaceholder": "Secret key do seu CAPTCHA",
+    "captchaGetKeysAt": "Obtenha suas chaves em",
     "shareTitle": "Compartilhar Formulário",
     "shareDesc": "Compartilhe seu formulário via link ou incorpore em seu site",
     "notPublishedWarning": "Este formulário ainda não está publicado. Publique-o primeiro para compartilhar.",
@@ -283,6 +469,7 @@
     "createError": "Não foi possível criar o formulário."
   },
   "publicForm": {
+    "seoDescriptionFallback": "Preencha o formulário",
     "submit": "Enviar",
     "submitting": "Enviando...",
     "success": {
@@ -302,10 +489,12 @@
   "legal": {
     "terms": {
       "title": "Termos de Uso",
+      "seoDescription": "Termos de uso da plataforma Submitin. Leia as condições de uso do serviço.",
       "lastUpdate": "Última atualização"
     },
     "privacy": {
       "title": "Política de Privacidade",
+      "seoDescription": "Política de privacidade da plataforma Submitin. Saiba como coletamos, usamos e protegemos seus dados.",
       "lastUpdate": "Última atualização"
     },
     "backHome": "Voltar ao início"

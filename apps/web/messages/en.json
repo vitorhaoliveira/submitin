@@ -25,6 +25,10 @@
     "required": "Required"
   },
   "landing": {
+    "seo": {
+      "title": "Submitin – Create amazing forms in minutes",
+      "keywords": "online forms, form builder, survey, create form, collect responses, Submitin"
+    },
     "hero": {
       "badge": "New: Real-time notifications",
       "title": "Create",
@@ -80,16 +84,103 @@
       "button": "Get Started — It's Free"
     },
     "nav": {
+      "pricing": "Pricing",
       "login": "Sign In",
-      "getStarted": "Get Started Free"
+      "getStarted": "Get Started"
+    },
+    "pricing": {
+      "title": "Simple and Transparent Pricing",
+      "subtitle": "Start for free and upgrade when you need more features",
+      "free": {
+        "name": "Free",
+        "description": "Perfect to get started",
+        "cta": "Start Free",
+        "features": {
+          "0": "Up to 5 forms",
+          "1": "100 responses/month",
+          "2": "Email notifications",
+          "3": "Basic webhook",
+          "4": "Submitin branding"
+        }
+      },
+      "pro": {
+        "name": "Pro",
+        "description": "For professionals and businesses",
+        "badge": "Most Popular",
+        "cta": "Upgrade to Pro",
+        "features": {
+          "0": "Everything in Free +",
+          "1": "Unlimited forms",
+          "2": "Unlimited responses",
+          "3": "Remove Submitin branding",
+          "4": "Custom theme",
+          "5": "Anti-spam (CAPTCHA)",
+          "6": "Priority support"
+        }
+      },
+      "perMonth": "/ month"
+    },
+    "proFeatures": {
+      "badge": "Pro Features",
+      "title": "Unlock the Full Potential",
+      "subtitle": "Advanced features to take your forms to the next level",
+      "customTheme": {
+        "title": "Custom Theme",
+        "description": "Customize colors, fonts and styles to match your brand"
+      },
+      "captcha": {
+        "title": "Anti-Spam (CAPTCHA)",
+        "description": "Protect your forms against bots and spam with Cloudflare Turnstile"
+      },
+      "unlimitedResponses": {
+        "title": "Unlimited Responses",
+        "description": "Receive as many responses as you need, without monthly limits"
+      },
+      "removeBranding": {
+        "title": "Remove Branding",
+        "description": "Remove Submitin branding and use only your own identity"
+      },
+      "prioritySupport": {
+        "title": "Priority Support",
+        "description": "Fast and dedicated support to resolve your questions"
+      },
+      "advancedAnalytics": {
+        "title": "Advanced Analytics",
+        "description": "Detailed insights about your responses and performance"
+      }
+    },
+    "comparison": {
+      "title": "Compare Plans",
+      "subtitle": "See exactly what's included in each plan",
+      "features": "Features",
+      "free": "Free",
+      "pro": "Pro",
+      "forms": "Forms",
+      "formsLimit": "Up to 5",
+      "formsUnlimited": "Unlimited",
+      "responsesPerMonth": "Responses per month",
+      "responsesLimit": "100",
+      "responsesUnlimited": "Unlimited",
+      "emailNotifications": "Email notifications",
+      "webhooks": "Webhooks",
+      "customTheme": "Custom theme",
+      "removeBranding": "Remove branding",
+      "captcha": "Anti-spam (CAPTCHA)",
+      "support": "Support",
+      "supportCommunity": "Community",
+      "supportPriority": "Priority"
     },
     "footer": {
       "copyright": "Made with ❤️ by Vitor Hugo",
       "terms": "Terms of Use",
-      "privacy": "Privacy"
+      "privacy": "Privacy",
+      "support": "Support",
+      "supportContact": "Questions? Contact us:"
     }
   },
   "auth": {
+    "accountTitle": "Account",
+    "accountDescription": "Access or create your Submitin account to create and manage forms.",
     "login": {
       "title": "Sign in to Submitin",
       "subtitle": "Enter your email and password to access",
@@ -97,10 +188,34 @@
       "emailPlaceholder": "your@email.com",
       "passwordLabel": "Password",
       "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot password",
       "submit": "Sign In",
       "submitting": "Signing in...",
       "noAccount": "Don't have an account?",
       "createAccount": "Create account"
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email to receive a link to reset your password",
+      "submit": "Send link",
+      "submitting": "Sending...",
+      "successMessage": "If that email is registered, you will receive a link to reset your password.",
+      "checkInbox": "Check your inbox and spam folder.",
+      "backToLogin": "Back to login",
+      "toLogin": "to login"
+    },
+    "reset": {
+      "title": "Reset password",
+      "subtitle": "Enter your new password below",
+      "newPasswordLabel": "New password",
+      "newPasswordPlaceholder": "Enter new password",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat new password",
+      "submit": "Reset password",
+      "submitting": "Saving...",
+      "successMessage": "Password reset successfully! Redirecting to login...",
+      "invalidToken": "Invalid or expired link. Please request a new link to reset your password.",
+      "passwordsDoNotMatch": "Passwords do not match"
     },
     "register": {
       "title": "Create Account",
@@ -130,6 +245,10 @@
     }
   },
   "dashboard": {
+    "seo": {
+      "title": "Dashboard",
+      "description": "Manage your forms and responses on Submitin."
+    },
     "title": "My Forms",
     "subtitle": "Manage your forms and view responses",
     "createForm": "New Form",
@@ -153,9 +272,26 @@
     },
     "nav": {
       "forms": "Forms",
+      "account": "Account",
       "settings": "Settings",
       "logout": "Sign Out"
     }
+  },
+  "account": {
+    "title": "Account",
+    "subtitle": "Manage your account and change your password",
+    "changePasswordTitle": "Change password",
+    "changePasswordDescription": "Enter your current password and choose a new one.",
+    "currentPasswordLabel": "Current password",
+    "currentPasswordPlaceholder": "Enter your current password",
+    "newPasswordLabel": "New password",
+    "newPasswordPlaceholder": "Enter new password",
+    "confirmPasswordLabel": "Confirm new password",
+    "confirmPasswordPlaceholder": "Repeat new password",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "submit": "Change password",
+    "submitting": "Updating...",
+    "changePasswordSuccess": "Password changed successfully!"
   },
   "formsGrid": {
     "title": "Forms",
@@ -188,6 +324,8 @@
     "descriptionPlaceholder": "Add a description for the form...",
     "publishForm": "Publish form",
     "publishDesc": "Make the form publicly accessible",
+    "publishButton": "Publish",
+    "unpublishButton": "Unpublish",
     "addFieldTitle": "Add Field",
     "addFieldDesc": "Configure the new field for your form",
     "editFieldTitle": "Edit Field",
@@ -204,9 +342,57 @@
     "notifyEmail": "Notification Email",
     "notifyEmailPlaceholder": "your@email.com",
     "notifyEmailHelp": "Receive an email for each new response",
+    "behaviorSection": "Behavior",
+    "allowMultipleResponses": "Allow multiple responses",
+    "allowMultipleResponsesHelp": "Show the \"Submit another response\" button after submission. Turn off for one response per person.",
     "webhookUrl": "Webhook URL",
     "webhookUrlPlaceholder": "https://...",
     "webhookUrlHelp": "Send responses to an external URL",
+    "emailNotifications": "Email Notifications",
+    "additionalEmails": "Additional Emails",
+    "additionalEmailsPlaceholder": "email@example.com",
+    "additionalEmailsHelp": "Notify multiple people for each new response (max. 10 emails)",
+    "proFeatureLock": "Feature exclusive to the PRO plan.",
+    "proUpgrade": "Upgrade",
+    "antiSpam": "Anti-spam",
+    "enableCaptcha": "Enable CAPTCHA",
+    "enableCaptchaHelp": "Protect your form against spam with human verification",
+    "appearance": "Appearance",
+    "removeLogo": "Remove Top Logo",
+    "removeLogoHelp": "Hide the Submitin logo and name at the top of the public form",
+    "customThemeTitle": "Custom Theme",
+    "customThemeDesc": "Customize your public form colors",
+    "customThemeProFeature": "Feature exclusive to the Pro plan",
+    "customThemeProUpgradeDesc": "Upgrade to customize the colors, fonts and style of your forms.",
+    "customThemeUpgrade": "Upgrade",
+    "themePresets": "Preset themes",
+    "primaryColor": "Primary color",
+    "accentColor": "Accent color",
+    "backgroundColor": "Background color",
+    "cardBackground": "Card background",
+    "textColor": "Text color",
+    "borderRadius": "Rounded corners",
+    "borderRadiusNone": "None",
+    "borderRadiusSm": "Small",
+    "borderRadiusMd": "Medium",
+    "borderRadiusLg": "Large",
+    "borderRadiusXl": "Extra large",
+    "borderRadiusFull": "Full",
+    "preview": "Preview",
+    "previewFormTitle": "Form preview",
+    "previewFormSubtitle": "This is how your form will look",
+    "previewButton": "Primary button",
+    "previewAccent": "Accent",
+    "resetTheme": "Reset",
+    "captchaProvider": "Provider",
+    "captchaSelectProvider": "Select provider",
+    "captchaTurnstile": "Cloudflare Turnstile (Recommended)",
+    "captchaHcaptcha": "hCaptcha",
+    "captchaSiteKey": "Site Key",
+    "captchaSiteKeyPlaceholder": "Your CAPTCHA site key",
+    "captchaSecretKey": "Secret Key",
+    "captchaSecretKeyPlaceholder": "Your CAPTCHA secret key",
+    "captchaGetKeysAt": "Get your keys at",
     "shareTitle": "Share Form",
     "shareDesc": "Share your form via link or embed it on your site",
     "notPublishedWarning": "This form is not published yet. Publish it first to share.",
@@ -283,6 +469,7 @@
     "createError": "Could not create the form."
   },
   "publicForm": {
+    "seoDescriptionFallback": "Fill out the form",
     "submit": "Submit",
     "submitting": "Submitting...",
     "success": {
@@ -302,10 +489,12 @@
   "legal": {
     "terms": {
       "title": "Terms of Use",
+      "seoDescription": "Submitin terms of use. Read the service terms and conditions.",
       "lastUpdate": "Last updated"
     },
     "privacy": {
       "title": "Privacy Policy",
+      "seoDescription": "Submitin privacy policy. Learn how we collect, use and protect your data.",
       "lastUpdate": "Last updated"
     },
     "backHome": "Back to home"

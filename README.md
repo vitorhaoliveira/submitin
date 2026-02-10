@@ -1,48 +1,47 @@
 # 📝 submitin
 
-Um sistema moderno para criar formulários personalizados, gerar links públicos e coletar respostas.
+A modern system for creating custom forms, generating public links, and collecting responses.
 
 ## ✨ Features
 
-- **Builder Intuitivo**: Crie formulários com campos de texto, email, número, data, múltipla escolha e checkbox
-- **Links Públicos**: Gere links únicos para compartilhar seus formulários
-- **Autenticação Magic Link**: Login sem senha, apenas com email
-- **Painel de Respostas**: Visualize todas as respostas em uma tabela organizada
-- **Exportação CSV**: Exporte suas respostas para análise externa
-- **Notificações por Email**: Receba alertas a cada nova resposta
-- **Webhooks**: Integre com sistemas externos
-- **Design Moderno**: Interface escura com glassmorphism e animações suaves
+- **Intuitive Builder**: Create forms with text, email, number, date, multiple choice, and checkbox fields
+- **Public Links**: Generate unique links to share your forms
+- **Responses Dashboard**: View all responses in an organized table
+- **CSV Export**: Export your responses for external analysis
+- **Email Notifications**: Get alerts on every new response
+- **Webhooks**: Integrate with external systems
+- **Modern Design**: Dark interface with glassmorphism and smooth animations
 
-## 🛠 Stack Tecnológica
+## 🛠 Tech Stack
 
-| Camada | Tecnologia |
-|--------|------------|
+| Layer | Technology |
+|-------|------------|
 | Monorepo | Turborepo + pnpm |
 | Frontend | Next.js 15 (App Router) + React 18 |
 | Styling | TailwindCSS + shadcn/ui |
 | Database | PostgreSQL + Prisma ORM |
-| Auth | NextAuth.js v5 (Magic Link) |
+| Auth | NextAuth.js v5 (Credentials – email/password) |
 | Email | React Email + Resend |
-| Validação | Zod + React Hook Form |
+| Validation | Zod + React Hook Form |
 
-## 📁 Estrutura do Projeto
+## 📁 Project Structure
 
 ```
 submitin/
 ├── apps/
-│   └── web/                    # Aplicação Next.js principal
+│   └── web/                    # Main Next.js application
 │       ├── app/
-│       │   ├── (auth)/         # Rotas de autenticação
-│       │   ├── (dashboard)/    # Painel admin (protegido)
-│       │   ├── f/[slug]/       # Formulários públicos
+│       │   ├── (auth)/         # Authentication routes
+│       │   ├── (dashboard)/    # Admin panel (protected)
+│       │   ├── f/[slug]/       # Public forms
 │       │   └── api/            # API Routes
 │       ├── components/
 │       └── lib/
 ├── packages/
-│   ├── database/               # Prisma schema e cliente
-│   ├── ui/                     # Componentes shadcn compartilhados
-│   ├── email/                  # Templates React Email
-│   └── config/                 # Configs ESLint, TypeScript, Tailwind
+│   ├── database/               # Prisma schema and client
+│   ├── ui/                     # Shared shadcn components
+│   ├── email/                  # React Email templates
+│   └── config/                 # ESLint, TypeScript, Tailwind configs
 ├── turbo.json
 ├── pnpm-workspace.yaml
 └── package.json
@@ -50,13 +49,13 @@ submitin/
 
 ## 🚀 Quick Start
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js 20+
 - pnpm 9+
-- PostgreSQL (local ou cloud)
+- PostgreSQL (local or cloud)
 
-### 1. Clone e instale as dependências
+### 1. Clone and install dependencies
 
 ```bash
 git clone <repo-url>
@@ -64,169 +63,173 @@ cd submitin
 pnpm install
 ```
 
-### 2. Configure as variáveis de ambiente
+### 2. Configure environment variables
 
-Crie um arquivo `.env.local` na pasta `apps/web/`:
+Create a `.env.local` file in the `apps/web/` folder:
 
 ```env
 # Database
-# Para PostgreSQL local:
+# For local PostgreSQL:
 DATABASE_URL="postgresql://postgres:password@localhost:5432/submitin?schema=public"
 
-# Para Supabase (obtenha em: Dashboard > Project Settings > Database):
+# For Supabase (get it from: Dashboard > Project Settings > Database):
 # DATABASE_URL="postgresql://postgres.xxxxx:password@aws-0-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true"
 
 # NextAuth
-AUTH_SECRET="gere-com-openssl-rand-base64-32"
+AUTH_SECRET="generate-with-openssl-rand-base64-32"
 AUTH_URL="http://localhost:3000"
 
-# Email (Resend) - OBRIGATÓRIO para envio de emails
+# Email (Resend) - Required for password reset and response notifications
 AUTH_RESEND_KEY="re_xxxxxxxxxxxx"
-AUTH_EMAIL_FROM="Seu Nome <noreply@seudominio.com>"
+AUTH_EMAIL_FROM="Your Name <noreply@yourdomain.com>"
 ```
 
-**⚠️ IMPORTANTE:**
-- Use `.env.local` (não `.env`) - o `.env.local` é ignorado pelo git
-- Se usar Supabase, substitua `DATABASE_URL` pela connection string do Supabase
-- `AUTH_RESEND_KEY` e `AUTH_EMAIL_FROM` são obrigatórios para o envio de emails funcionar
+**⚠️ IMPORTANT:**
+- Use `.env.local` (not `.env`) — `.env.local` is gitignored
+- If using Supabase, replace `DATABASE_URL` with your Supabase connection string
+- Login works without Resend. `AUTH_RESEND_KEY` and `AUTH_EMAIL_FROM` are required only for password reset and (optional) response notifications
 
-**⚠️ Importante para Deploy (Vercel/Supabase):**
+**⚠️ Important for Deploy (Vercel/Supabase):**
 
-- Para gerar `AUTH_SECRET`: `openssl rand -base64 32`
-- Configure todas as variáveis no dashboard do seu provedor:
+- To generate `AUTH_SECRET`: `openssl rand -base64 32`
+- Configure all variables in your provider's dashboard:
   - **Vercel**: Project Settings > Environment Variables
-  - **Supabase**: Project Settings > Edge Functions > Secrets (se usar Edge Functions) ou variáveis de ambiente do seu deploy
-- Variáveis obrigatórias: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`
-- Variáveis opcionais: `AUTH_RESEND_KEY`, `AUTH_EMAIL_FROM`
-- O build falhará se as variáveis obrigatórias não estiverem configuradas
+  - **Supabase**: Project Settings > Edge Functions > Secrets (if using Edge Functions) or your deploy environment variables
+- Required variables: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`
+- Optional variables: `AUTH_RESEND_KEY`, `AUTH_EMAIL_FROM`
+- Build will fail if required variables are not set
 
-**📌 Nota sobre Supabase:**
-- Este projeto usa **Next.js API Routes** (não Supabase Edge Functions)
-- Se você usa Supabase como banco de dados, configure `DATABASE_URL` com a connection string do Supabase
-- As variáveis de ambiente devem ser configuradas no provedor onde você faz deploy do Next.js (Vercel, Railway, etc.)
-- O envio de emails funciona da mesma forma, independente de usar Supabase como banco
+**📌 Note about Supabase:**
+- This project uses **Next.js API Routes** (not Supabase Edge Functions)
+- If you use Supabase as the database, set `DATABASE_URL` to your Supabase connection string
+- Environment variables must be set in the provider where you deploy Next.js (Vercel, Railway, etc.)
+- Email sending works the same way whether or not you use Supabase as the database
 
-### ✅ Checklist para Deploy em Produção
+### ✅ Production Deploy Checklist
 
-Antes de fazer deploy, verifique:
+Before deploying, verify:
 
-1. **Variáveis de Ambiente Configuradas**:
-   - [ ] `DATABASE_URL` - Connection string do Supabase (não use localhost!)
-   - [ ] `AUTH_SECRET` - Gerado com `openssl rand -base64 32`
-   - [ ] `AUTH_URL` - URL do seu site em produção (ex: `https://seudominio.com`)
-   - [ ] `AUTH_RESEND_KEY` - API key da Resend
-   - [ ] `AUTH_EMAIL_FROM` - Email verificado na Resend
+1. **Environment Variables Set**:
+   - [ ] `DATABASE_URL` — Supabase connection string (do not use localhost!)
+   - [ ] `AUTH_SECRET` — Generated with `openssl rand -base64 32`
+   - [ ] `AUTH_URL` — Your production site URL (e.g. `https://yourdomain.com`)
+   - [ ] `AUTH_RESEND_KEY` — Resend API key
+   - [ ] `AUTH_EMAIL_FROM` — Email verified in Resend
 
 2. **Database**:
-   - [ ] `DATABASE_URL` aponta para Supabase (não localhost)
-   - [ ] Use "Connection pooling" do Supabase para melhor performance
-   - [ ] Migrations aplicadas (`pnpm db:push` ou via Supabase)
+   - [ ] `DATABASE_URL` points to Supabase (not localhost)
+   - [ ] Use Supabase "Connection pooling" for better performance
+   - [ ] Migrations applied (`pnpm db:push` or via Supabase)
 
 3. **Resend**:
-   - [ ] Domínio verificado na Resend Dashboard
-   - [ ] Status do domínio: `verified` (SPF e DKIM configurados)
-   - [ ] `AUTH_EMAIL_FROM` usa o domínio verificado
+   - [ ] Domain verified in Resend Dashboard
+   - [ ] Domain status: `verified` (SPF and DKIM configured)
+   - [ ] `AUTH_EMAIL_FROM` uses the verified domain
 
-4. **Após o Deploy**:
-   - [ ] Verifique os logs do servidor para diagnóstico
-   - [ ] Teste o login (envio de email)
-   - [ ] Verifique se as respostas dos formulários estão sendo salvas
+4. **After Deploy**:
+   - [ ] Check server logs for diagnostics
+   - [ ] Test login and, if configured, password reset and response notifications
+   - [ ] Verify form responses are being saved
 
-### 3. Configure o banco de dados
+### 3. Set up the database
 
 ```bash
-# Gerar o cliente Prisma
+# Generate Prisma client
 pnpm db:generate
 
-# Criar as tabelas
+# Create tables
 pnpm db:push
 ```
 
-### 4. Inicie o servidor de desenvolvimento
+### 4. Start the development server
 
 ```bash
 pnpm dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000)
+Open [http://localhost:3000](http://localhost:3000)
 
-## 📝 Scripts Disponíveis
+## 📝 Available Scripts
 
-| Comando | Descrição |
-|---------|-----------|
-| `pnpm dev` | Inicia todos os apps em modo desenvolvimento |
-| `pnpm build` | Build de produção de todos os apps |
-| `pnpm lint` | Executa o linter em todos os packages |
-| `pnpm db:generate` | Gera o cliente Prisma |
-| `pnpm db:push` | Sincroniza o schema com o banco |
-| `pnpm db:studio` | Abre o Prisma Studio |
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start all apps in development mode |
+| `pnpm build` | Production build for all apps |
+| `pnpm lint` | Run linter across all packages |
+| `pnpm db:generate` | Generate Prisma client |
+| `pnpm db:push` | Sync schema with database |
+| `pnpm db:studio` | Open Prisma Studio |
 
-## 🔐 Autenticação
+## 🔐 Authentication
 
-O sistema usa Magic Link para autenticação:
+The system uses **email and password** (Credentials provider) with NextAuth.js v5:
 
-1. Usuário informa o email
-2. Um link mágico é enviado por email
-3. Ao clicar no link, o usuário é autenticado automaticamente
+- **Register**: Create an account with email and password
+- **Login**: Sign in with email and password
+- **Forgot password**: Request a reset link via email (requires Resend)
+- **Reset password**: Set a new password via the link sent by email
+- **Email verification**: Optional verification flow for new accounts
 
-Para desenvolvimento local sem email, você pode usar o Prisma Studio para visualizar os tokens de verificação.
+Login does not require email delivery; Resend is only needed for password reset and (optional) response notifications.
 
-## 📧 Configuração de Email (Resend)
+## 📧 Email Configuration (Resend)
 
-### Passo a Passo
+Resend is used for **password reset emails** and **response notifications** (optional). Login works without it.
 
-1. **Crie uma conta** em [resend.com](https://resend.com)
+### Step by Step
 
-2. **Adicione e verifique seu domínio** (⚠️ **OBRIGATÓRIO**)
-   - Acesse o dashboard da Resend > **Domains**
-   - Clique em **Add Domain**
-   - **Recomendação**: Use um subdomínio (ex: `updates.seudominio.com`) para isolar a reputação de envio
-   - Configure os registros DNS conforme instruções:
-     - **SPF**: Registro TXT que autoriza a Resend a enviar emails
-     - **DKIM**: Registro TXT com chave pública para verificar autenticidade
-     - **DMARC** (opcional): Aumenta a confiança com provedores de email
-   - Aguarde a verificação (status deve ficar `verified`)
-   - 📖 [Documentação completa](https://resend.com/docs/dashboard/domains/introduction)
+1. **Create an account** at [resend.com](https://resend.com)
 
-3. **Crie uma API Key**
-   - Acesse **API Keys** no dashboard
-   - Clique em **Create API Key**
-   - Copie a chave (formato: `re_xxxxxxxxxxxx`)
+2. **Add and verify your domain** (⚠️ **REQUIRED**)
+   - Go to Resend dashboard > **Domains**
+   - Click **Add Domain**
+   - **Recommendation**: Use a subdomain (e.g. `updates.yourdomain.com`) to isolate sending reputation
+   - Configure DNS records as instructed:
+     - **SPF**: TXT record that authorizes Resend to send email
+     - **DKIM**: TXT record with public key for authenticity verification
+     - **DMARC** (optional): Improves trust with email providers
+   - Wait for verification (status should become `verified`)
+   - 📖 [Full documentation](https://resend.com/docs/dashboard/domains/introduction)
 
-4. **Configure as variáveis de ambiente**
+3. **Create an API Key**
+   - Go to **API Keys** in the dashboard
+   - Click **Create API Key**
+   - Copy the key (format: `re_xxxxxxxxxxxx`)
+
+4. **Set environment variables**
    ```env
    AUTH_RESEND_KEY="re_xxxxxxxxxxxx"
-   AUTH_EMAIL_FROM="Seu Nome <noreply@seudominio.com>"
+   AUTH_EMAIL_FROM="Your Name <noreply@yourdomain.com>"
    ```
    
-   ⚠️ **IMPORTANTE**: 
-   - O domínio em `AUTH_EMAIL_FROM` **DEVE** estar verificado na Resend
-   - Use o formato: `"Nome <email@dominio.com>"` ou `"email@dominio.com"`
-   - O domínio precisa ter status `verified` no dashboard da Resend
+   ⚠️ **IMPORTANT**: 
+   - The domain in `AUTH_EMAIL_FROM` **MUST** be verified in Resend
+   - Use the format: `"Name <email@domain.com>"` or `"email@domain.com"`
+   - The domain must have `verified` status in the Resend dashboard
 
 ## 🗄️ Database
 
-O projeto usa PostgreSQL com Prisma ORM. Você pode usar:
+The project uses PostgreSQL with Prisma ORM. You can use:
 
-- **Local**: PostgreSQL instalado localmente
+- **Local**: PostgreSQL installed locally
 - **Cloud**: [Neon](https://neon.tech), [Supabase](https://supabase.com), [Railway](https://railway.app)
 
-### Configurando Supabase
+### Configuring Supabase
 
-1. Acesse o [Supabase Dashboard](https://app.supabase.com)
-2. Vá em **Project Settings** > **Database**
-3. Copie a **Connection String** (use a opção "Connection pooling" para melhor performance)
-4. Cole no arquivo `.env.local` como `DATABASE_URL`
+1. Go to the [Supabase Dashboard](https://app.supabase.com)
+2. Open **Project Settings** > **Database**
+3. Copy the **Connection String** (use "Connection pooling" for better performance)
+4. Paste it into `.env.local` as `DATABASE_URL`
 
 ## 🔧 Troubleshooting
 
-### Erro: "Can't reach database server at 'localhost:5432'"
+### Error: "Can't reach database server at 'localhost:5432'"
 
-**Problema**: O Prisma está tentando conectar em um PostgreSQL local que não está rodando.
+**Problem**: Prisma is trying to connect to a local PostgreSQL that is not running.
 
-**Soluções**:
-1. **Se você usa Supabase**: Atualize `DATABASE_URL` no `.env.local` com a connection string do Supabase
-2. **Se você usa PostgreSQL local**: Certifique-se de que o PostgreSQL está rodando:
+**Solutions**:
+1. **If you use Supabase**: Update `DATABASE_URL` in `.env.local` with your Supabase connection string
+2. **If you use local PostgreSQL**: Make sure PostgreSQL is running:
    ```bash
    # macOS (Homebrew)
    brew services start postgresql
@@ -235,43 +238,42 @@ O projeto usa PostgreSQL com Prisma ORM. Você pode usar:
    sudo systemctl start postgresql
    ```
 
-### Erro: "Configuration" no login
+### Error: "Configuration" or email not sending (password reset / notifications)
 
-**Problema**: As variáveis `AUTH_RESEND_KEY` ou `AUTH_EMAIL_FROM` não estão configuradas.
+**Problem**: `AUTH_RESEND_KEY` or `AUTH_EMAIL_FROM` are not set — needed for password reset and response notifications (not for login).
 
-**Solução**:
-1. Crie/edite o arquivo `.env.local` na pasta `apps/web/`
-2. Adicione as variáveis:
+**Solution**:
+1. Create or edit `.env.local` in the `apps/web/` folder
+2. Add the variables:
    ```env
    AUTH_RESEND_KEY="re_xxxxxxxxxxxx"
-   AUTH_EMAIL_FROM="Seu Nome <noreply@seudominio.com>"
+   AUTH_EMAIL_FROM="Your Name <noreply@yourdomain.com>"
    ```
-3. Reinicie o servidor: `pnpm dev`
+3. Restart the server: `pnpm dev`
 
-### Verificar configuração
+### Verify configuration
 
-Ao iniciar o servidor, você verá um diagnóstico automático no console mostrando:
-- ✅ Variáveis configuradas corretamente
-- ❌ Variáveis faltando ou incorretas
-- ⚠️ Avisos sobre configurações
+When you start the server, an automatic diagnostic will appear in the console showing:
+- ✅ Variables configured correctly
+- ❌ Missing or incorrect variables
+- ⚠️ Warnings about configuration
 
-Se algo estiver errado, o diagnóstico mostrará instruções específicas para corrigir.
+If something is wrong, the diagnostic will show specific instructions to fix it.
 
-## 🎨 Customização
+## 🎨 Customization
 
-### Temas
+### Themes
 
-O design system está configurado em `apps/web/app/globals.css`. As variáveis CSS podem ser ajustadas para personalizar cores, bordas e espaçamentos.
+The design system is configured in `apps/web/app/globals.css`. CSS variables can be adjusted to customize colors, borders, and spacing.
 
-### Componentes
+### Components
 
-Os componentes UI estão em `packages/ui/src/components/` e seguem os padrões do shadcn/ui.
+UI components live in `packages/ui/src/components/` and follow shadcn/ui patterns.
 
-## 📄 Licença
+## 📄 License
 
 MIT
 
 ---
 
-Feito com ❤️ por Vitor Hugo
-
+Made with ❤️ by Vitor Hugo

@@ -4,24 +4,16 @@ import { GeistMono } from "geist/font/mono";
 import { I18nProvider } from "@/lib/i18n-context";
 import { defaultLocale } from "@/i18n/config";
 import { cookies } from "next/headers";
+import { getDefaultMetadataForLocale } from "@/lib/seo";
+import { getLocaleFromCookie } from "@/lib/i18n";
 import "./globals.css";
 import { Toaster } from "@/components/toaster";
 import { SessionProvider } from "@/components/session-provider";
 
-export const metadata: Metadata = {
-  title: {
-    default: "Submitin",
-    template: "%s | Submitin",
-  },
-  description:
-    "Crie formulários personalizados, compartilhe links públicos e colete respostas facilmente.",
-  keywords: ["Submitin", "formulários", "forms", "pesquisa", "survey"],
-  authors: [{ name: "Vitor Hugo" }],
-  icons: {
-    icon: "/icon.svg",
-    apple: "/apple-icon.svg",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocaleFromCookie();
+  return getDefaultMetadataForLocale(locale);
+}
 
 export const viewport: Viewport = {
   width: "device-width",

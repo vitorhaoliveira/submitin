@@ -50,6 +50,12 @@ export function DashboardNav({ user }: DashboardNavProps) {
       icon: CreditCard,
       active: pathname.startsWith("/dashboard/billing"),
     },
+    {
+      href: "/dashboard/account",
+      label: t("nav.account"),
+      icon: User,
+      active: pathname.startsWith("/dashboard/account"),
+    },
   ];
 
   return (

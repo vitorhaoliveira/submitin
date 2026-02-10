@@ -1,6 +1,8 @@
 import { prisma } from "@submitin/database";
 import { notFound } from "next/navigation";
 import { PublicForm } from "@/components/public-form";
+import { buildMetadata } from "@/lib/seo";
+import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 import type { CustomTheme } from "@/lib/theme-utils";
 
 interface PublicFormPageProps {
@@ -9,17 +11,31 @@ interface PublicFormPageProps {
 
 export async function generateMetadata({ params }: PublicFormPageProps) {
   const { slug } = await params;
+  const locale = await getLocaleFromCookie();
+  const t = await getTranslations("publicForm");
   const form = await prisma.form.findUnique({
     where: { slug },
     select: { name: true, description: true },
   });
 
-  if (!form) return { title: "Formulário não encontrado" };
+  if (!form) {
+    return buildMetadata({
+      title: t("errors.notFound"),
+      noIndex: true,
+      locale: locale === "en" ? "en" : "pt_BR",
+    });
+  }
 
-  return {
-    title: form.name,
-    description: form.description || `Preencha o formulário ${form.name}`,
-  };
+  const title = form.name;
+  const description =
+    form.description || `${t("seoDescriptionFallback")} ${form.name}`;
+  return buildMetadata({
+    title,
+    description,
+    path: `/f/${slug}`,
+    keywords: ["formulário", form.name, "pesquisa", "survey"],
+    locale: locale === "en" ? "en" : "pt_BR",
+  });
 }
 
 export default async function PublicFormPage({ params }: PublicFormPageProps) {
@@ -63,8 +79,8 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
           customTheme: form.settings.customTheme as CustomTheme | null,
           captchaEnabled: form.settings.captchaEnabled,
           captchaProvider: form.settings.captchaProvider as "turnstile" | "hcaptcha" | null,
-          // Apenas o siteKey é público, o secretKey fica no servidor
           captchaSiteKey: form.settings.captchaSiteKey,
+          allowMultipleResponses: form.settings.allowMultipleResponses ?? false,
         }
       : null,
   };

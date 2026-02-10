@@ -42,9 +42,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (existingUser) {
-      // Mensagem genérica para evitar enumeração de usuários
       return NextResponse.json(
-        { error: "Não foi possível criar a conta. Tente novamente." },
+        { error: "Este email já está cadastrado. Faça login ou use \"Esqueci a senha\"." },
         { status: 400 }
       );
     }

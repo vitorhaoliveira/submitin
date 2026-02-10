@@ -5,18 +5,18 @@ export async function generateMetadata() {
   const locale = await getLocaleFromCookie();
   const t = await getTranslations("auth");
   return buildMetadata({
-    title: t("accountTitle"),
-    description: t("accountDescription"),
+    title: t("login.title"),
+    description: t("login.subtitle"),
+    path: "/login",
     noIndex: true,
     locale: locale === "en" ? "en" : "pt_BR",
   });
 }
 
-export default function AuthLayout({
+export default function LoginLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return <>{children}</>;
 }
-

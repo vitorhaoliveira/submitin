@@ -13,6 +13,11 @@ export default async function FormsPage() {
     redirect("/login");
   }
 
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { plan: true },
+  });
+
   const forms = await prisma.form.findMany({
     where: { userId: session.user.id },
     include: {
@@ -23,6 +28,6 @@ export default async function FormsPage() {
     orderBy: { updatedAt: "desc" },
   });
 
-  return <FormsGrid forms={forms} />;
+  return <FormsGrid forms={forms} userPlan={user?.plan || "free"} />;
 }
 

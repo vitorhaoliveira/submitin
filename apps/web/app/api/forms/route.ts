@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@submitin/database";
 import { createFormSchema } from "@/lib/validations";
 import { generateSlug } from "@/lib/utils";
-import { MAX_FORMS_PER_USER } from "@/lib/security";
+import { PLANS } from "@/lib/stripe";
 
 export async function GET() {
   try {
@@ -36,19 +36,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    // Verifica limite de formulários por usuário
-    const formCount = await prisma.form.count({
-      where: { userId: session.user.id },
+    // Get user plan
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { plan: true },
     });
 
-    if (formCount >= MAX_FORMS_PER_USER) {
-      return NextResponse.json(
-        { 
-          error: `Limite de formulários atingido. Máximo de ${MAX_FORMS_PER_USER} formulários por conta.`,
-          code: "LIMIT_REACHED",
-        },
-        { status: 403 }
-      );
+    // Check form limit based on plan
+    if (user?.plan === "free") {
+      const formCount = await prisma.form.count({
+        where: { userId: session.user.id },
+      });
+
+      const maxForms = PLANS.free.limits.maxForms;
+      if (formCount >= maxForms) {
+        return NextResponse.json(
+          { 
+            error: `Limite de ${maxForms} formulários atingido. Faça upgrade para o plano Pro para criar formulários ilimitados.`,
+            code: "LIMIT_REACHED",
+          },
+          { status: 403 }
+        );
+      }
     }
 
     const body = await request.json();

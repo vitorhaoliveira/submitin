@@ -48,3 +48,5 @@ packages/database/prisma/*.db-journal
 *.bak
 *.tmp
 
+# Docs
+docs

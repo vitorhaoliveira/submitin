@@ -5,17 +5,21 @@ import { useSession } from "next-auth/react";
 import { Button } from "@submitin/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
-import { Loader2, Check, Crown, Sparkles } from "lucide-react";
+import { Loader2, Check, Crown, Sparkles, Phone } from "lucide-react";
 import { PLANS } from "@/lib/stripe";
+import { SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_TEL } from "@/lib/utils";
+import { useTranslations } from "@/lib/i18n-context";
 
 interface UserSubscription {
   plan: string;
   stripeCurrentPeriodEnd: string | null;
   stripeCustomerId: string | null;
+  cancelAtPeriodEnd: boolean;
 }
 
 export default function BillingPage() {
   const { data: session } = useSession();
+  const t = useTranslations("landing");
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [portalLoading, setPortalLoading] = useState(false);
@@ -117,20 +121,38 @@ export default function BillingPage() {
 
       {/* Current Plan Badge */}
       {isPro && userPlan?.stripeCurrentPeriodEnd && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+        <div className={`mb-6 p-4 border rounded-lg ${userPlan.cancelAtPeriodEnd
+            ? "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 border-orange-200 dark:border-orange-800"
+            : "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border-yellow-200 dark:border-yellow-800"
+          }`}>
           <div className="flex items-center gap-2 mb-1">
-            <Crown className="h-5 w-5 text-yellow-600 dark:text-yellow-500" />
-            <span className="font-semibold text-yellow-900 dark:text-yellow-100">
-              Plano Pro Ativo
+            <Crown className={`h-5 w-5 ${userPlan.cancelAtPeriodEnd
+                ? "text-orange-600 dark:text-orange-500"
+                : "text-yellow-600 dark:text-yellow-500"
+              }`} />
+            <span className={`font-semibold ${userPlan.cancelAtPeriodEnd
+                ? "text-orange-900 dark:text-orange-100"
+                : "text-yellow-900 dark:text-yellow-100"
+              }`}>
+              {userPlan.cancelAtPeriodEnd ? "Assinatura Cancelada" : "Plano Pro Ativo"}
             </span>
           </div>
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
-            Renovação em:{" "}
-            {new Date(userPlan.stripeCurrentPeriodEnd).toLocaleDateString("pt-BR", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            })}
+          <p className={`text-sm ${userPlan.cancelAtPeriodEnd
+              ? "text-orange-800 dark:text-orange-200"
+              : "text-yellow-800 dark:text-yellow-200"
+            }`}>
+            {userPlan.cancelAtPeriodEnd
+              ? `Você terá acesso ao plano Pro até: ${new Date(userPlan.stripeCurrentPeriodEnd).toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}`
+              : `Renovação em: ${new Date(userPlan.stripeCurrentPeriodEnd).toLocaleDateString("pt-BR", {
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+              })}`
+            }
           </p>
         </div>
       )}
@@ -285,6 +307,25 @@ export default function BillingPage() {
           </Card>
         </div>
       </div>
+
+      {/* Suporte */}
+      <Card className="mt-8 border-primary/30">
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <Phone className="h-5 w-5 text-primary shrink-0" />
+            <div>
+              <p className="font-medium">{t("footer.supportContact")}</p>
+              <a
+                href={SUPPORT_PHONE_TEL}
+                className="text-primary hover:underline font-medium"
+                rel="noopener noreferrer"
+              >
+                {SUPPORT_PHONE_DISPLAY}
+              </a>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
         stripeCustomerId: true,
         stripeSubscriptionId: true,
         stripeCurrentPeriodEnd: true,
+        cancelAtPeriodEnd: true,
       },
     });
 
@@ -30,6 +31,7 @@ export async function GET(req: NextRequest) {
       stripeCustomerId: user.stripeCustomerId,
       stripeSubscriptionId: user.stripeSubscriptionId,
       stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd,
+      cancelAtPeriodEnd: user.cancelAtPeriodEnd,
     });
   } catch (error) {
     console.error("❌ Error fetching subscription:", error);

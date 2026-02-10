@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FileText } from "lucide-react";
 import { getTranslations } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_TEL } from "@/lib/utils";
 
 export default async function LegalLayout({
   children,
@@ -36,6 +37,13 @@ export default async function LegalLayout({
         {/* Footer */}
         <footer className="mt-16 pt-8 border-t border-border">
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+            <a
+              href={SUPPORT_PHONE_TEL}
+              className="hover:text-foreground transition-colors"
+              rel="noopener noreferrer"
+            >
+              {tLanding("footer.support")} {SUPPORT_PHONE_DISPLAY}
+            </a>
             <Link href="/termos" className="hover:text-foreground transition-colors">
               {tLanding("footer.terms")}
             </Link>

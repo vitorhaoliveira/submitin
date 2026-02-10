@@ -1,9 +1,17 @@
-import { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Termos de Uso",
-  description: "Termos de uso da plataforma submitin",
-};
+export async function generateMetadata() {
+  const locale = await getLocaleFromCookie();
+  const t = await getTranslations("legal");
+  return buildMetadata({
+    title: t("terms.title"),
+    description: t("terms.seoDescription"),
+    path: "/termos",
+    keywords: ["termos de uso", "Submitin", "condições de uso"],
+    locale: locale === "en" ? "en" : "pt_BR",
+  });
+}
 
 export default function TermosPage() {
   return (

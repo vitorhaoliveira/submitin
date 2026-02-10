@@ -1,9 +1,17 @@
-import { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 
-export const metadata: Metadata = {
-  title: "Política de Privacidade",
-  description: "Política de privacidade da plataforma submitin",
-};
+export async function generateMetadata() {
+  const locale = await getLocaleFromCookie();
+  const t = await getTranslations("legal");
+  return buildMetadata({
+    title: t("privacy.title"),
+    description: t("privacy.seoDescription"),
+    path: "/privacidade",
+    keywords: ["privacidade", "política de privacidade", "Submitin", "proteção de dados"],
+    locale: locale === "en" ? "en" : "pt_BR",
+  });
+}
 
 export default function PrivacidadePage() {
   return (

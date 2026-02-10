@@ -25,6 +25,7 @@ model User {
   stripeSubscriptionId String? @unique
   stripePriceId       String?
   stripeCurrentPeriodEnd DateTime?
+  cancelAtPeriodEnd   Boolean  @default(false)
 
   accounts Account[]
   sessions Session[]
@@ -148,6 +149,9 @@ model FormSettings {
   notifyEmail  String?
   notifyEmails String[] @default([])
   webhookUrl   String?
+
+  // Comportamento: permitir botão "Enviar outra resposta" na tela de sucesso
+  allowMultipleResponses Boolean @default(false)
 
   // PRO: Anti-spam / CAPTCHA
   captchaEnabled   Boolean @default(false)

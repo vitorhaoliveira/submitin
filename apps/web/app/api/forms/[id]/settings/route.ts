@@ -40,111 +40,94 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    const form = await prisma.form.findFirst({
-      where: {
-        id,
-        userId: session.user.id,
-      },
-    });
+    // Buscar usuário e formulário
+    const [user, form] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: session.user.id },
+        select: { plan: true }
+      }),
+      prisma.form.findFirst({
+        where: {
+          id,
+          userId: session.user.id,
+        },
+      })
+    ]);
 
     if (!form) {
       return NextResponse.json({ error: "Formulário não encontrado" }, { status: 404 });
     }
 
+    const isPro = user?.plan === "pro";
     const body = await request.json();
+    
     console.log("📝 Salvando configurações do formulário:", form.name);
+    console.log("  → Usuário PRO:", isPro);
     console.log("  → Dados recebidos:", JSON.stringify(body, null, 2));
 
     const validatedData = formSettingsSchema.parse(body);
-    console.log("  → Dados validados:", JSON.stringify(validatedData, null, 2));
+
+    const allowMultipleResponses = validatedData.allowMultipleResponses ?? false;
+
+    // Bloquear funcionalidades PRO para usuários Free
+    const settingsData = {
+      notifyEmail: validatedData.notifyEmail || null,
+      notifyEmails: validatedData.notifyEmails || [],
+      webhookUrl: validatedData.webhookUrl || null,
+      allowMultipleResponses,
+      captchaEnabled: isPro ? (validatedData.captchaEnabled || false) : false,
+      captchaProvider: isPro ? (validatedData.captchaProvider || null) : null,
+      captchaSiteKey: isPro ? (validatedData.captchaSiteKey || null) : null,
+      captchaSecretKey: isPro ? (validatedData.captchaSecretKey || null) : null,
+      hideBranding: isPro ? (validatedData.hideBranding || false) : false,
+      customTheme: isPro && validatedData.customTheme ? validatedData.customTheme : Prisma.DbNull,
+    };
+
+    console.log("  → Dados a salvar (filtrados por plano):", JSON.stringify(settingsData, null, 2));
 
     const settings = await prisma.formSettings.upsert({
       where: { formId: id },
-      update: {
-        // Notificações
-        notifyEmail: validatedData.notifyEmail || null,
-        notifyEmails: validatedData.notifyEmails || [],
-        webhookUrl: validatedData.webhookUrl || null,
-
-        // PRO: Anti-spam / CAPTCHA
-        captchaEnabled: validatedData.captchaEnabled || false,
-        captchaProvider: validatedData.captchaProvider || null,
-        captchaSiteKey: validatedData.captchaSiteKey || null,
-        captchaSecretKey: validatedData.captchaSecretKey || null,
-
-        // PRO: Branding
-        hideBranding: validatedData.hideBranding || false,
-
-        // PRO: Custom Theme
-        customTheme: validatedData.customTheme ? validatedData.customTheme : Prisma.JsonNull,
-      },
+      update: settingsData,
       create: {
         formId: id,
-        // Notificações
-        notifyEmail: validatedData.notifyEmail || null,
-        notifyEmails: validatedData.notifyEmails || [],
-        webhookUrl: validatedData.webhookUrl || null,
-
-        // PRO: Anti-spam / CAPTCHA
-        captchaEnabled: validatedData.captchaEnabled || false,
-        captchaProvider: validatedData.captchaProvider || null,
-        captchaSiteKey: validatedData.captchaSiteKey || null,
-        captchaSecretKey: validatedData.captchaSecretKey || null,
-
-        // PRO: Branding
-        hideBranding: validatedData.hideBranding || false,
-
-        // PRO: Custom Theme
-        customTheme: validatedData.customTheme ? validatedData.customTheme : Prisma.JsonNull,
-      },
+        ...settingsData,
+      } as Prisma.FormSettingsUncheckedCreateInput,
     });
 
-    console.log("✅ Configurações salvas com sucesso:");
-    console.log("  → notifyEmail:", settings.notifyEmail || "(não configurado)");
-    console.log(
-      "  → notifyEmails:",
-      settings.notifyEmails.length > 0 ? settings.notifyEmails.join(", ") : "(nenhum)"
-    );
-    console.log("  → webhookUrl:", settings.webhookUrl || "(não configurado)");
-    console.log("  → captchaEnabled:", settings.captchaEnabled);
-    console.log("  → captchaProvider:", settings.captchaProvider || "(não configurado)");
-    console.log("  → hideBranding:", settings.hideBranding);
-    console.log("  → customTheme:", settings.customTheme ? "configurado" : "(padrão)");
+    console.log("✅ Configurações salvas com sucesso");
 
-    // Verificar se as variáveis de ambiente de email estão configuradas
-    const hasNotifyEmails = settings.notifyEmail || settings.notifyEmails.length > 0;
-    if (hasNotifyEmails) {
-      const hasResendKey = !!process.env.AUTH_RESEND_KEY;
-      const hasEmailFrom = !!process.env.AUTH_EMAIL_FROM;
+    const responseSettings = { ...settings };
 
-      if (!hasResendKey || !hasEmailFrom) {
-        console.warn(
-          "⚠️ AVISO: Email de notificação configurado, mas variáveis de ambiente faltando:"
-        );
-        if (!hasResendKey) console.warn("  → AUTH_RESEND_KEY não está configurada");
-        if (!hasEmailFrom) console.warn("  → AUTH_EMAIL_FROM não está configurada");
-        console.warn("  → Os emails NÃO serão enviados até que as variáveis sejam configuradas.");
-      } else {
-        console.log("✅ Variáveis de email configuradas corretamente.");
-        console.log("  → AUTH_EMAIL_FROM:", process.env.AUTH_EMAIL_FROM);
+    if (!isPro) {
+      const proFeaturesRequested =
+        validatedData.captchaEnabled ||
+        validatedData.hideBranding ||
+        validatedData.customTheme;
+
+      if (proFeaturesRequested) {
+        console.log("⚠️ Funcionalidades PRO ignoradas (usuário Free)");
+        return NextResponse.json({
+          ...responseSettings,
+          _warning: "Algumas funcionalidades PRO foram ignoradas. Faça upgrade para o plano PRO."
+        });
       }
     }
 
-    // Verificar configuração de CAPTCHA
-    if (settings.captchaEnabled) {
-      if (!settings.captchaSiteKey || !settings.captchaSecretKey) {
-        console.warn("⚠️ AVISO: CAPTCHA habilitado mas chaves não configuradas");
-      } else {
-        console.log("✅ CAPTCHA configurado corretamente com provider:", settings.captchaProvider);
-      }
-    }
-
-    return NextResponse.json(settings);
+    return NextResponse.json(responseSettings);
   } catch (error) {
     console.error("❌ Error updating settings:", error);
     if (error instanceof Error && error.name === "ZodError") {
       return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
     }
-    return NextResponse.json({ error: "Erro ao atualizar configurações" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Erro ao atualizar configurações";
+    const isPrisma = error && typeof error === "object" && "code" in error;
+    if (isPrisma && error && typeof error === "object") {
+      console.error("  → Prisma code:", (error as { code?: string }).code);
+      console.error("  → Prisma meta:", (error as { meta?: unknown }).meta);
+    }
+    return NextResponse.json(
+      { error: process.env.NODE_ENV === "development" ? message : "Erro ao atualizar configurações" },
+      { status: 500 }
+    );
   }
 }

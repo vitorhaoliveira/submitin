@@ -99,6 +99,8 @@ export const formSettingsSchema = z.object({
     .default([]),
   webhookUrl: z.string().url("URL inválida").optional().or(z.literal("")),
 
+  allowMultipleResponses: z.boolean().optional().default(false),
+
   // PRO: Anti-spam / CAPTCHA
   captchaEnabled: z.boolean().optional().default(false),
   captchaProvider: z.enum(captchaProviders).optional().or(z.literal("")),
@@ -139,5 +141,27 @@ export const registerSchema = z.object({
   name: z.string().min(2, "Nome muito curto").max(100, "Nome muito longo").optional(),
 });
 
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z.string().min(1, "Senha atual é obrigatória"),
+    newPassword: passwordSchema,
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
+    message: "A nova senha deve ser diferente da atual",
+    path: ["newPassword"],
+  });
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(1, "Token inválido"),
+  newPassword: passwordSchema,
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("Email inválido"),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;

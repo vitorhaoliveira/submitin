@@ -29,13 +29,14 @@ export const PLANS = {
     currency: "USD",
     interval: "month" as const,
     features: [
-      "Formulários ilimitados",
+      "Até 5 formulários",
       "100 respostas/mês",
       "Notificações por email",
       "Webhook básico",
       "Branding Submitin",
     ],
     limits: {
+      maxForms: 5,
       responsesPerMonth: 100,
       customTheme: false,
       hideBranding: false,
@@ -50,6 +51,7 @@ export const PLANS = {
     stripePriceId: STRIPE_PRO_PRICE_ID,
     features: [
       "Tudo do Free +",
+      "Formulários ilimitados",
       "Respostas ilimitadas",
       "Remover branding Submitin",
       "Tema personalizado",
@@ -57,6 +59,7 @@ export const PLANS = {
       "Suporte prioritário",
     ],
     limits: {
+      maxForms: -1, // unlimited
       responsesPerMonth: -1, // unlimited
       customTheme: true,
       hideBranding: true,
@@ -109,6 +112,7 @@ export async function createCheckoutSession({
     client_reference_id: userId,
     payment_method_types: ["card"],
     mode: "subscription",
+    currency: "usd",
     line_items: [
       {
         price: priceId,

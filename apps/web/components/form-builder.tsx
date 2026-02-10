@@ -54,11 +54,13 @@ import {
   Code2,
   Link2,
   Check,
+  Upload,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { fieldTypes, type FieldType, type CreateFieldInput } from "@/lib/validations";
 import { ThemeEditor } from "./theme-editor";
 import { type CustomTheme } from "@/lib/theme-utils";
+import { useProFeatures } from "@/hooks/use-pro-features";
 
 interface Field {
   id: string;
@@ -75,6 +77,7 @@ interface FormSettings {
   notifyEmail: string | null;
   notifyEmails: string[];
   webhookUrl: string | null;
+  allowMultipleResponses: boolean;
   captchaEnabled: boolean;
   captchaProvider: string | null;
   captchaSiteKey: string | null;
@@ -110,6 +113,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
   const router = useRouter();
   const t = useTranslations("formBuilder");
   const tCommon = useTranslations("common");
+  const { isPro, loading: loadingPlan } = useProFeatures();
   const [form, setForm] = useState(initialForm);
   const [fields, setFields] = useState<Field[]>(initialForm.fields);
   const [isSaving, setIsSaving] = useState(false);
@@ -128,6 +132,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
     notifyEmail: initialForm.settings?.notifyEmail || "",
     notifyEmails: initialForm.settings?.notifyEmails || [],
     webhookUrl: initialForm.settings?.webhookUrl || "",
+    allowMultipleResponses: initialForm.settings?.allowMultipleResponses ?? false,
     captchaEnabled: initialForm.settings?.captchaEnabled || false,
     captchaProvider: initialForm.settings?.captchaProvider || "",
     captchaSiteKey: initialForm.settings?.captchaSiteKey || "",
@@ -194,6 +199,39 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
       toast({
         title: t("formSaved"),
         description: form.published ? t("formSavedPublished") : t("formSavedDraft"),
+      });
+      router.refresh();
+    } catch {
+      toast({
+        title: tCommon("error"),
+        description: t("formSaveError"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  async function handlePublishToggle() {
+    const newPublished = !form.published;
+    setIsSaving(true);
+    try {
+      const response = await fetch(`/api/forms/${form.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          description: form.description,
+          published: newPublished,
+        }),
+      });
+
+      if (!response.ok) throw new Error();
+
+      setForm((prev) => ({ ...prev, published: newPublished }));
+      toast({
+        title: t("formSaved"),
+        description: newPublished ? t("formSavedPublished") : t("formSavedDraft"),
       });
       router.refresh();
     } catch {
@@ -384,6 +422,21 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               <span className="hidden sm:inline">{t("responses")}</span>
             </Button>
           </Link>
+          <Button
+            variant={form.published ? "outline" : "default"}
+            onClick={handlePublishToggle}
+            disabled={isSaving}
+            className="gap-2"
+          >
+            {isSaving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Upload className="w-4 h-4" />
+            )}
+            <span className="hidden sm:inline">
+              {form.published ? t("unpublishButton") : t("publishButton")}
+            </span>
+          </Button>
           <Button onClick={handleSaveForm} disabled={isSaving} className="gap-2">
             {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             <span className="hidden sm:inline">{tCommon("save")}</span>
@@ -655,7 +708,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
             <div className="space-y-4">
               <h3 className="font-semibold flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                Notificações por Email
+                {t("emailNotifications")}
               </h3>
               <div className="space-y-2">
                 <Label>{t("notifyEmail")}</Label>
@@ -673,7 +726,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               {/* Múltiplos Emails - PRO */}
               <div className="space-y-2">
                 <Label className="flex items-center gap-2">
-                  Emails Adicionais
+                  {t("additionalEmails")}
                   <Badge variant="secondary" className="text-xs">
                     PRO
                   </Badge>
@@ -681,7 +734,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 <div className="flex gap-2">
                   <Input
                     type="email"
-                    placeholder="email@exemplo.com"
+                    placeholder={t("additionalEmailsPlaceholder")}
                     value={newEmail}
                     onChange={(e: ChangeEvent<HTMLInputElement>) => setNewEmail(e.target.value)}
                     onKeyDown={(e) => {
@@ -735,8 +788,29 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Notifique múltiplas pessoas a cada nova resposta (máx. 10 emails)
+                  {t("additionalEmailsHelp")}
                 </p>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Comportamento: permitir mais de uma resposta */}
+            <div className="space-y-4">
+              <h3 className="font-semibold">{t("behaviorSection")}</h3>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>{t("allowMultipleResponses")}</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("allowMultipleResponsesHelp")}
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.allowMultipleResponses}
+                  onCheckedChange={(checked: boolean) =>
+                    setSettings({ ...settings, allowMultipleResponses: checked })
+                  }
+                />
               </div>
             </div>
 
@@ -758,22 +832,31 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
             <Separator />
 
             {/* Anti-spam / CAPTCHA - PRO */}
+            {!isPro && (
+              <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  🔒 {t("proFeatureLock")}{" "}
+                  <a href="/dashboard/billing" className="underline font-medium">{t("proUpgrade")}</a>
+                </p>
+              </div>
+            )}
             <div className="space-y-4">
               <h3 className="font-semibold flex items-center gap-2">
-                🛡️ Anti-spam
+                🛡️ {t("antiSpam")}
                 <Badge variant="secondary" className="text-xs">
                   PRO
                 </Badge>
               </h3>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Habilitar CAPTCHA</Label>
+                  <Label>{t("enableCaptcha")}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Proteja seu formulário contra spam com verificação humana
+                    {t("enableCaptchaHelp")}
                   </p>
                 </div>
                 <Switch
                   checked={settings.captchaEnabled}
+                  disabled={!isPro}
                   onCheckedChange={(checked: boolean) =>
                     setSettings({ ...settings, captchaEnabled: checked })
                   }
@@ -783,7 +866,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               {settings.captchaEnabled && (
                 <div className="space-y-4 pl-4 border-l-2 border-border">
                   <div className="space-y-2">
-                    <Label>Provider</Label>
+                    <Label>{t("captchaProvider")}</Label>
                     <Select
                       value={settings.captchaProvider}
                       onValueChange={(value: string) =>
@@ -791,20 +874,20 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione o provider" />
+                        <SelectValue placeholder={t("captchaSelectProvider")} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="turnstile">
-                          Cloudflare Turnstile (Recomendado)
+                          {t("captchaTurnstile")}
                         </SelectItem>
-                        <SelectItem value="hcaptcha">hCaptcha</SelectItem>
+                        <SelectItem value="hcaptcha">{t("captchaHcaptcha")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Site Key</Label>
+                    <Label>{t("captchaSiteKey")}</Label>
                     <Input
-                      placeholder="Site key do seu CAPTCHA"
+                      placeholder={t("captchaSiteKeyPlaceholder")}
                       value={settings.captchaSiteKey}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setSettings({ ...settings, captchaSiteKey: e.target.value })
@@ -812,17 +895,17 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Secret Key</Label>
+                    <Label>{t("captchaSecretKey")}</Label>
                     <Input
                       type="password"
-                      placeholder="Secret key do seu CAPTCHA"
+                      placeholder={t("captchaSecretKeyPlaceholder")}
                       value={settings.captchaSecretKey}
                       onChange={(e: ChangeEvent<HTMLInputElement>) =>
                         setSettings({ ...settings, captchaSecretKey: e.target.value })
                       }
                     />
                     <p className="text-xs text-muted-foreground">
-                      Obtenha suas chaves em{" "}
+                      {t("captchaGetKeysAt")}{" "}
                       {settings.captchaProvider === "hcaptcha" ? (
                         <a
                           href="https://dashboard.hcaptcha.com"
@@ -851,22 +934,31 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
             <Separator />
 
             {/* Branding - PRO */}
+            {!isPro && (
+              <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                  🔒 {t("proFeatureLock")}{" "}
+                  <a href="/dashboard/billing" className="underline font-medium">{t("proUpgrade")}</a>
+                </p>
+              </div>
+            )}
             <div className="space-y-4">
               <h3 className="font-semibold flex items-center gap-2">
-                🎨 Aparência
+                🎨 {t("appearance")}
                 <Badge variant="secondary" className="text-xs">
                   PRO
                 </Badge>
               </h3>
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Remover Logo do Topo</Label>
+                  <Label>{t("removeLogo")}</Label>
                   <p className="text-xs text-muted-foreground">
-                    Oculta o logo e nome do Submitin no topo do formulário público
+                    {t("removeLogoHelp")}
                   </p>
                 </div>
                 <Switch
                   checked={settings.hideBranding}
+                  disabled={!isPro}
                   onCheckedChange={(checked: boolean) =>
                     setSettings({ ...settings, hideBranding: checked })
                   }
@@ -878,8 +970,8 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 <ThemeEditor
                   theme={settings.customTheme}
                   onChange={(theme) => setSettings({ ...settings, customTheme: theme })}
-                  isPro={true}
-                  disabled={false}
+                  isPro={isPro}
+                  disabled={!isPro}
                 />
               </div>
             </div>

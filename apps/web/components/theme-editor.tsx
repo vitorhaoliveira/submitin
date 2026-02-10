@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
@@ -78,6 +79,7 @@ function ColorInput({ label, value, onChange, disabled }: ColorInputProps) {
 }
 
 function ThemePreview({ theme }: { theme: CustomTheme }) {
+  const t = useTranslations("formBuilder");
   const styles = generateThemeStyles(theme);
 
   return (
@@ -99,13 +101,13 @@ function ThemePreview({ theme }: { theme: CustomTheme }) {
           className="font-semibold text-sm"
           style={{ color: theme.textColor || defaultTheme.textColor }}
         >
-          Preview do Formulário
+          {t("previewFormTitle")}
         </h4>
         <p
           className="text-xs opacity-70"
           style={{ color: theme.textColor || defaultTheme.textColor }}
         >
-          Assim ficará seu formulário
+          {t("previewFormSubtitle")}
         </p>
         <div className="flex gap-2 pt-2">
           <div
@@ -115,7 +117,7 @@ function ThemePreview({ theme }: { theme: CustomTheme }) {
               borderRadius: theme.borderRadius === "full" ? "9999px" : undefined,
             }}
           >
-            Botão Principal
+            {t("previewButton")}
           </div>
           <div
             className="px-3 py-1.5 rounded-md text-xs font-medium"
@@ -124,7 +126,7 @@ function ThemePreview({ theme }: { theme: CustomTheme }) {
               color: theme.accentColor || defaultTheme.accentColor,
             }}
           >
-            Acento
+            {t("previewAccent")}
           </div>
         </div>
       </div>
@@ -138,6 +140,7 @@ export function ThemeEditor({
   isPro = true,
   disabled = false,
 }: ThemeEditorProps) {
+  const t = useTranslations("formBuilder");
   const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
 
   // Usa o tema atual ou o padrão para edição
@@ -188,13 +191,13 @@ export function ThemeEditor({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Palette className="w-5 h-5" />
-            Tema Personalizado
+            {t("customThemeTitle")}
             <Badge variant="secondary" className="ml-2">
               PRO
             </Badge>
           </CardTitle>
           <CardDescription>
-            Personalize as cores do seu formulário público
+            {t("customThemeDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -203,14 +206,13 @@ export function ThemeEditor({
               <Sparkles className="w-8 h-8 text-primary" />
             </div>
             <div>
-              <p className="font-medium">Recurso exclusivo do plano Pro</p>
+              <p className="font-medium">{t("customThemeProFeature")}</p>
               <p className="text-sm text-muted-foreground mt-1">
-                Faça upgrade para personalizar as cores, fontes e estilo dos
-                seus formulários.
+                {t("customThemeProUpgradeDesc")}
               </p>
             </div>
-            <Button variant="default" className="mt-4">
-              Fazer Upgrade
+            <Button variant="default" className="mt-4" asChild>
+              <Link href="/dashboard/billing">{t("customThemeUpgrade")}</Link>
             </Button>
           </div>
         </CardContent>
@@ -225,10 +227,10 @@ export function ThemeEditor({
           <div>
             <CardTitle className="flex items-center gap-2">
               <Palette className="w-5 h-5" />
-              Tema Personalizado
+              {t("customThemeTitle")}
             </CardTitle>
             <CardDescription>
-              Personalize as cores do seu formulário público
+              {t("customThemeDesc")}
             </CardDescription>
           </div>
           {theme && (
@@ -239,7 +241,7 @@ export function ThemeEditor({
               disabled={disabled}
             >
               <RotateCcw className="w-4 h-4 mr-2" />
-              Resetar
+              {t("resetTheme")}
             </Button>
           )}
         </div>
@@ -247,7 +249,7 @@ export function ThemeEditor({
       <CardContent className="space-y-6">
         {/* Presets */}
         <div className="space-y-3">
-          <Label>Temas Pré-definidos</Label>
+          <Label>{t("themePresets")}</Label>
           <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
             {Object.entries(themePresets).map(([name, preset]) => (
               <button
@@ -283,37 +285,37 @@ export function ThemeEditor({
         {/* Cores customizadas */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <ColorInput
-            label="Cor Principal"
+            label={t("primaryColor")}
             value={currentTheme.primaryColor || defaultTheme.primaryColor!}
             onChange={(v) => handleColorChange("primaryColor", v)}
             disabled={disabled}
           />
           <ColorInput
-            label="Cor de Acento"
+            label={t("accentColor")}
             value={currentTheme.accentColor || defaultTheme.accentColor!}
             onChange={(v) => handleColorChange("accentColor", v)}
             disabled={disabled}
           />
           <ColorInput
-            label="Cor de Fundo"
+            label={t("backgroundColor")}
             value={currentTheme.backgroundColor || defaultTheme.backgroundColor!}
             onChange={(v) => handleColorChange("backgroundColor", v)}
             disabled={disabled}
           />
           <ColorInput
-            label="Fundo do Card"
+            label={t("cardBackground")}
             value={currentTheme.cardBackground || defaultTheme.cardBackground!}
             onChange={(v) => handleColorChange("cardBackground", v)}
             disabled={disabled}
           />
           <ColorInput
-            label="Cor do Texto"
+            label={t("textColor")}
             value={currentTheme.textColor || defaultTheme.textColor!}
             onChange={(v) => handleColorChange("textColor", v)}
             disabled={disabled}
           />
           <div className="space-y-2">
-            <Label className="text-sm">Bordas Arredondadas</Label>
+            <Label className="text-sm">{t("borderRadius")}</Label>
             <Select
               value={currentTheme.borderRadius || "lg"}
               onValueChange={handleBorderRadiusChange}
@@ -323,12 +325,12 @@ export function ThemeEditor({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Nenhum</SelectItem>
-                <SelectItem value="sm">Pequeno</SelectItem>
-                <SelectItem value="md">Médio</SelectItem>
-                <SelectItem value="lg">Grande</SelectItem>
-                <SelectItem value="xl">Extra Grande</SelectItem>
-                <SelectItem value="full">Completo</SelectItem>
+                <SelectItem value="none">{t("borderRadiusNone")}</SelectItem>
+                <SelectItem value="sm">{t("borderRadiusSm")}</SelectItem>
+                <SelectItem value="md">{t("borderRadiusMd")}</SelectItem>
+                <SelectItem value="lg">{t("borderRadiusLg")}</SelectItem>
+                <SelectItem value="xl">{t("borderRadiusXl")}</SelectItem>
+                <SelectItem value="full">{t("borderRadiusFull")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -336,7 +338,7 @@ export function ThemeEditor({
 
         {/* Preview */}
         <div className="space-y-3">
-          <Label>Preview</Label>
+          <Label>{t("preview")}</Label>
           <ThemePreview theme={currentTheme} />
         </div>
       </CardContent>

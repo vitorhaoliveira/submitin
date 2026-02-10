@@ -8,6 +8,7 @@ import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
+import { PLANS } from "@/lib/stripe";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,9 +56,10 @@ interface Form {
 
 interface FormsGridProps {
   forms: Form[];
+  userPlan: string;
 }
 
-export function FormsGrid({ forms: initialForms }: FormsGridProps) {
+export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
   const router = useRouter();
   const t = useTranslations("formsGrid");
   const tCommon = useTranslations("common");
@@ -73,6 +75,11 @@ export function FormsGrid({ forms: initialForms }: FormsGridProps) {
   const filteredForms = forms.filter((form) =>
     form.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  const isFree = userPlan === "free";
+  const maxForms = PLANS.free.limits.maxForms;
+  const formsRemaining = isFree ? Math.max(0, maxForms - forms.length) : null;
+  const canCreateForm = !isFree || forms.length < maxForms;
 
   async function copyLink(slug: string) {
     const url = `${window.location.origin}/f/${slug}`;
@@ -116,14 +123,29 @@ export function FormsGrid({ forms: initialForms }: FormsGridProps) {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground">{t("subtitle")}</p>
+          <p className="text-muted-foreground">
+            {t("subtitle")}
+            {isFree && (
+              <span className="ml-2 text-xs bg-muted px-2 py-1 rounded">
+                {forms.length}/{maxForms} formulários
+              </span>
+            )}
+          </p>
         </div>
-        <Link href="/dashboard/forms/new">
-          <Button className="gap-2">
-            <Plus className="w-4 h-4" />
-            {tDashboard("createForm")}
-          </Button>
-        </Link>
+        {canCreateForm ? (
+          <Link href="/dashboard/forms/new">
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              {tDashboard("createForm")}
+            </Button>
+          </Link>
+        ) : (
+          <Link href="/dashboard/billing">
+            <Button variant="default" className="gap-2">
+              Upgrade para Pro
+            </Button>
+          </Link>
+        )}
       </div>
 
       {forms.length > 0 && (

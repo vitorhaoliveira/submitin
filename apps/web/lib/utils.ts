@@ -1,5 +1,10 @@
 import { customAlphabet } from "nanoid";
 
+/** Contato de suporte (WhatsApp/ligação). Formato tel: para links. */
+export const SUPPORT_PHONE_TEL = "tel:+5511991019367";
+/** Número formatado para exibição: (11) 99101-9367 */
+export const SUPPORT_PHONE_DISPLAY = "(11) 99101-9367";
+
 const nanoid = customAlphabet("abcdefghijklmnopqrstuvwxyz0123456789", 8);
 
 export function generateSlug(): string {

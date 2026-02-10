@@ -8,7 +8,7 @@ const messageCache: Record<Locale, Messages | null> = {
   en: null,
 };
 
-async function getLocaleFromCookie(): Promise<Locale> {
+export async function getLocaleFromCookie(): Promise<Locale> {
   try {
     const cookieStore = await cookies();
     const localeCookie = cookieStore.get("NEXT_LOCALE")?.value;

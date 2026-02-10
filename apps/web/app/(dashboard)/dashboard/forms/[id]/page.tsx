@@ -58,6 +58,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
           notifyEmail: form.settings.notifyEmail,
           notifyEmails: form.settings.notifyEmails,
           webhookUrl: form.settings.webhookUrl,
+          allowMultipleResponses: form.settings.allowMultipleResponses ?? false,
           captchaEnabled: form.settings.captchaEnabled,
           captchaProvider: form.settings.captchaProvider,
           captchaSiteKey: form.settings.captchaSiteKey,
