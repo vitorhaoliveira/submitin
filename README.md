@@ -105,32 +105,6 @@ AUTH_EMAIL_FROM="Your Name <noreply@yourdomain.com>"
 - Environment variables must be set in the provider where you deploy Next.js (Vercel, Railway, etc.)
 - Email sending works the same way whether or not you use Supabase as the database
 
-### ✅ Production Deploy Checklist
-
-Before deploying, verify:
-
-1. **Environment Variables Set**:
-   - [ ] `DATABASE_URL` — Supabase connection string (do not use localhost!)
-   - [ ] `AUTH_SECRET` — Generated with `openssl rand -base64 32`
-   - [ ] `AUTH_URL` — Your production site URL (e.g. `https://yourdomain.com`)
-   - [ ] `AUTH_RESEND_KEY` — Resend API key
-   - [ ] `AUTH_EMAIL_FROM` — Email verified in Resend
-
-2. **Database**:
-   - [ ] `DATABASE_URL` points to Supabase (not localhost)
-   - [ ] Use Supabase "Connection pooling" for better performance
-   - [ ] Migrations applied (`pnpm db:push` or via Supabase)
-
-3. **Resend**:
-   - [ ] Domain verified in Resend Dashboard
-   - [ ] Domain status: `verified` (SPF and DKIM configured)
-   - [ ] `AUTH_EMAIL_FROM` uses the verified domain
-
-4. **After Deploy**:
-   - [ ] Check server logs for diagnostics
-   - [ ] Test login and, if configured, password reset and response notifications
-   - [ ] Verify form responses are being saved
-
 ### 3. Set up the database
 
 ```bash
