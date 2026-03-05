@@ -90,6 +90,15 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
     });
   }
 
+  async function copyIntegrationUrl(slug: string) {
+    const url = `${window.location.origin}/api/public/forms/${slug}/responses`;
+    await navigator.clipboard.writeText(url);
+    toast({
+      title: t("linkCopied"),
+      description: t("integrationUrlCopiedDesc"),
+    });
+  }
+
   async function handleDelete() {
     if (!deleteDialog.form) return;
 
@@ -234,6 +243,10 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
                         <DropdownMenuItem onClick={() => copyLink(form.slug)}>
                           <Copy className="w-4 h-4 mr-2" />
                           {t("copyLink")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => copyIntegrationUrl(form.slug)}>
+                          <Copy className="w-4 h-4 mr-2" />
+                          {t("copyIntegrationUrl")}
                         </DropdownMenuItem>
                         {form.published && (
                           <DropdownMenuItem asChild>

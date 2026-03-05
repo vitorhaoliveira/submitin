@@ -165,6 +165,11 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
     return `${window.location.origin}/f/${form.slug}`;
   }
 
+  function getIntegrationUrl() {
+    if (typeof window === "undefined") return "";
+    return `${window.location.origin}/api/public/forms/${form.slug}/responses`;
+  }
+
   function getEmbedCode() {
     const url = getPublicUrl();
     const size = embedSizes[embedSize];
@@ -177,7 +182,12 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
     setTimeout(() => setCopiedField(null), 2000);
     toast({
       title: t("linkCopied"),
-      description: field === "link" ? t("linkCopiedDesc") : t("codeCopiedDesc"),
+      description:
+        field === "link"
+          ? t("linkCopiedDesc")
+          : field === "integration"
+            ? t("integrationUrlCopiedDesc")
+            : t("codeCopiedDesc"),
     });
   }
 
@@ -1028,6 +1038,34 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                     <ExternalLink className="w-4 h-4" />
                   </Button>
                 </Link>
+              </div>
+            </div>
+
+            {/* URL para integração (Framer, etc.) */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Link2 className="w-4 h-4 text-primary" />
+                <Label className="font-semibold">{t("integrationUrl")}</Label>
+              </div>
+              <p className="text-sm text-muted-foreground">{t("integrationUrlDesc")}</p>
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={getIntegrationUrl()}
+                  className="font-mono text-sm bg-muted"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => copyToClipboard(getIntegrationUrl(), "integration")}
+                  disabled={!form.published}
+                >
+                  {copiedField === "integration" ? (
+                    <Check className="w-4 h-4 text-green-500" />
+                  ) : (
+                    <Copy className="w-4 h-4" />
+                  )}
+                </Button>
               </div>
             </div>
 
