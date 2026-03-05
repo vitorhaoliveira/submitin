@@ -74,20 +74,41 @@ export async function POST(
       );
     }
 
-    let body: { values?: Record<string, string>; captchaToken?: string };
+    let body: Record<string, unknown>;
     try {
       body = await request.json();
     } catch {
       return NextResponse.json(
-        { error: "Corpo da requisição deve ser JSON com { values: { ... } }." },
+        { error: "Corpo da requisição deve ser JSON." },
         { status: 400, headers: corsHeaders }
       );
     }
 
-    const rawValues = body?.values;
-    if (!rawValues || typeof rawValues !== "object") {
+    if (!body || typeof body !== "object") {
       return NextResponse.json(
-        { error: "Campo 'values' obrigatório com objeto de campo → valor." },
+        { error: "Corpo da requisição inválido." },
+        { status: 400, headers: corsHeaders }
+      );
+    }
+
+    // Aceita { values: { ... } } OU payload flat do Framer: { buffet_name: "...", client_name: "...", ... }
+    let rawValues: Record<string, string>;
+    if (body.values && typeof body.values === "object" && !Array.isArray(body.values)) {
+      rawValues = {};
+      for (const [k, v] of Object.entries(body.values)) {
+        if (v !== undefined && v !== null) rawValues[k] = String(v);
+      }
+    } else {
+      rawValues = {};
+      for (const [key, value] of Object.entries(body)) {
+        if (key === "captchaToken") continue;
+        if (value !== undefined && value !== null) rawValues[key] = String(value);
+      }
+    }
+
+    if (Object.keys(rawValues).length === 0) {
+      return NextResponse.json(
+        { error: "Nenhum dado de formulário enviado." },
         { status: 400, headers: corsHeaders }
       );
     }
@@ -97,7 +118,7 @@ export async function POST(
       form.settings?.captchaSecretKey &&
       form.settings?.captchaProvider
     ) {
-      const captchaToken = body?.captchaToken;
+      const captchaToken = typeof body.captchaToken === "string" ? body.captchaToken : undefined;
       if (!captchaToken) {
         return NextResponse.json(
           { error: "Verificação anti-spam necessária. Inclua captchaToken no body." },
