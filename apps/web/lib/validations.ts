@@ -26,14 +26,20 @@ export const createFieldSchema = z
   .object({
     type: z.enum(fieldTypes),
     label: z.string().min(1, "Label é obrigatório").max(100, "Label muito longo"),
-    placeholder: z.string().max(100, "Placeholder muito longo").optional(),
+    placeholder: z
+      .string()
+      .max(100, "Placeholder muito longo")
+      .optional()
+      .nullable()
+      .transform((v) => v ?? undefined),
     required: z.boolean().default(false),
     options: z
       .array(z.string())
       .optional()
+      .nullable()
       .transform((opts) => {
-        // Filtra opções vazias ou que contêm apenas espaços
-        if (!opts) return undefined;
+        // Filtra opções vazias ou que contêm apenas espaços; null vira undefined
+        if (opts == null) return undefined;
         const filtered = opts.filter((opt) => opt.trim() !== "");
         return filtered.length > 0 ? filtered : undefined;
       }),
