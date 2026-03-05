@@ -5,15 +5,28 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 // Configuração de logs baseada no ambiente
-const logConfig: Prisma.LogLevel[] = process.env.NODE_ENV === "development" 
-  ? ["query", "error", "warn"] 
+const logConfig: Prisma.LogLevel[] = process.env.NODE_ENV === "development"
+  ? ["query", "error", "warn"]
   : ["error"];
+
+// Em produção (ex.: Vercel), limitar a 1 conexão por instância para não estourar
+// o limite do Supabase (Session mode). Melhor ainda: use a URL do Connection Pooler
+// (porta 6543) com ?pgbouncer=true no DATABASE_URL.
+function getDatasourceUrl(): string | undefined {
+  const url = process.env.DATABASE_URL;
+  if (process.env.NODE_ENV !== "production" || !url) return undefined;
+  const sep = url.includes("?") ? "&" : "?";
+  return `${url}${sep}connection_limit=1`;
+}
+
+const datasourceUrl = getDatasourceUrl();
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
     log: logConfig,
     errorFormat: "pretty",
+    ...(datasourceUrl && { datasources: { db: { url: datasourceUrl } } }),
   });
 
 // Tratamento de erros de conexão
@@ -33,7 +46,8 @@ if (process.env.NODE_ENV === "development") {
         console.error("\n2. Se você usa Supabase:");
         console.error("   - Atualize DATABASE_URL com a connection string do Supabase");
         console.error("   - Obtenha em: Supabase Dashboard > Project Settings > Database");
-        console.error("   - Formato: postgresql://user:password@db.xxxxx.supabase.co:5432/postgres");
+        console.error("   - Em produção (Vercel): use Connection Pooler (porta 6543) com ?pgbouncer=true");
+        console.error("     para evitar 'max clients reached'.");
         console.error("=".repeat(60) + "\n");
       }
     }
