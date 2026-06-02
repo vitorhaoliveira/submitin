@@ -1,18 +1,22 @@
 import { prisma } from "@submitin/database";
 import { sendEmail } from "@submitin/email";
 import { NewResponseEmail } from "@submitin/email/templates/new-response";
+import { ResponseConfirmationEmail } from "@submitin/email/templates/response-confirmation";
 import {
   sanitizeFormValues,
   isValidEmail,
   MAX_FIELD_VALUE_LENGTH,
   MAX_RESPONSES_PER_FORM,
 } from "@/lib/security";
+import { computeVisibleFieldIds, parseVisibility } from "@/lib/field-visibility";
+import { getFormAvailability } from "@/lib/form-availability";
 
 type FormField = {
   id: string;
   label: string;
   type: string;
   required: boolean;
+  visibility?: unknown;
 };
 
 type FormWithRelations = {
@@ -23,6 +27,12 @@ type FormWithRelations = {
     notifyEmail: string | null;
     notifyEmails: string[];
     webhookUrl: string | null;
+    confirmationEmail?: boolean | null;
+    thankYouMessage?: string | null;
+    opensAt?: Date | string | null;
+    closesAt?: Date | string | null;
+    maxResponses?: number | null;
+    closedMessage?: string | null;
   } | null;
   _count: { responses: number };
 };
@@ -61,16 +71,36 @@ export function mapValuesByLabelToFieldIds(
  */
 export async function createFormResponse(
   form: FormWithRelations,
-  valuesByFieldId: Record<string, string>
+  valuesByFieldId: Record<string, string>,
+  /** Se enviado, converte a resposta parcial deste id em completa (sem duplicar). */
+  partialId?: string | null
 ) {
   if (form._count.responses >= MAX_RESPONSES_PER_FORM) {
     throw { status: 403, message: "Este formulário atingiu o limite máximo de respostas." };
   }
 
+  // PRO: Agendamento e limites — bloqueia envio fora da janela/limite definidos.
+  const availability = getFormAvailability(form.settings, form._count.responses);
+  if (!availability.isOpen) {
+    const message =
+      availability.reason === "scheduled"
+        ? "Este formulário ainda não está aceitando respostas."
+        : form.settings?.closedMessage || "Este formulário não está mais aceitando respostas.";
+    throw { status: 403, message };
+  }
+
   const values = sanitizeFormValues(valuesByFieldId);
   const validFieldIds = new Set(form.fields.map((f) => f.id));
 
+  // Lógica condicional: campos ocultos não são validados nem persistidos.
+  const visibleIds = computeVisibleFieldIds(
+    form.fields.map((f) => ({ id: f.id, visibility: parseVisibility(f.visibility) })),
+    values
+  );
+
   for (const field of form.fields) {
+    if (!visibleIds.has(field.id)) continue;
+
     const value = values[field.id];
 
     if (field.required && !value) {
@@ -86,22 +116,39 @@ export async function createFormResponse(
     }
   }
 
-  const response = await prisma.response.create({
-    data: {
-      formId: form.id,
-      fieldValues: {
-        create: Object.entries(values)
-          .filter(([fieldId, value]) => value && validFieldIds.has(fieldId))
-          .map(([fieldId, value]) => ({
-            fieldId,
-            value: String(value),
-          })),
-      },
-    },
-    include: {
-      fieldValues: true,
-    },
-  });
+  const fieldValuesCreate = Object.entries(values)
+    .filter(([fieldId, value]) => value && validFieldIds.has(fieldId) && visibleIds.has(fieldId))
+    .map(([fieldId, value]) => ({ fieldId, value: String(value) }));
+
+  // Se há uma parcial deste lead, converte em completa (substitui os valores)
+  // em vez de criar uma nova resposta — evita lead duplicado.
+  const existingPartial = partialId
+    ? await prisma.response.findFirst({
+        where: { id: partialId, formId: form.id, partial: true },
+        select: { id: true },
+      })
+    : null;
+
+  const response = existingPartial
+    ? await prisma.$transaction(async (tx) => {
+        await tx.fieldValue.deleteMany({ where: { responseId: existingPartial.id } });
+        return tx.response.update({
+          where: { id: existingPartial.id },
+          data: {
+            partial: false,
+            submittedAt: new Date(),
+            fieldValues: { create: fieldValuesCreate },
+          },
+          include: { fieldValues: true },
+        });
+      })
+    : await prisma.response.create({
+        data: {
+          formId: form.id,
+          fieldValues: { create: fieldValuesCreate },
+        },
+        include: { fieldValues: true },
+      });
 
   const emailsToNotify: string[] = [];
   if (form.settings?.notifyEmail) {
@@ -139,6 +186,32 @@ export async function createFormResponse(
       }
     });
     await Promise.allSettled(emailPromises);
+  }
+
+  // Email de confirmação ao respondente (se ativado e houver um campo de email preenchido)
+  if (form.settings?.confirmationEmail) {
+    const emailField = form.fields.find((f) => f.type === "email");
+    const respondentEmail = emailField ? values[emailField.id] : undefined;
+    if (respondentEmail && isValidEmail(respondentEmail)) {
+      try {
+        await sendEmail({
+          to: respondentEmail,
+          subject: `Recebemos sua resposta — ${form.name}`,
+          react: ResponseConfirmationEmail({
+            formName: form.name,
+            customMessage: form.settings.thankYouMessage || undefined,
+            submittedAt: new Date().toLocaleDateString("pt-BR", {
+              day: "2-digit",
+              month: "short",
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+          }),
+        });
+      } catch (err) {
+        console.error(`Falha ao enviar confirmação para ${respondentEmail}:`, err);
+      }
+    }
   }
 
   if (form.settings?.webhookUrl) {

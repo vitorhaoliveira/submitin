@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
+import { useState, useRef, useEffect, type ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { QRCodeCanvas } from "qrcode.react";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
@@ -45,19 +46,34 @@ import {
   Loader2,
   Save,
   Type,
+  AlignLeft,
   Mail,
+  Phone,
   Hash,
   Calendar,
   List,
   CheckSquare,
+  Star,
   Share2,
   Code2,
   Link2,
   Check,
   Upload,
+  QrCode,
+  Download,
+  Lock,
+  GitBranch,
+  Info,
+  CalendarClock,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { fieldTypes, type FieldType, type CreateFieldInput } from "@/lib/validations";
+import {
+  isCompleteRule,
+  type VisibilityRule,
+  type VisibilityOperator,
+} from "@/lib/field-visibility";
+import { saveGuestDraft, saveGuestDraftForClaim, readGuestDraft } from "@/lib/guest-draft";
 import { ThemeEditor } from "./theme-editor";
 import { type CustomTheme } from "@/lib/theme-utils";
 import { useProFeatures } from "@/hooks/use-pro-features";
@@ -70,6 +86,7 @@ interface Field {
   required: boolean;
   order: number;
   options: string[] | null;
+  visibility?: VisibilityRule | null;
 }
 
 interface FormSettings {
@@ -78,12 +95,22 @@ interface FormSettings {
   notifyEmails: string[];
   webhookUrl: string | null;
   allowMultipleResponses: boolean;
+  conversational?: boolean;
   captchaEnabled: boolean;
   captchaProvider: string | null;
   captchaSiteKey: string | null;
   captchaSecretKey: string | null;
   hideBranding: boolean;
   customTheme: CustomTheme | null;
+  thankYouTitle: string | null;
+  thankYouMessage: string | null;
+  thankYouRedirectUrl: string | null;
+  confirmationEmail: boolean;
+  opensAt?: string | null;
+  closesAt?: string | null;
+  maxResponses?: number | null;
+  closedMessage?: string | null;
+  capturePartials?: boolean;
 }
 
 interface Form {
@@ -98,22 +125,48 @@ interface Form {
 
 interface FormBuilderProps {
   form: Form;
+  guest?: boolean;
+  /** Plano resolvido no servidor; evita a corrida do fetch no client. */
+  initialIsPro?: boolean;
 }
 
 const fieldTypeIcons: Record<FieldType, React.ReactNode> = {
   text: <Type className="w-4 h-4" />,
+  textarea: <AlignLeft className="w-4 h-4" />,
   email: <Mail className="w-4 h-4" />,
+  phone: <Phone className="w-4 h-4" />,
   number: <Hash className="w-4 h-4" />,
   date: <Calendar className="w-4 h-4" />,
   select: <List className="w-4 h-4" />,
   checkbox: <CheckSquare className="w-4 h-4" />,
+  rating: <Star className="w-4 h-4" />,
 };
 
-export function FormBuilder({ form: initialForm }: FormBuilderProps) {
+let guestFieldCounter = 0;
+function guestFieldId() {
+  guestFieldCounter += 1;
+  return `g${guestFieldCounter}`;
+}
+
+// Tipos cujos valores são conhecidos e servem como fonte de lógica condicional.
+const CONDITION_SOURCE_TYPES = ["select", "checkbox", "rating"];
+
+/** Converte ISO/Date para o formato do input datetime-local ("YYYY-MM-DDTHH:mm") em hora local. */
+function toDateTimeLocal(value?: string | Date | null): string {
+  if (!value) return "";
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+export function FormBuilder({ form: initialForm, guest = false, initialIsPro = false }: FormBuilderProps) {
   const router = useRouter();
   const t = useTranslations("formBuilder");
   const tCommon = useTranslations("common");
-  const { isPro, loading: loadingPlan } = useProFeatures();
+  const { isPro: hookIsPro, loading: loadingPlan } = useProFeatures();
+  // Fonte primária: plano do servidor; o hook só promove (nunca rebaixa) após carregar.
+  const isPro = initialIsPro || hookIsPro;
   const [form, setForm] = useState(initialForm);
   const [fields, setFields] = useState<Field[]>(initialForm.fields);
   const [isSaving, setIsSaving] = useState(false);
@@ -121,29 +174,54 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
   const [showSettings, setShowSettings] = useState(false);
   const [showAddField, setShowAddField] = useState(false);
   const [editingField, setEditingField] = useState<Field | null>(null);
-  const [newField, setNewField] = useState<CreateFieldInput>({
+  // Estado local aceita `null` em visibility (limpar regra); convertido ao enviar.
+  const [newField, setNewField] = useState<
+    Omit<CreateFieldInput, "visibility"> & { visibility?: VisibilityRule | null }
+  >({
     type: "text",
     label: "",
     placeholder: "",
     required: false,
     options: [],
+    visibility: null,
   });
   const [settings, setSettings] = useState({
     notifyEmail: initialForm.settings?.notifyEmail || "",
     notifyEmails: initialForm.settings?.notifyEmails || [],
     webhookUrl: initialForm.settings?.webhookUrl || "",
     allowMultipleResponses: initialForm.settings?.allowMultipleResponses ?? false,
+    conversational: initialForm.settings?.conversational ?? false,
     captchaEnabled: initialForm.settings?.captchaEnabled || false,
     captchaProvider: initialForm.settings?.captchaProvider || "",
     captchaSiteKey: initialForm.settings?.captchaSiteKey || "",
     captchaSecretKey: initialForm.settings?.captchaSecretKey || "",
     hideBranding: initialForm.settings?.hideBranding || false,
     customTheme: initialForm.settings?.customTheme || null,
+    thankYouTitle: initialForm.settings?.thankYouTitle || "",
+    thankYouMessage: initialForm.settings?.thankYouMessage || "",
+    thankYouRedirectUrl: initialForm.settings?.thankYouRedirectUrl || "",
+    confirmationEmail: initialForm.settings?.confirmationEmail || false,
+    // PRO: Agendamento e limites (datetime-local usa "YYYY-MM-DDTHH:mm")
+    opensAt: toDateTimeLocal(initialForm.settings?.opensAt),
+    closesAt: toDateTimeLocal(initialForm.settings?.closesAt),
+    maxResponses: initialForm.settings?.maxResponses ?? null,
+    closedMessage: initialForm.settings?.closedMessage || "",
+    capturePartials: initialForm.settings?.capturePartials ?? false,
   });
   const [newEmail, setNewEmail] = useState("");
   const [showShare, setShowShare] = useState(false);
   const [embedSize, setEmbedSize] = useState<"small" | "medium" | "large">("medium");
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const qrRef = useRef<HTMLDivElement>(null);
+
+  function downloadQrCode() {
+    const canvas = qrRef.current?.querySelector("canvas");
+    if (!canvas) return;
+    const link = document.createElement("a");
+    link.download = `submitin-${form.slug}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
 
   const embedSizes = {
     small: { width: "100%", height: "400px" },
@@ -151,13 +229,75 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
     large: { width: "100%", height: "800px" },
   };
 
+  // --- Modo convidado (sem login): rascunho local + gate de cadastro ---
+  const guestHydrated = useRef(false);
+
+  function draftFromState() {
+    return {
+      name: form.name,
+      description: form.description,
+      fields: fields.map((f) => ({
+        type: f.type as FieldType,
+        label: f.label,
+        placeholder: f.placeholder,
+        required: f.required,
+        options: f.options,
+      })),
+    };
+  }
+
+  // Hidrata a partir do rascunho salvo (só quando não veio de um modelo)
+  useEffect(() => {
+    if (!guest || guestHydrated.current) return;
+    guestHydrated.current = true;
+    if (fields.length > 0) return; // veio de um modelo
+    const draft = readGuestDraft();
+    if (!draft) return;
+    setForm((prev) => ({
+      ...prev,
+      name: draft.name || prev.name,
+      description: draft.description ?? prev.description,
+    }));
+    if (draft.fields?.length) {
+      setFields(
+        draft.fields.map((f, i) => ({
+          id: guestFieldId(),
+          type: f.type,
+          label: f.label,
+          placeholder: f.placeholder ?? null,
+          required: !!f.required,
+          order: i,
+          options: f.options ?? null,
+        }))
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guest]);
+
+  // Persiste rascunho a cada mudança
+  useEffect(() => {
+    if (!guest || !guestHydrated.current) return;
+    saveGuestDraft(draftFromState());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [guest, form.name, form.description, fields]);
+
+  function gate() {
+    // Ação intencional (salvar/publicar como visitante): marca o rascunho para
+    // ser reivindicado uma única vez após o cadastro. O auto-save acima NÃO marca.
+    saveGuestDraftForClaim(draftFromState());
+    router.push("/register?from=builder");
+  }
+
   const fieldTypeLabels: Record<FieldType, string> = {
     text: t("fieldTypes.text"),
+    textarea: t("fieldTypes.textarea"),
     email: t("fieldTypes.email"),
+    phone: t("fieldTypes.phone"),
     number: t("fieldTypes.number"),
     date: t("fieldTypes.date"),
     select: t("fieldTypes.select"),
     checkbox: t("fieldTypes.checkbox"),
+    rating: t("fieldTypes.rating"),
   };
 
   function getPublicUrl() {
@@ -192,6 +332,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
   }
 
   async function handleSaveForm() {
+    if (guest) return gate();
     setIsSaving(true);
     try {
       const response = await fetch(`/api/forms/${form.id}`, {
@@ -223,6 +364,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
   }
 
   async function handlePublishToggle() {
+    if (guest) return gate();
     const newPublished = !form.published;
     setIsSaving(true);
     try {
@@ -274,11 +416,30 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
       return;
     }
 
+    if (guest) {
+      const localField: Field = {
+        id: guestFieldId(),
+        type: newField.type,
+        label: newField.label,
+        placeholder: newField.placeholder ?? null,
+        required: !!newField.required,
+        order: fields.length,
+        options: newField.type === "select" ? (newField.options ?? null) : null,
+      };
+      setFields([...fields, { ...localField, visibility: newField.visibility ?? null }]);
+      setShowAddField(false);
+      setNewField({ type: "text", label: "", placeholder: "", required: false, options: [], visibility: null });
+      toast({ title: t("fieldAdded") });
+      return;
+    }
+
     setIsAddingField(true);
     try {
       const fieldData = {
         ...newField,
         options: newField.type === "select" ? newField.options : undefined,
+        // Lógica condicional só é enviada por usuários Pro
+        visibility: isPro ? newField.visibility ?? null : null,
       };
 
       const response = await fetch(`/api/forms/${form.id}/fields`, {
@@ -301,6 +462,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
         placeholder: "",
         required: false,
         options: [],
+        visibility: null,
       });
       toast({ title: t("fieldAdded") });
     } catch (error) {
@@ -317,6 +479,13 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
   async function handleUpdateField() {
     if (!editingField) return;
 
+    if (guest) {
+      setFields(fields.map((f) => (f.id === editingField.id ? editingField : f)));
+      setEditingField(null);
+      toast({ title: t("fieldUpdated") });
+      return;
+    }
+
     try {
       const response = await fetch(`/api/forms/${form.id}/fields/${editingField.id}`, {
         method: "PUT",
@@ -327,6 +496,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
           placeholder: editingField.placeholder,
           required: editingField.required,
           options: editingField.options,
+          visibility: isPro ? editingField.visibility ?? null : null,
         }),
       });
 
@@ -346,6 +516,11 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
   }
 
   async function handleDeleteField(fieldId: string) {
+    if (guest) {
+      setFields(fields.filter((f) => f.id !== fieldId));
+      toast({ title: t("fieldRemoved") });
+      return;
+    }
     try {
       const response = await fetch(`/api/forms/${form.id}/fields/${fieldId}`, {
         method: "DELETE",
@@ -365,6 +540,7 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
   }
 
   async function handleSaveSettings() {
+    if (guest) return gate();
     try {
       const response = await fetch(`/api/forms/${form.id}/settings`, {
         method: "PUT",
@@ -385,12 +561,165 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
     }
   }
 
+  /**
+   * Editor de lógica condicional (PRO). `candidates` são os campos que podem
+   * controlar a visibilidade (todos exceto o próprio). Gated por `isPro`.
+   */
+  function renderConditionEditor(
+    rule: VisibilityRule | null | undefined,
+    onChange: (rule: VisibilityRule | null) => void,
+    allCandidates: Field[]
+  ) {
+    // Só campos com valores conhecidos servem de condição (evita texto livre,
+    // impossível de prever). Múltipla escolha, Sim/Não e Avaliação.
+    const candidates = allCandidates.filter((c) => CONDITION_SOURCE_TYPES.includes(c.type));
+    const controller = rule ? candidates.find((c) => c.id === rule.fieldId) : undefined;
+
+    const unavailable = !isPro || candidates.length === 0;
+
+    return (
+      <div className="space-y-3 rounded-lg border border-border p-3">
+        <div className="flex items-center justify-between gap-2">
+          <Label className={`flex items-center gap-2 ${unavailable ? "text-muted-foreground" : ""}`}>
+            <GitBranch className={`w-4 h-4 ${unavailable ? "text-muted-foreground" : "text-primary"}`} />
+            {t("conditional.title")}
+            <Badge variant="secondary" className="text-xs">PRO</Badge>
+          </Label>
+          <Switch
+            checked={!!rule}
+            disabled={unavailable}
+            onCheckedChange={(checked: boolean) => {
+              if (!checked) return onChange(null);
+              const first = candidates[0];
+              if (!first) return;
+              onChange({ fieldId: first.id, operator: "equals", value: "" });
+            }}
+          />
+        </div>
+
+        {!isPro ? (
+          <p className="text-xs text-muted-foreground">{t("conditional.proHint")}</p>
+        ) : candidates.length === 0 ? (
+          <div className="flex items-start gap-2 rounded-md bg-muted/60 border border-border px-3 py-2.5">
+            <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {t("conditional.needsChoiceField")}
+            </p>
+          </div>
+        ) : rule ? (
+          <div className="space-y-2">
+            <p className="text-xs text-muted-foreground">{t("conditional.showIf")}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {/* Campo controlador */}
+              <Select
+                value={rule.fieldId}
+                onValueChange={(v: string) => onChange({ ...rule, fieldId: v, value: "" })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {candidates.map((c) => (
+                    <SelectItem key={c.id} value={c.id}>
+                      {c.label || fieldTypeLabels[c.type as FieldType]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              {/* Operador */}
+              <Select
+                value={rule.operator}
+                onValueChange={(v: string) =>
+                  onChange({ ...rule, operator: v as VisibilityOperator })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="equals">{t("conditional.equals")}</SelectItem>
+                  <SelectItem value="not_equals">{t("conditional.notEquals")}</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Valor — depende do tipo do campo controlador */}
+              {controller?.type === "select" && controller.options?.length ? (
+                <Select
+                  value={rule.value}
+                  onValueChange={(v: string) => onChange({ ...rule, value: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("conditional.value")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {controller.options.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : controller?.type === "rating" ? (
+                <Select
+                  value={rule.value}
+                  onValueChange={(v: string) => onChange({ ...rule, value: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("conditional.value")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["1", "2", "3", "4", "5"].map((n) => (
+                      <SelectItem key={n} value={n}>
+                        {n} ⭐
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                // checkbox (e fallback): Sim/Não
+                <Select
+                  value={rule.value}
+                  onValueChange={(v: string) => onChange({ ...rule, value: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t("conditional.value")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">{tCommon("yes")}</SelectItem>
+                    <SelectItem value="false">{tCommon("no")}</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+
+            {/* Aviso: regra sem valor escolhido é ignorada (campo fica sempre visível) */}
+            {rule.value.trim().length === 0 && (
+              <div className="flex items-start gap-2 rounded-md bg-amber-500/10 border border-amber-500/20 px-3 py-2">
+                <Info className="w-4 h-4 mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+                  {t("conditional.emptyValue")}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
+      {guest && (
+        <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-700 text-center">
+          <Lock className="w-3.5 h-3.5 shrink-0" />
+          {t("guestBanner")}
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href="/dashboard/forms">
+          <Link href={guest ? "/" : "/dashboard/forms"}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -408,14 +737,24 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 {form.published ? t("status.published") : t("status.draft")}
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground font-mono">/f/{form.slug}</p>
+            {!guest && (
+              <p className="text-sm text-muted-foreground font-mono">/f/{form.slug}</p>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={() => setShowSettings(true)}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => (guest ? gate() : setShowSettings(true))}
+          >
             <Settings className="w-4 h-4" />
           </Button>
-          <Button variant="outline" onClick={() => setShowShare(true)} className="gap-2">
+          <Button
+            variant="outline"
+            onClick={() => (guest ? gate() : setShowShare(true))}
+            className="gap-2"
+          >
             <Share2 className="w-4 h-4" />
             <span className="hidden sm:inline">{t("share")}</span>
           </Button>
@@ -426,12 +765,14 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               </Button>
             </Link>
           )}
-          <Link href={`/dashboard/forms/${form.id}/responses`}>
-            <Button variant="outline" className="gap-2">
-              <Eye className="w-4 h-4" />
-              <span className="hidden sm:inline">{t("responses")}</span>
-            </Button>
-          </Link>
+          {!guest && (
+            <Link href={`/dashboard/forms/${form.id}/responses`}>
+              <Button variant="outline" className="gap-2">
+                <Eye className="w-4 h-4" />
+                <span className="hidden sm:inline">{t("responses")}</span>
+              </Button>
+            </Link>
+          )}
           <Button
             variant={form.published ? "outline" : "default"}
             onClick={handlePublishToggle}
@@ -477,7 +818,9 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
             </div>
             <Switch
               checked={form.published}
-              onCheckedChange={(checked: boolean) => setForm({ ...form, published: checked })}
+              onCheckedChange={(checked: boolean) =>
+                guest ? gate() : setForm({ ...form, published: checked })
+              }
             />
           </div>
         </CardContent>
@@ -518,6 +861,12 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                       {field.required && (
                         <Badge variant="outline" className="text-xs">
                           {tCommon("required")}
+                        </Badge>
+                      )}
+                      {isCompleteRule(field.visibility) && (
+                        <Badge variant="secondary" className="text-xs gap-1">
+                          <GitBranch className="w-3 h-3" />
+                          {t("conditional.badge")}
                         </Badge>
                       )}
                     </div>
@@ -631,6 +980,12 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
               />
               <Label htmlFor="required">{t("requiredField")}</Label>
             </div>
+
+            {renderConditionEditor(
+              newField.visibility,
+              (rule) => setNewField({ ...newField, visibility: rule }),
+              fields
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddField(false)}>
@@ -654,6 +1009,39 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
           </DialogHeader>
           {editingField && (
             <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>{t("fieldType")}</Label>
+                <Select
+                  value={editingField.type}
+                  onValueChange={(value: string) =>
+                    setEditingField({
+                      ...editingField,
+                      type: value,
+                      // Ao virar/sair de "select", normaliza as opções
+                      options:
+                        value === "select"
+                          ? editingField.options?.length
+                            ? editingField.options
+                            : []
+                          : null,
+                    })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fieldTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        <div className="flex items-center gap-2">
+                          {fieldTypeIcons[type]}
+                          {fieldTypeLabels[type]}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2">
                 <Label>{t("fieldName")}</Label>
                 <Input
@@ -695,6 +1083,12 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                 />
                 <Label>{t("requiredField")}</Label>
               </div>
+
+              {renderConditionEditor(
+                editingField.visibility,
+                (rule) => setEditingField({ ...editingField, visibility: rule }),
+                fields.filter((f) => f.id !== editingField.id)
+              )}
             </div>
           )}
           <DialogFooter>
@@ -821,6 +1215,168 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                     setSettings({ ...settings, allowMultipleResponses: checked })
                   }
                 />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>{t("conversational.label")}</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("conversational.help")}
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.conversational}
+                  onCheckedChange={(checked: boolean) =>
+                    setSettings({ ...settings, conversational: checked })
+                  }
+                />
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label>{t("confirmationEmail")}</Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t("confirmationEmailHelp")}
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.confirmationEmail}
+                  onCheckedChange={(checked: boolean) =>
+                    setSettings({ ...settings, confirmationEmail: checked })
+                  }
+                />
+              </div>
+
+              {/* Respostas parciais (PRO) */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label className="flex items-center gap-2">
+                    {t("partials.label")}
+                    <Badge variant="secondary" className="text-xs">PRO</Badge>
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {isPro ? t("partials.help") : t("partials.proHint")}
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.capturePartials}
+                  disabled={!isPro}
+                  onCheckedChange={(checked: boolean) =>
+                    setSettings({ ...settings, capturePartials: checked })
+                  }
+                />
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* Agendamento e limites (PRO) */}
+            <div className="space-y-3">
+              <div>
+                <h3 className="font-semibold flex items-center gap-2">
+                  <CalendarClock className="w-4 h-4 text-primary" />
+                  {t("schedule.section")}
+                  <Badge variant="secondary" className="text-xs">PRO</Badge>
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">{t("schedule.help")}</p>
+              </div>
+
+              {!isPro ? (
+                <div className="flex items-start gap-2 rounded-md bg-muted/60 border border-border px-3 py-2.5">
+                  <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {t("schedule.proHint")}
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="space-y-1.5">
+                      <Label className="text-sm">{t("schedule.opensAt")}</Label>
+                      <Input
+                        type="datetime-local"
+                        value={settings.opensAt}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          setSettings({ ...settings, opensAt: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label className="text-sm">{t("schedule.closesAt")}</Label>
+                      <Input
+                        type="datetime-local"
+                        value={settings.closesAt}
+                        onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                          setSettings({ ...settings, closesAt: e.target.value })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">{t("schedule.maxResponses")}</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      placeholder={t("schedule.maxResponsesPlaceholder")}
+                      value={settings.maxResponses ?? ""}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        setSettings({
+                          ...settings,
+                          maxResponses: e.target.value ? Number(e.target.value) : null,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-sm">{t("schedule.closedMessage")}</Label>
+                    <Textarea
+                      placeholder={t("schedule.closedMessagePlaceholder")}
+                      value={settings.closedMessage}
+                      onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                        setSettings({ ...settings, closedMessage: e.target.value })
+                      }
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Separator />
+
+            {/* Página de obrigado */}
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold">{t("thankYouSection")}</h3>
+                <p className="text-xs text-muted-foreground">{t("thankYouSectionHelp")}</p>
+              </div>
+              <div className="space-y-2">
+                <Label>{t("thankYouTitle")}</Label>
+                <Input
+                  placeholder={t("thankYouTitlePlaceholder")}
+                  value={settings.thankYouTitle}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setSettings({ ...settings, thankYouTitle: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("thankYouMessage")}</Label>
+                <Textarea
+                  placeholder={t("thankYouMessagePlaceholder")}
+                  value={settings.thankYouMessage}
+                  onChange={(e: ChangeEvent<HTMLTextAreaElement>) =>
+                    setSettings({ ...settings, thankYouMessage: e.target.value })
+                  }
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>{t("thankYouRedirect")}</Label>
+                <Input
+                  placeholder="https://"
+                  value={settings.thankYouRedirectUrl}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                    setSettings({ ...settings, thankYouRedirectUrl: e.target.value })
+                  }
+                />
+                <p className="text-xs text-muted-foreground">{t("thankYouRedirectHelp")}</p>
               </div>
             </div>
 
@@ -1038,6 +1594,38 @@ export function FormBuilder({ form: initialForm }: FormBuilderProps) {
                     <ExternalLink className="w-4 h-4" />
                   </Button>
                 </Link>
+              </div>
+            </div>
+
+            {/* QR Code */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <QrCode className="w-4 h-4 text-primary" />
+                <Label className="font-semibold">{t("qrCode")}</Label>
+              </div>
+              <p className="text-sm text-muted-foreground">{t("qrCodeDesc")}</p>
+              <div className="flex items-center gap-4">
+                <div
+                  ref={qrRef}
+                  className="bg-white p-3 rounded-lg shrink-0"
+                  aria-hidden={!form.published}
+                >
+                  <QRCodeCanvas
+                    value={getPublicUrl() || "https://submitin.app"}
+                    size={120}
+                    level="M"
+                    marginSize={1}
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={downloadQrCode}
+                  disabled={!form.published}
+                  className="gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  {t("qrCodeDownload")}
+                </Button>
               </div>
             </div>
 

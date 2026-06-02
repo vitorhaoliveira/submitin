@@ -22,7 +22,8 @@
     "add": "Add",
     "update": "Update",
     "remove": "Remove",
-    "required": "Required"
+    "required": "Required",
+    "view": "View"
   },
   "landing": {
     "seo": {
@@ -30,13 +31,173 @@
       "keywords": "online forms, form builder, survey, create form, collect responses, Submitin"
     },
     "hero": {
-      "badge": "New: Real-time notifications",
+      "badge": "Free and without writing a single line of code",
       "title": "Create",
       "titleHighlight": "amazing",
-      "titleEnd": "forms in minutes",
-      "subtitle": "Build custom forms, share with a link and collect responses easily. No code, no hassle.",
-      "cta": "Create First Form",
-      "ctaSecondary": "See Features"
+      "titleEnd": "forms and collect responses in minutes",
+      "subtitle": "Build your form, share a link and watch responses arrive in real time. Simple, beautiful and free to start.",
+      "cta": "Create my form for free",
+      "ctaSecondary": "See it in action",
+      "microProof": "Free to start · No credit card · No code"
+    },
+    "trust": {
+      "guarantees": {
+        "0": "No credit card",
+        "1": "Your data is yours — export to CSV",
+        "2": "Spam protection",
+        "3": "No code required"
+      }
+    },
+    "howItWorks": {
+      "title": "Get started in 3 steps",
+      "subtitle": "From zero to your first published form in under 2 minutes.",
+      "steps": {
+        "0": {
+          "title": "Build the form",
+          "description": "Add text, email, date, multiple choice fields and more — all visual, no code."
+        },
+        "1": {
+          "title": "Share the link",
+          "description": "Each form gets a unique public link. Share it or embed it on your site."
+        },
+        "2": {
+          "title": "Collect responses",
+          "description": "Track everything in the dashboard, get an email on every submission and export to CSV."
+        }
+      }
+    },
+    "useCases": {
+      "title": "What you can use it for",
+      "subtitle": "Create any form in minutes. A few ready-made examples to start:",
+      "items": {
+        "0": {
+          "title": "Contact",
+          "description": "Receive messages and questions straight from your site."
+        },
+        "1": {
+          "title": "Event registration",
+          "description": "Organized RSVPs and sign-ups."
+        },
+        "2": {
+          "title": "Satisfaction survey",
+          "description": "Star ratings and customer feedback."
+        },
+        "3": {
+          "title": "Order / Quote",
+          "description": "Receive orders and requests via WhatsApp."
+        },
+        "4": {
+          "title": "Waitlist",
+          "description": "Capture interested people before launch."
+        },
+        "5": {
+          "title": "And much more",
+          "description": "Sign-ups, bookings, support and whatever you imagine."
+        }
+      }
+    },
+    "templates": {
+      "badge": "Ready-made templates",
+      "title": "Start with a template, publish in minutes",
+      "subtitle": "Pick a template, tweak the fields your way and generate the public link — no code.",
+      "fields": "fields",
+      "useTemplate": "Use template",
+      "blankTitle": "Start from scratch",
+      "blankDescription": "Create a blank form and add the fields you want.",
+      "cta": "See all templates"
+    },
+    "stats": {
+      "fieldTypes": "Field types",
+      "templates": "Ready templates",
+      "toPublish": "To publish",
+      "code": "Lines of code"
+    },
+    "demo": {
+      "title": "See Submitin in action",
+      "subtitle": "From the builder to the responses dashboard — explore how it works.",
+      "tabBuilder": "Builder",
+      "tabForm": "Public form",
+      "tabResponses": "Responses",
+      "builder": {
+        "formName": "Contact form",
+        "addField": "Add field",
+        "required": "Required"
+      },
+      "form": {
+        "title": "Contact form",
+        "description": "Reply in under 1 minute.",
+        "nameLabel": "Name",
+        "namePlaceholder": "Your name",
+        "emailLabel": "Email",
+        "emailPlaceholder": "you@email.com",
+        "messageLabel": "Message",
+        "messagePlaceholder": "How can we help?",
+        "subjectLabel": "Subject",
+        "subjectOptions": {
+          "0": "Question",
+          "1": "Quote",
+          "2": "Support"
+        },
+        "submit": "Submit",
+        "submitting": "Submitting...",
+        "successTitle": "Response sent!",
+        "successSubtitle": "Thanks for reaching out. The team has been notified.",
+        "poweredBy": "Powered by Submitin"
+      },
+      "responses": {
+        "title": "Responses",
+        "export": "Export CSV",
+        "colName": "Name",
+        "colEmail": "Email",
+        "colDate": "Received",
+        "rows": {
+          "0": {
+            "name": "Anna Stone",
+            "email": "anna@email.com",
+            "date": "2 min ago"
+          },
+          "1": {
+            "name": "Carl Lee",
+            "email": "carl@email.com",
+            "date": "1 h ago"
+          },
+          "2": {
+            "name": "Marina Reis",
+            "email": "marina@email.com",
+            "date": "Yesterday"
+          }
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "subtitle": "Everything you need to know before getting started.",
+      "items": {
+        "0": {
+          "q": "Do I need to know how to code?",
+          "a": "No. You build forms visually, adding fields with a few clicks — no code required."
+        },
+        "1": {
+          "q": "Is it really free?",
+          "a": "Yes. You create forms, publish them and collect responses for free — no credit card to get started."
+        },
+        "2": {
+          "q": "How long does it take to build a form?",
+          "a": "Less than 2 minutes: pick a ready-made template, tweak the fields and share the link."
+        },
+        "3": {
+          "q": "Is my data locked into the platform?",
+          "a": "No. You can export all your responses to CSV at any time."
+        },
+        "4": {
+          "q": "Can I integrate with other systems?",
+          "a": "Yes. Use webhooks to automatically send every response to the URL you configure."
+        },
+        "5": {
+          "q": "How does spam protection work?",
+          "a": "There's per-IP rate limiting on every submission and, on the Pro plan, you can enable CAPTCHA (Cloudflare Turnstile)."
+        }
+      }
     },
     "features": {
       "builder": {
@@ -58,20 +219,20 @@
         "description": "Get an email whenever someone submits your form."
       },
       "embed": {
-        "title": "Website Embed",
-        "description": "Embed your form on any website with a simple iframe code."
+        "title": "On your website",
+        "description": "Show the form inside your own website — no developer needed."
       },
       "webhooks": {
-        "title": "Webhooks",
-        "description": "Integrate with other systems by sending data to your URL automatically."
+        "title": "Automatic integrations",
+        "description": "Automatically send each response to other tools you already use."
       },
       "secureLogin": {
-        "title": "Secure Login",
-        "description": "Access your account with email and password protected by encryption."
+        "title": "Protected access",
+        "description": "Your account and the data you collect stay safe and secure."
       },
       "security": {
-        "title": "Security",
-        "description": "Spam protection, rate limiting and input sanitization included."
+        "title": "Spam protection",
+        "description": "Automatic blocking of bots and fake responses — nothing to configure."
       },
       "performance": {
         "title": "Fast and Light",
@@ -79,11 +240,14 @@
       }
     },
     "cta": {
-      "title": "Ready to get started?",
-      "subtitle": "Create your free account and start collecting responses in less than 2 minutes.",
-      "button": "Get Started — It's Free"
+      "title": "Start for free now",
+      "subtitle": "Build your first form in under 2 minutes. No card, no code.",
+      "button": "Create my form for free",
+      "secondary": "Browse templates"
     },
     "nav": {
+      "howItWorks": "How it works",
+      "templates": "Templates",
       "pricing": "Pricing",
       "login": "Sign In",
       "getStarted": "Get Started"
@@ -172,11 +336,41 @@
     },
     "footer": {
       "copyright": "Made with ❤️ by Vitor Hugo",
+      "tagline": "Amazing forms and responses in minutes. Free to start.",
+      "productTitle": "Product",
+      "legalTitle": "Legal",
+      "ctaButton": "Start free",
       "terms": "Terms of Use",
       "privacy": "Privacy",
       "support": "Support",
       "supportContact": "Questions? Contact us:"
     }
+  },
+  "guest": {
+    "seoTitle": "Create your form for free | Submitin",
+    "title": "Build your form",
+    "subtitle": "Add fields and see the live preview. Create an account to save and publish.",
+    "formName": "Form name",
+    "untitled": "Untitled form",
+    "addField": "Add field",
+    "editField": "Edit field",
+    "fieldType": "Field type",
+    "fieldLabel": "Field label",
+    "fieldLabelPlaceholder": "E.g.: Your name",
+    "placeholder": "Example text (placeholder)",
+    "options": "Options (one per line)",
+    "optionsPlaceholder": "Option 1\nOption 2\nOption 3",
+    "required": "Required",
+    "cancel": "Cancel",
+    "add": "Add",
+    "saveField": "Save",
+    "preview": "Preview",
+    "empty": "Add fields to see your form preview.",
+    "submit": "Submit",
+    "signIn": "Sign in",
+    "save": "Save my form",
+    "banner": "You're trying it out without an account. Create a free account to save and publish.",
+    "claiming": "Saving your form..."
   },
   "auth": {
     "accountTitle": "Account",
@@ -268,18 +462,24 @@
     "stats": {
       "totalForms": "Total Forms",
       "totalResponses": "Total Responses",
-      "publishedForms": "Published Forms"
+      "publishedForms": "Published Forms",
+      "drafts": "Drafts"
     },
     "nav": {
       "forms": "Forms",
       "account": "Account",
       "settings": "Settings",
       "logout": "Sign Out"
-    }
+    },
+    "greeting": "Welcome back",
+    "overview": "Here is what is happening with your forms.",
+    "seeAll": "See all",
+    "quickStart": "Create a new form",
+    "quickStartDesc": "Pick a template or start from scratch — ready in seconds."
   },
   "account": {
     "title": "Account",
-    "subtitle": "Manage your account and change your password",
+    "subtitle": "Manage your information, usage and security",
     "changePasswordTitle": "Change password",
     "changePasswordDescription": "Enter your current password and choose a new one.",
     "currentPasswordLabel": "Current password",
@@ -291,7 +491,32 @@
     "passwordsDoNotMatch": "Passwords do not match",
     "submit": "Change password",
     "submitting": "Updating...",
-    "changePasswordSuccess": "Password changed successfully!"
+    "changePasswordSuccess": "Password changed successfully!",
+    "profileTitle": "Profile",
+    "profileDescription": "Your personal information.",
+    "nameLabel": "Name",
+    "namePlaceholder": "Your name",
+    "emailLabel": "Email",
+    "emailReadonly": "Your email cannot be changed.",
+    "saveProfile": "Save changes",
+    "profileSaved": "Profile updated!",
+    "noChanges": "No changes to save.",
+    "memberSince": "Member since",
+    "planLabel": "Current plan",
+    "accountId": "Account ID",
+    "usageTitle": "Usage",
+    "usageDescription": "Your activity on Submitin.",
+    "formsUsage": "Forms",
+    "responsesUsage": "Responses",
+    "publishedUsage": "Published",
+    "unlimited": "Unlimited",
+    "ofLimit": "of {limit}",
+    "planFree": "Free",
+    "planPro": "Pro",
+    "upgradeCta": "Upgrade to Pro",
+    "managePlan": "Manage plan",
+    "detailsTitle": "Account details",
+    "securityTitle": "Security"
   },
   "formsGrid": {
     "title": "Forms",
@@ -304,6 +529,10 @@
     "copyLink": "Copy Link",
     "copyIntegrationUrl": "Copy integration URL (Framer)",
     "openForm": "Open Form",
+    "duplicate": "Duplicate",
+    "formDuplicated": "Form duplicated",
+    "formDuplicatedDesc": "A copy was created as a draft.",
+    "duplicateError": "Could not duplicate the form.",
     "linkCopied": "Link copied!",
     "linkCopiedDesc": "The form link has been copied to clipboard.",
     "integrationUrlCopiedDesc": "Integration URL copied to clipboard.",
@@ -317,6 +546,7 @@
   },
   "formBuilder": {
     "title": "Edit Form",
+    "guestBanner": "You're trying it out without an account. Create a free account to save and publish.",
     "info": "Information",
     "fields": "Fields",
     "fieldsDesc": "Add and organize your form fields",
@@ -345,8 +575,22 @@
     "notifyEmailPlaceholder": "your@email.com",
     "notifyEmailHelp": "Receive an email for each new response",
     "behaviorSection": "Behavior",
+    "confirmationEmail": "Confirmation email to respondent",
+    "confirmationEmailHelp": "Sends a confirmation email to whoever responds (if the form has a filled-in email field).",
+    "thankYouSection": "Thank-you page",
+    "thankYouSectionHelp": "Customize the message shown after submitting (optional).",
+    "thankYouTitle": "Title",
+    "thankYouTitlePlaceholder": "Response sent!",
+    "thankYouMessage": "Message",
+    "thankYouMessagePlaceholder": "Thank you! We'll get back to you soon.",
+    "thankYouRedirect": "Redirect to (optional)",
+    "thankYouRedirectHelp": "If set, the respondent is taken to this page after submitting.",
     "allowMultipleResponses": "Allow multiple responses",
     "allowMultipleResponsesHelp": "Show the \"Submit another response\" button after submission. Turn off for one response per person.",
+    "conversational": {
+      "label": "Conversational mode",
+      "help": "Show one question at a time, conversation style. Usually increases completion rate."
+    },
     "webhookUrl": "Webhook URL",
     "webhookUrlPlaceholder": "https://...",
     "webhookUrlHelp": "Send responses to an external URL",
@@ -399,6 +643,9 @@
     "shareDesc": "Share your form via link or embed it on your site",
     "notPublishedWarning": "This form is not published yet. Publish it first to share.",
     "directLink": "Direct Link",
+    "qrCode": "QR Code",
+    "qrCodeDesc": "Print or share it to collect responses from a phone. Great for stores, events and counters.",
+    "qrCodeDownload": "Download QR Code",
     "integrationUrl": "Integration URL (Framer, etc.)",
     "integrationUrlDesc": "Use this URL in Framer or another site to submit responses to this form. Request body must be JSON: { \"values\": { \"Field label\": \"value\", ... } }. Keys must match your field labels.",
     "integrationUrlCopiedDesc": "Integration URL copied to clipboard.",
@@ -430,15 +677,46 @@
     "codeCopiedDesc": "Code copied to clipboard.",
     "fieldTypes": {
       "text": "Text",
+      "textarea": "Long Text",
       "email": "Email",
+      "phone": "Phone",
       "number": "Number",
       "date": "Date",
       "select": "Multiple Choice",
-      "checkbox": "Checkbox"
+      "checkbox": "Checkbox",
+      "rating": "Rating (Stars)"
     },
     "status": {
       "draft": "Draft",
       "published": "Published"
+    },
+    "conditional": {
+      "title": "Conditional logic",
+      "proHint": "Available on the Pro plan — show this field only when another answer matches.",
+      "noFields": "Add another field to this form first — conditional logic shows this field based on another field’s answer.",
+      "showIf": "Show this field only if:",
+      "equals": "is equal to",
+      "notEquals": "is different from",
+      "value": "value",
+      "badge": "Conditional",
+      "emptyValue": "Enter a value to compare — without it, this rule is ignored and the field always shows.",
+      "needsChoiceField": "Add a multiple-choice, yes/no, or rating field first — conditional logic depends on a field with known answers."
+    },
+    "schedule": {
+      "section": "Scheduling & limits",
+      "help": "Control when this form accepts responses.",
+      "proHint": "Available on the Pro plan — schedule open/close dates and a response limit.",
+      "opensAt": "Opens at",
+      "closesAt": "Closes at",
+      "maxResponses": "Response limit",
+      "maxResponsesPlaceholder": "e.g. 100",
+      "closedMessage": "Closed message",
+      "closedMessagePlaceholder": "This form is no longer accepting responses."
+    },
+    "partials": {
+      "label": "Capture partial responses",
+      "help": "Save leads who fill in a contact but do not submit.",
+      "proHint": "Available on the Pro plan — capture leads who start but do not finish."
     }
   },
   "responses": {
@@ -446,6 +724,10 @@
     "subtitle": "View all form responses",
     "backToForm": "Back to Form",
     "exportCSV": "Export CSV",
+    "charts": {
+      "byDay": "Responses per day",
+      "noData": "No data yet"
+    },
     "noResponses": {
       "title": "No responses yet",
       "subtitle": "Responses will appear here when someone fills out the form.",
@@ -454,33 +736,66 @@
     },
     "table": {
       "submittedAt": "Submitted at",
-      "actions": "Actions"
+      "actions": "Actions",
+      "fieldsFilled": "fields filled"
     },
     "responseDeleted": "Response deleted!",
     "deleteError": "Could not delete the response.",
     "deleteTitle": "Delete response",
     "deleteConfirm": "Are you sure you want to delete this response? This action cannot be undone.",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "exportSuccess": "CSV exported!",
+    "exportSuccessDesc": "{count} responses exported successfully.",
+    "analytics": {
+      "views": "Views",
+      "conversion": "Conversion",
+      "upgradeTitle": "Unlock advanced analytics",
+      "upgradeDesc": "Track views, conversion rate and more with the Pro plan.",
+      "upgradeCta": "Upgrade to Pro"
+    },
+    "refresh": "Refresh",
+    "copyLink": "Copy link",
+    "openForm": "Open form",
+    "partials": {
+      "title": "Partial responses",
+      "subtitle": "Leads who started but have not submitted yet.",
+      "anonymous": "No contact",
+      "fieldsFilled": "fields filled"
+    }
   },
   "newForm": {
     "title": "Create New Form",
-    "subtitle": "Give your form a name to get started",
+    "subtitle": "Start from a ready-made template or build from scratch",
     "nameLabel": "Form Name",
     "namePlaceholder": "E.g.: Customer Satisfaction Survey",
     "descLabel": "Description (optional)",
     "descPlaceholder": "Describe the purpose of the form...",
     "create": "Create Form",
     "creating": "Creating...",
-    "createError": "Could not create the form."
+    "createError": "Could not create the form.",
+    "templatesTitle": "Start with a template",
+    "templatesSubtitle": "Ready-made templates for the most common use cases — you can tweak everything later.",
+    "fieldsCount": "fields",
+    "blankTitle": "Start from scratch",
+    "blankDescription": "Create a blank form and add the fields you want.",
+    "orBlank": "or create a blank form"
   },
   "publicForm": {
     "seoDescriptionFallback": "Fill out the form",
     "submit": "Submit",
     "submitting": "Submitting...",
+    "estimatedTime": "Takes ~{minutes} min",
+    "estimatedTimeShort": "Takes less than 1 min",
+    "fieldValid": "Looks good",
+    "next": "Continue",
+    "back": "Back",
+    "stepOf": "{current} of {total}",
+    "enterHint": "press Enter ↵",
     "success": {
       "title": "Response submitted!",
       "subtitle": "Thank you for filling out the form.",
-      "another": "Submit another response"
+      "another": "Submit another response",
+      "redirecting": "Redirecting..."
     },
     "errors": {
       "required": "This field is required",
@@ -489,7 +804,11 @@
       "notFound": "Form not found",
       "limitReached": "This form has reached its response limit."
     },
-    "poweredBy": "Created with"
+    "poweredBy": "Created with",
+    "closed": {
+      "message": "This form is no longer accepting responses.",
+      "scheduled": "This form is not accepting responses yet."
+    }
   },
   "legal": {
     "terms": {
@@ -514,5 +833,23 @@
     "serverError": "Internal server error",
     "formNotFound": "Form not found",
     "limitReached": "Limit reached"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "forms": "Forms",
+    "account": "Account",
+    "billing": "Billing",
+    "login": "Log in",
+    "signup": "Sign up",
+    "logout": "Sign out",
+    "quickCreate": "Create form",
+    "menu": "Menu",
+    "collapse": "Collapse",
+    "expand": "Expand",
+    "toggleTheme": "Toggle theme",
+    "lightMode": "Light",
+    "darkMode": "Dark",
+    "sectionMain": "Main",
+    "sectionGeneral": "Account"
   }
 }

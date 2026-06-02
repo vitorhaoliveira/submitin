@@ -18,33 +18,51 @@ export default async function ResponsesPage({
     redirect("/login");
   }
 
-  const form = await prisma.form.findFirst({
-    where: {
-      id,
-      userId: session.user.id,
-    },
-    include: {
-      fields: {
-        orderBy: { order: "asc" },
+  const [form, dbUser, responses] = await Promise.all([
+    prisma.form.findFirst({
+      where: {
+        id,
+        userId: session.user.id,
       },
-    },
-  });
+      include: {
+        fields: {
+          orderBy: { order: "asc" },
+        },
+      },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { plan: true },
+    }),
+    prisma.response.findMany({
+      where: { formId: id },
+      include: {
+        fieldValues: {
+          include: {
+            field: true,
+          },
+        },
+      },
+      orderBy: { submittedAt: "desc" },
+    }),
+  ]);
 
   if (!form) {
     notFound();
   }
 
-  const responses = await prisma.response.findMany({
-    where: { formId: id },
-    include: {
-      fieldValues: {
-        include: {
-          field: true,
-        },
-      },
-    },
-    orderBy: { submittedAt: "desc" },
-  });
+  // Separa respostas completas (tabela principal) de parciais (leads PRO).
+  const completeResponses = responses.filter((r) => !r.partial);
+  const partialResponses = responses
+    .filter((r) => r.partial)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
-  return <ResponsesTable form={form} responses={responses} />;
+  return (
+    <ResponsesTable
+      form={form}
+      responses={completeResponses}
+      partials={partialResponses}
+      isPro={dbUser?.plan === "pro"}
+    />
+  );
 }

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
@@ -17,6 +18,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@submitin/ui/components/dialog";
@@ -28,9 +30,15 @@ import {
   MessageSquare,
   ExternalLink,
   Copy,
+  Trash2,
+  Loader2,
+  TrendingUp,
+  RefreshCw,
+  UserPlus,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { formatDate, formatRelativeDate } from "@/lib/utils";
+import { ResponseCharts } from "./response-charts";
 
 interface Field {
   id: string;
@@ -47,6 +55,7 @@ interface FieldValue {
 interface Response {
   id: string;
   submittedAt: Date;
+  updatedAt?: Date;
   fieldValues: FieldValue[];
 }
 
@@ -55,25 +64,56 @@ interface Form {
   name: string;
   slug: string;
   fields: Field[];
+  views: number;
 }
 
 interface ResponsesTableProps {
   form: Form;
   responses: Response[];
+  partials?: Response[];
+  isPro: boolean;
 }
 
-export function ResponsesTable({ form, responses }: ResponsesTableProps) {
+export function ResponsesTable({ form, responses: initialResponses, partials = [], isPro }: ResponsesTableProps) {
+  const router = useRouter();
   const t = useTranslations("responses");
   const tCommon = useTranslations("common");
   const tDashboard = useTranslations("dashboard");
+  const [responses, setResponses] = useState(initialResponses);
   const [search, setSearch] = useState("");
   const [selectedResponse, setSelectedResponse] = useState<Response | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Response | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredResponses = responses.filter((response) =>
     response.fieldValues.some((fv) =>
       fv.value.toLowerCase().includes(search.toLowerCase())
     )
   );
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setIsDeleting(true);
+    try {
+      const res = await fetch(`/api/forms/${form.id}/responses/${deleteTarget.id}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error();
+      setResponses((prev) => prev.filter((r) => r.id !== deleteTarget.id));
+      setSelectedResponse((cur) => (cur?.id === deleteTarget.id ? null : cur));
+      toast({ title: t("responseDeleted") });
+      router.refresh();
+    } catch {
+      toast({
+        title: tCommon("error"),
+        description: t("deleteError"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
+    }
+  }
 
   function exportCSV() {
     if (responses.length === 0) {
@@ -96,26 +136,33 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
       ];
     });
 
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
-      ),
-    ].join("\n");
+    // Escapa célula para CSV: neutraliza fórmulas (CSV injection) e aspas/quebras.
+    const escapeCell = (raw: string) => {
+      let cell = String(raw ?? "");
+      if (/^[=+\-@\t\r]/.test(cell)) cell = `'${cell}`;
+      return `"${cell.replace(/"/g, '""')}"`;
+    };
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const csvContent = [
+      headers.map(escapeCell).join(","),
+      ...rows.map((row) => row.map(escapeCell).join(",")),
+    ].join("\r\n");
+
+    // BOM para o Excel reconhecer UTF-8 (acentos não quebram).
+    const blob = new Blob(["﻿" + csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
+    const stamp = new Date().toISOString().slice(0, 10);
     link.href = url;
-    link.download = `${form.name.replace(/[^a-z0-9]/gi, "_")}_responses.csv`;
+    link.download = `${form.name.replace(/[^a-z0-9]/gi, "_")}_${stamp}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
     toast({
-      title: "CSV exported!",
-      description: `${responses.length} responses exported successfully.`,
+      title: t("exportSuccess"),
+      description: t("exportSuccessDesc").replace("{count}", String(responses.length)),
     });
   }
 
@@ -123,6 +170,16 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
     const url = `${window.location.origin}/f/${form.slug}`;
     await navigator.clipboard.writeText(url);
     toast({ title: tCommon("copied") });
+  }
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  function handleRefresh() {
+    // router.refresh() re-executa o server component (busca views/respostas novas).
+    setIsRefreshing(true);
+    router.refresh();
+    // Curto feedback visual; o refresh do servidor é rápido e não tem callback.
+    setTimeout(() => setIsRefreshing(false), 800);
   }
 
   return (
@@ -141,11 +198,21 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="icon" onClick={copyLink}>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            title={t("refresh")}
+            aria-label={t("refresh")}
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
+          </Button>
+          <Button variant="outline" size="icon" onClick={copyLink} title={t("copyLink")}>
             <Copy className="w-4 h-4" />
           </Button>
           <Link href={`/f/${form.slug}`} target="_blank">
-            <Button variant="outline" size="icon">
+            <Button variant="outline" size="icon" title={t("openForm")}>
               <ExternalLink className="w-4 h-4" />
             </Button>
           </Link>
@@ -157,19 +224,44 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>{tDashboard("stats.totalResponses")}</CardDescription>
-            <CardTitle className="text-4xl">{responses.length}</CardTitle>
+            <CardTitle className="text-4xl tabular-nums">{responses.length}</CardTitle>
           </CardHeader>
         </Card>
+
+        {/* Visualizações (PRO) */}
+        <Card className={!isPro ? "relative overflow-hidden" : undefined}>
+          <CardHeader className="pb-2">
+            <CardDescription className="flex items-center gap-1.5">
+              <Eye className="w-3.5 h-3.5" />
+              {t("analytics.views")}
+              {!isPro && <Badge variant="secondary" className="text-[10px]">PRO</Badge>}
+            </CardDescription>
+            <CardTitle className="text-4xl tabular-nums">
+              {isPro ? form.views : "—"}
+            </CardTitle>
+          </CardHeader>
+        </Card>
+
+        {/* Taxa de conversão (PRO) */}
         <Card>
           <CardHeader className="pb-2">
-            <CardDescription>{tDashboard("formCard.fields")}</CardDescription>
-            <CardTitle className="text-4xl">{form.fields.length}</CardTitle>
+            <CardDescription className="flex items-center gap-1.5">
+              <TrendingUp className="w-3.5 h-3.5" />
+              {t("analytics.conversion")}
+              {!isPro && <Badge variant="secondary" className="text-[10px]">PRO</Badge>}
+            </CardDescription>
+            <CardTitle className="text-4xl tabular-nums">
+              {isPro
+                ? `${form.views > 0 ? Math.min(100, Math.round((responses.length / form.views) * 100)) : 0}%`
+                : "—"}
+            </CardTitle>
           </CardHeader>
         </Card>
+
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>{t("table.submittedAt")}</CardDescription>
@@ -181,6 +273,74 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
           </CardHeader>
         </Card>
       </div>
+
+      {/* CTA de upgrade para liberar analytics (apenas Free) */}
+      {!isPro && (
+        <Card className="overflow-hidden border-primary/20 bg-brand-soft">
+          <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-brand-gradient text-white flex items-center justify-center">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-semibold">{t("analytics.upgradeTitle")}</p>
+                <p className="text-sm text-muted-foreground">{t("analytics.upgradeDesc")}</p>
+              </div>
+            </div>
+            <Link href="/dashboard/billing" className="shrink-0">
+              <Button>{t("analytics.upgradeCta")}</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Respostas parciais (leads que não concluíram) — PRO */}
+      {isPro && partials.length > 0 && (
+        <Card className="border-amber-500/30">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <UserPlus className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              {t("partials.title")}
+              <Badge variant="secondary" className="text-xs">{partials.length}</Badge>
+            </CardTitle>
+            <CardDescription>{t("partials.subtitle")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {partials.map((p) => {
+                const valueMap = new Map(p.fieldValues.map((fv) => [fv.field.id, fv.value]));
+                // Mostra o 1º contato (email/phone) + o 1º outro valor preenchido
+                const contact = form.fields.find(
+                  (f) => (f.type === "email" || f.type === "phone") && valueMap.get(f.id)
+                );
+                const filled = form.fields.filter((f) => valueMap.get(f.id)?.trim());
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedResponse(p)}
+                    className="w-full flex items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5 text-left hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">
+                        {contact ? valueMap.get(contact.id) : t("partials.anonymous")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {filled.length}/{form.fields.length} {t("table.fieldsFilled")}
+                      </p>
+                    </div>
+                    <span className="text-xs text-muted-foreground shrink-0">
+                      {p.updatedAt ? formatRelativeDate(p.updatedAt) : ""}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Charts */}
+      {responses.length > 0 && <ResponseCharts fields={form.fields} responses={responses} />}
 
       {/* Table */}
       <Card>
@@ -285,13 +445,25 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
                           </td>
                         )}
                         <td className="py-3 px-4 text-right">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setSelectedResponse(response)}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setSelectedResponse(response)}
+                              aria-label={tCommon("view")}
+                            >
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-muted-foreground hover:text-destructive"
+                              onClick={() => setDeleteTarget(response)}
+                              aria-label={tCommon("delete")}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -317,26 +489,66 @@ export function ResponsesTable({ form, responses }: ResponsesTableProps) {
             </DialogDescription>
           </DialogHeader>
           {selectedResponse && (
-            <div className="space-y-4">
-              {form.fields.map((field) => {
-                const fieldValue = selectedResponse.fieldValues.find(
-                  (fv) => fv.field.id === field.id
-                );
-                return (
-                  <div key={field.id} className="space-y-1">
-                    <label className="text-sm font-medium text-muted-foreground">
-                      {field.label}
-                    </label>
-                    <p className="text-base">
-                      {fieldValue?.value || (
-                        <span className="text-muted-foreground italic">—</span>
-                      )}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+            <>
+              <div className="space-y-4">
+                {form.fields.map((field) => {
+                  const fieldValue = selectedResponse.fieldValues.find(
+                    (fv) => fv.field.id === field.id
+                  );
+                  return (
+                    <div key={field.id} className="space-y-1">
+                      <label className="text-sm font-medium text-muted-foreground">
+                        {field.label}
+                      </label>
+                      <p className="text-base">
+                        {fieldValue?.value || (
+                          <span className="text-muted-foreground italic">—</span>
+                        )}
+                      </p>
+                    </div>
+                  );
+                })}
+              </div>
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => setDeleteTarget(selectedResponse)}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {tCommon("delete")}
+                </Button>
+              </DialogFooter>
+            </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Confirmação de exclusão */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open: boolean) => !open && setDeleteTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("deleteTitle")}</DialogTitle>
+            <DialogDescription>{t("deleteConfirm")}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
+              {tCommon("cancel")}
+            </Button>
+            <Button variant="destructive" onClick={handleDelete} disabled={isDeleting}>
+              {isDeleting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  {t("deleting")}
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {tCommon("delete")}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

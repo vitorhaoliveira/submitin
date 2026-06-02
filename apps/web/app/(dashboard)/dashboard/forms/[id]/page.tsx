@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@submitin/database";
 import { redirect, notFound } from "next/navigation";
 import { FormBuilder } from "@/components/form-builder";
+import { parseVisibility } from "@/lib/field-visibility";
 
 export const metadata = {
   title: "Editar Formulário",
@@ -14,22 +15,30 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
     redirect("/login");
   }
 
-  const form = await prisma.form.findFirst({
-    where: {
-      id,
-      userId: session.user.id,
-    },
-    include: {
-      fields: {
-        orderBy: { order: "asc" },
+  const [form, dbUser] = await Promise.all([
+    prisma.form.findFirst({
+      where: {
+        id,
+        userId: session.user.id,
       },
-      settings: true,
-    },
-  });
+      include: {
+        fields: {
+          orderBy: { order: "asc" },
+        },
+        settings: true,
+      },
+    }),
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { plan: true },
+    }),
+  ]);
 
   if (!form) {
     notFound();
   }
+
+  const isPro = dbUser?.plan === "pro";
 
   // Transform JsonValue options to string[] | null and include all settings
   const transformedForm = {
@@ -50,6 +59,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
       order: field.order,
       formId: field.formId,
       options: Array.isArray(field.options) ? (field.options as string[]) : null,
+      visibility: parseVisibility(field.visibility),
     })),
     // Include all settings fields for Pro features
     settings: form.settings
@@ -72,9 +82,13 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
             accentColor?: string;
             borderRadius?: "none" | "sm" | "md" | "lg" | "xl" | "full";
           } | null,
+          thankYouTitle: form.settings.thankYouTitle,
+          thankYouMessage: form.settings.thankYouMessage,
+          thankYouRedirectUrl: form.settings.thankYouRedirectUrl,
+          confirmationEmail: form.settings.confirmationEmail,
         }
       : null,
   };
 
-  return <FormBuilder form={transformedForm} />;
+  return <FormBuilder form={transformedForm} initialIsPro={isPro} />;
 }

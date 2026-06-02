@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { prisma } from "@submitin/database";
+import { prisma, Prisma } from "@submitin/database";
 import { createFieldSchema } from "@/lib/validations";
 
 export async function PUT(
@@ -44,6 +44,8 @@ export async function PUT(
       data: {
         ...validatedData,
         options: validatedData.options ? validatedData.options : undefined,
+        // DbNull limpa a regra (SQL NULL); valor presente grava a regra
+        visibility: validatedData.visibility ?? Prisma.DbNull,
       },
     });
 

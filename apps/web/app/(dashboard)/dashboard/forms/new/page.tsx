@@ -1,127 +1,59 @@
-"use client";
+import { auth } from "@/lib/auth";
+import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
+import { FormBuilder } from "@/components/form-builder";
+import { getFormTemplates } from "@/lib/form-templates";
+import { NewFormClient } from "./new-form-client";
+import { GuestTemplatePicker } from "./guest-template-picker";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "@/lib/i18n-context";
-import { Button } from "@submitin/ui/components/button";
-import { Input } from "@submitin/ui/components/input";
-import { Label } from "@submitin/ui/components/label";
-import { Textarea } from "@submitin/ui/components/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@submitin/ui/components/card";
-import { ArrowLeft, Loader2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { createFormSchema, type CreateFormInput } from "@/lib/validations";
+export default async function NewFormPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ template?: string; blank?: string }>;
+}) {
+  const session = await auth();
 
-export default function NewFormPage() {
-  const router = useRouter();
-  const t = useTranslations("newForm");
-  const tCommon = useTranslations("common");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CreateFormInput>({
-    resolver: zodResolver(createFormSchema),
-  });
-
-  async function onSubmit(data: CreateFormInput) {
-    setIsLoading(true);
-    try {
-      const response = await fetch("/api/forms", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) throw new Error();
-
-      const form = await response.json();
-      toast({
-        title: tCommon("success"),
-      });
-      router.push(`/dashboard/forms/${form.id}`);
-    } catch {
-      toast({
-        title: tCommon("error"),
-        description: t("createError"),
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+  // Usuário logado: seletor de modelos (cria via API)
+  if (session?.user) {
+    return <NewFormClient />;
   }
 
-  return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/forms">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground">{t("subtitle")}</p>
-        </div>
-      </div>
+  // Visitante (sem login): seletor de modelos
+  const { template, blank } = await searchParams;
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">{t("nameLabel")} *</Label>
-              <Input
-                id="name"
-                placeholder={t("namePlaceholder")}
-                {...register("name")}
-                disabled={isLoading}
-              />
-              {errors.name && (
-                <p className="text-sm text-destructive">{errors.name.message}</p>
-              )}
-            </div>
+  // Sem modelo escolhido ainda: mostra os mesmos modelos prontos do usuário logado
+  if (!template && !blank) {
+    return <GuestTemplatePicker />;
+  }
 
-            <div className="space-y-2">
-              <Label htmlFor="description">{t("descLabel")}</Label>
-              <Textarea
-                id="description"
-                placeholder={t("descPlaceholder")}
-                {...register("description")}
-                disabled={isLoading}
-              />
-              {errors.description && (
-                <p className="text-sm text-destructive">{errors.description.message}</p>
-              )}
-            </div>
+  // Modelo escolhido (ou "em branco"): abre o construtor em modo convidado
+  const locale = await getLocaleFromCookie();
+  const t = await getTranslations("guest");
 
-            <div className="flex justify-end gap-4 pt-4">
-              <Link href="/dashboard/forms">
-                <Button type="button" variant="outline" disabled={isLoading}>
-                  {tCommon("cancel")}
-                </Button>
-              </Link>
-              <Button type="submit" disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    {t("creating")}
-                  </>
-                ) : (
-                  t("create")
-                )}
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
+  const tpl = template
+    ? getFormTemplates(locale === "en" ? "en" : "pt").find((x) => x.id === template)
+    : null;
+
+  const fields = tpl
+    ? tpl.fields.map((f, i) => ({
+        id: `g${i}`,
+        type: f.type,
+        label: f.label,
+        placeholder: f.placeholder ?? null,
+        required: f.required ?? false,
+        order: i,
+        options: f.options ?? null,
+      }))
+    : [];
+
+  const guestForm = {
+    id: "guest",
+    slug: "meu-formulario",
+    name: tpl?.name ?? t("untitled"),
+    description: tpl?.description ?? "",
+    published: false,
+    fields,
+    settings: null,
+  };
+
+  return <FormBuilder guest form={guestForm} />;
 }
