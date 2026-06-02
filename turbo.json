@@ -8,6 +8,7 @@
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "node_modules/.prisma/**"],
       "env": [
         "DATABASE_URL",
+        "DIRECT_URL",
         "AUTH_SECRET",
         "AUTH_RESEND_KEY",
         "AUTH_EMAIL_FROM",
