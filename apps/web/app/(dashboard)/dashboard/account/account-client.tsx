@@ -32,7 +32,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { PLANS } from "@/lib/stripe";
+import { PLANS, isPaid, maxFormsFor, maxResponsesPerMonthFor } from "@/lib/stripe";
 import { formatDate } from "@/lib/utils";
 
 interface AccountClientProps {
@@ -57,9 +57,9 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
   const locale = useLocale();
   const { update } = useSession();
 
-  const isPro = profile.plan === "pro";
-  const maxForms = PLANS.free.limits.maxForms;
-  const maxResponses = PLANS.free.limits.responsesPerMonth;
+  const isPro = isPaid(profile.plan);
+  const maxForms = maxFormsFor(profile.plan);
+  const maxResponses = maxResponsesPerMonthFor(profile.plan);
 
   // ---- Perfil (editar nome) ----
   const [name, setName] = useState(profile.name ?? "");
@@ -164,7 +164,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       key: "forms",
       label: t("formsUsage"),
       value: usage.forms,
-      limit: isPro ? null : maxForms,
+      limit: maxForms === -1 ? null : maxForms,
       icon: FileText,
       tint: "bg-primary/10 text-primary",
     },
@@ -172,7 +172,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       key: "responses",
       label: t("responsesUsage"),
       value: usage.responses,
-      limit: isPro ? null : maxResponses,
+      limit: maxResponses === -1 ? null : maxResponses,
       icon: MessageSquare,
       tint: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
     },
@@ -270,7 +270,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                 </div>
                 <div>
                   <p className="font-semibold">{t("upgradeCta")}</p>
-                  <p className="text-sm text-muted-foreground">{PLANS.pro.features[1]}</p>
+                  <p className="text-sm text-muted-foreground">{PLANS.premium.features[1]}</p>
                 </div>
               </div>
               <Link href="/dashboard/billing" className="shrink-0">

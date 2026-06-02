@@ -8,7 +8,7 @@ import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
-import { PLANS } from "@/lib/stripe";
+import { maxFormsFor } from "@/lib/stripe";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -78,10 +78,10 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
     form.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const isFree = userPlan === "free";
-  const maxForms = PLANS.free.limits.maxForms;
-  const formsRemaining = isFree ? Math.max(0, maxForms - forms.length) : null;
-  const canCreateForm = !isFree || forms.length < maxForms;
+  const maxForms = maxFormsFor(userPlan);
+  const isUnlimited = maxForms === -1;
+  const formsRemaining = isUnlimited ? null : Math.max(0, maxForms - forms.length);
+  const canCreateForm = isUnlimited || forms.length < maxForms;
 
   async function copyLink(slug: string) {
     const url = `${window.location.origin}/f/${slug}`;
@@ -155,7 +155,7 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
           <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
           <p className="text-muted-foreground">
             {t("subtitle")}
-            {isFree && (
+            {!isUnlimited && (
               <span className="ml-2 text-xs bg-muted px-2 py-1 rounded">
                 {forms.length}/{maxForms} formulários
               </span>

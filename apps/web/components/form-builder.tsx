@@ -164,9 +164,11 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
   const router = useRouter();
   const t = useTranslations("formBuilder");
   const tCommon = useTranslations("common");
-  const { isPro: hookIsPro, loading: loadingPlan } = useProFeatures();
+  const { isPro: hookIsPro, isPremium: hookIsPremium, loading: loadingPlan } = useProFeatures();
   // Fonte primária: plano do servidor; o hook só promove (nunca rebaixa) após carregar.
   const isPro = initialIsPro || hookIsPro;
+  // Features avançadas (CAPTCHA, respostas parciais) são exclusivas do Premium.
+  const isPremium = hookIsPremium;
   const [form, setForm] = useState(initialForm);
   const [fields, setFields] = useState<Field[]>(initialForm.fields);
   const [isSaving, setIsSaving] = useState(false);
@@ -1245,20 +1247,20 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
                 />
               </div>
 
-              {/* Respostas parciais (PRO) */}
+              {/* Respostas parciais (Premium) */}
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label className="flex items-center gap-2">
                     {t("partials.label")}
-                    <Badge variant="secondary" className="text-xs">PRO</Badge>
+                    <Badge variant="secondary" className="text-xs">Premium</Badge>
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    {isPro ? t("partials.help") : t("partials.proHint")}
+                    {isPremium ? t("partials.help") : t("partials.proHint")}
                   </p>
                 </div>
                 <Switch
                   checked={settings.capturePartials}
-                  disabled={!isPro}
+                  disabled={!isPremium}
                   onCheckedChange={(checked: boolean) =>
                     setSettings({ ...settings, capturePartials: checked })
                   }
@@ -1268,18 +1270,18 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
 
             <Separator />
 
-            {/* Agendamento e limites (PRO) */}
+            {/* Agendamento e limites (Premium) */}
             <div className="space-y-3">
               <div>
                 <h3 className="font-semibold flex items-center gap-2">
                   <CalendarClock className="w-4 h-4 text-primary" />
                   {t("schedule.section")}
-                  <Badge variant="secondary" className="text-xs">PRO</Badge>
+                  <Badge variant="secondary" className="text-xs">Premium</Badge>
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1">{t("schedule.help")}</p>
               </div>
 
-              {!isPro ? (
+              {!isPremium ? (
                 <div className="flex items-start gap-2 rounded-md bg-muted/60 border border-border px-3 py-2.5">
                   <Info className="w-4 h-4 mt-0.5 shrink-0 text-muted-foreground" />
                   <p className="text-xs text-muted-foreground leading-relaxed">
@@ -1397,8 +1399,8 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
 
             <Separator />
 
-            {/* Anti-spam / CAPTCHA - PRO */}
-            {!isPro && (
+            {/* Anti-spam / CAPTCHA - Premium */}
+            {!isPremium && (
               <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
                   🔒 {t("proFeatureLock")}{" "}
@@ -1410,7 +1412,7 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
               <h3 className="font-semibold flex items-center gap-2">
                 🛡️ {t("antiSpam")}
                 <Badge variant="secondary" className="text-xs">
-                  PRO
+                  Premium
                 </Badge>
               </h3>
               <div className="flex items-center justify-between">
@@ -1422,7 +1424,7 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
                 </div>
                 <Switch
                   checked={settings.captchaEnabled}
-                  disabled={!isPro}
+                  disabled={!isPremium}
                   onCheckedChange={(checked: boolean) =>
                     setSettings({ ...settings, captchaEnabled: checked })
                   }

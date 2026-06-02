@@ -5,9 +5,15 @@ import { Badge } from "@submitin/ui/components/badge";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
+const PLAN_LABEL: Record<string, string> = {
+  free: "Grátis",
+  plus: "Plus",
+  premium: "Premium",
+};
+
 export function ProBadge() {
   const { data: session } = useSession();
-  const [isPro, setIsPro] = useState(false);
+  const [plan, setPlan] = useState<string>("free");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -21,7 +27,7 @@ export function ProBadge() {
         const response = await fetch("/api/user/subscription");
         if (response.ok) {
           const data = await response.json();
-          setIsPro(data.plan === "pro");
+          setPlan(data.plan || "free");
         }
       } catch (error) {
         console.error("Error fetching plan:", error);
@@ -37,10 +43,12 @@ export function ProBadge() {
     return null;
   }
 
-  if (!isPro) {
+  const isPaid = plan === "plus" || plan === "premium";
+
+  if (!isPaid) {
     return (
       <Badge variant="outline" className="text-xs">
-        Free
+        {PLAN_LABEL.free}
       </Badge>
     );
   }
@@ -48,7 +56,7 @@ export function ProBadge() {
   return (
     <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-xs">
       <Crown className="h-3 w-3 mr-1" />
-      Pro
+      {PLAN_LABEL[plan] ?? "Plus"}
     </Badge>
   );
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import type Stripe from "stripe";
-import { stripe } from "@/lib/stripe";
+import { stripe, planFromPriceId } from "@/lib/stripe";
 import { prisma } from "@submitin/database";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
@@ -48,14 +48,18 @@ export async function POST(req: NextRequest) {
           // Get subscription details
           const subscription: any = await stripe.subscriptions.retrieve(subscriptionId);
 
+          // Plano derivado do price ID da assinatura (plus/premium)
+          const priceId = subscription.items.data[0]?.price.id || "";
+          const plan = planFromPriceId(priceId);
+
           // Update user with subscription info
           await prisma.user.update({
             where: { id: userId },
             data: {
-              plan: "pro",
+              plan,
               stripeCustomerId: customerId,
               stripeSubscriptionId: subscriptionId,
-              stripePriceId: subscription.items.data[0]?.price.id || "",
+              stripePriceId: priceId,
               stripeCurrentPeriodEnd: subscription.current_period_end
                 ? new Date(subscription.current_period_end * 1000)
                 : null,
@@ -68,9 +72,9 @@ export async function POST(req: NextRequest) {
             user: { connect: { id: userId } },
             stripeSubscriptionId: subscriptionId,
             stripeCustomerId: customerId,
-            stripePriceId: subscription.items.data[0]?.price.id || "",
+            stripePriceId: priceId,
             status: subscription.status,
-            plan: "pro",
+            plan,
           };
 
           if (typeof subscription.current_period_start === "number") {
@@ -107,9 +111,16 @@ export async function POST(req: NextRequest) {
           break;
         }
 
+        // Plano derivado do price ID atual; ativo/trial mantém o plano, senão free.
+        const updatedPriceId = subscription.items?.data?.[0]?.price?.id || "";
+        const updatedPlan = planFromPriceId(updatedPriceId);
+        const isActive =
+          subscription.status === "active" || subscription.status === "trialing";
+
         // Update user subscription status
         const userUpdateData: any = {
-          plan: subscription.status === "active" && !subscription.cancel_at_period_end ? "pro" : subscription.status === "active" && subscription.cancel_at_period_end ? "pro" : "free",
+          plan: isActive ? updatedPlan : "free",
+          stripePriceId: updatedPriceId,
           cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
         };
         if (typeof subscription.current_period_end === "number") {

@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@submitin/database";
 import { redirect, notFound } from "next/navigation";
 import { ResponsesTable } from "@/components/responses-table";
+import { isPaid } from "@/lib/stripe";
 
 export const metadata = {
   title: "Respostas",
@@ -62,7 +63,7 @@ export default async function ResponsesPage({
       form={form}
       responses={completeResponses}
       partials={partialResponses}
-      isPro={dbUser?.plan === "pro"}
+      isPro={isPaid(dbUser?.plan)}
     />
   );
 }

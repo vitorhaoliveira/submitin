@@ -3,6 +3,7 @@ import { prisma } from "@submitin/database";
 import { redirect, notFound } from "next/navigation";
 import { FormBuilder } from "@/components/form-builder";
 import { parseVisibility } from "@/lib/field-visibility";
+import { isPaid } from "@/lib/stripe";
 
 export const metadata = {
   title: "Editar Formulário",
@@ -38,7 +39,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
     notFound();
   }
 
-  const isPro = dbUser?.plan === "pro";
+  const isPro = isPaid(dbUser?.plan);
 
   // Transform JsonValue options to string[] | null and include all settings
   const transformedForm = {

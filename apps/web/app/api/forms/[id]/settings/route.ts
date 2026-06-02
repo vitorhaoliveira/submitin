@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma, Prisma } from "@submitin/database";
 import { formSettingsSchema } from "@/lib/validations";
+import { isPaid, isPremium } from "@/lib/stripe";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -58,11 +59,14 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: "Formulário não encontrado" }, { status: 404 });
     }
 
-    const isPro = user?.plan === "pro";
+    // Plus libera features básicas (branding/tema); Premium libera as avançadas
+    // (agendamento, parciais, CAPTCHA).
+    const paid = isPaid(user?.plan);
+    const premium = isPremium(user?.plan);
     const body = await request.json();
-    
+
     console.log("📝 Salvando configurações do formulário:", form.name);
-    console.log("  → Usuário PRO:", isPro);
+    console.log("  → Plano pago:", paid, "| Premium:", premium);
     console.log("  → Dados recebidos:", JSON.stringify(body, null, 2));
 
     const validatedData = formSettingsSchema.parse(body);
@@ -80,19 +84,21 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       thankYouMessage: validatedData.thankYouMessage || null,
       thankYouRedirectUrl: validatedData.thankYouRedirectUrl || null,
       confirmationEmail: validatedData.confirmationEmail ?? false,
-      // PRO: Agendamento e limites (só persistidos para usuários Pro)
-      opensAt: isPro && validatedData.opensAt ? new Date(validatedData.opensAt) : null,
-      closesAt: isPro && validatedData.closesAt ? new Date(validatedData.closesAt) : null,
-      maxResponses: isPro ? validatedData.maxResponses ?? null : null,
-      closedMessage: isPro ? validatedData.closedMessage || null : null,
-      // PRO: Respostas parciais
-      capturePartials: isPro ? (validatedData.capturePartials || false) : false,
-      captchaEnabled: isPro ? (validatedData.captchaEnabled || false) : false,
-      captchaProvider: isPro ? (validatedData.captchaProvider || null) : null,
-      captchaSiteKey: isPro ? (validatedData.captchaSiteKey || null) : null,
-      captchaSecretKey: isPro ? (validatedData.captchaSecretKey || null) : null,
-      hideBranding: isPro ? (validatedData.hideBranding || false) : false,
-      customTheme: isPro && validatedData.customTheme ? validatedData.customTheme : Prisma.DbNull,
+      // Premium: Agendamento e limites (features avançadas)
+      opensAt: premium && validatedData.opensAt ? new Date(validatedData.opensAt) : null,
+      closesAt: premium && validatedData.closesAt ? new Date(validatedData.closesAt) : null,
+      maxResponses: premium ? validatedData.maxResponses ?? null : null,
+      closedMessage: premium ? validatedData.closedMessage || null : null,
+      // Premium: Respostas parciais
+      capturePartials: premium ? (validatedData.capturePartials || false) : false,
+      // Premium: Anti-spam / CAPTCHA
+      captchaEnabled: premium ? (validatedData.captchaEnabled || false) : false,
+      captchaProvider: premium ? (validatedData.captchaProvider || null) : null,
+      captchaSiteKey: premium ? (validatedData.captchaSiteKey || null) : null,
+      captchaSecretKey: premium ? (validatedData.captchaSecretKey || null) : null,
+      // Plus + Premium: branding e tema
+      hideBranding: paid ? (validatedData.hideBranding || false) : false,
+      customTheme: paid && validatedData.customTheme ? validatedData.customTheme : Prisma.DbNull,
     };
 
     console.log("  → Dados a salvar (filtrados por plano):", JSON.stringify(settingsData, null, 2));
@@ -110,19 +116,21 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const responseSettings = { ...settings };
 
-    if (!isPro) {
-      const proFeaturesRequested =
-        validatedData.captchaEnabled ||
-        validatedData.hideBranding ||
-        validatedData.customTheme;
+    // Avisa quando o plano atual não cobre alguma feature solicitada.
+    const requestedPaidFeature = validatedData.hideBranding || validatedData.customTheme;
+    const requestedPremiumFeature =
+      validatedData.captchaEnabled ||
+      validatedData.capturePartials ||
+      validatedData.opensAt ||
+      validatedData.closesAt ||
+      validatedData.maxResponses != null;
 
-      if (proFeaturesRequested) {
-        console.log("⚠️ Funcionalidades PRO ignoradas (usuário Free)");
-        return NextResponse.json({
-          ...responseSettings,
-          _warning: "Algumas funcionalidades PRO foram ignoradas. Faça upgrade para o plano PRO."
-        });
-      }
+    if ((!paid && requestedPaidFeature) || (!premium && requestedPremiumFeature)) {
+      console.log("⚠️ Funcionalidades de plano superior ignoradas");
+      return NextResponse.json({
+        ...responseSettings,
+        _warning: "Algumas funcionalidades não estão disponíveis no seu plano e foram ignoradas. Faça upgrade para liberá-las.",
+      });
     }
 
     return NextResponse.json(responseSettings);

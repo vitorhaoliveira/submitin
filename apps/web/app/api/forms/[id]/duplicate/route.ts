@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma, Prisma } from "@submitin/database";
 import { generateSlug } from "@/lib/utils";
-import { PLANS } from "@/lib/stripe";
+import { maxFormsFor } from "@/lib/stripe";
 
 // POST /api/forms/[id]/duplicate — cria uma cópia do formulário (campos + configurações)
 export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -13,18 +13,18 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
-    // Respeita o limite de formulários do plano Free
+    // Respeita o limite de formulários do plano (-1 = ilimitado)
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
       select: { plan: true },
     });
-    if (user?.plan === "free") {
+    const maxForms = maxFormsFor(user?.plan);
+    if (maxForms !== -1) {
       const formCount = await prisma.form.count({ where: { userId: session.user.id } });
-      const maxForms = PLANS.free.limits.maxForms;
       if (formCount >= maxForms) {
         return NextResponse.json(
           {
-            error: `Limite de ${maxForms} formulários atingido. Faça upgrade para o plano Pro para criar formulários ilimitados.`,
+            error: `Limite de ${maxForms} formulários atingido. Faça upgrade do seu plano para criar mais.`,
             code: "LIMIT_REACHED",
           },
           { status: 403 }
