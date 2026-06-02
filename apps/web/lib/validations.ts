@@ -1,16 +1,29 @@
 import { z } from "zod";
 
-export const fieldTypes = ["text", "email", "number", "date", "select", "checkbox"] as const;
+export const fieldTypes = [
+  "text",
+  "textarea",
+  "email",
+  "phone",
+  "number",
+  "date",
+  "select",
+  "checkbox",
+  "rating",
+] as const;
 
 export type FieldType = (typeof fieldTypes)[number];
 
 export const fieldTypeLabels: Record<FieldType, string> = {
   text: "Texto",
+  textarea: "Texto Longo",
   email: "Email",
+  phone: "Telefone",
   number: "Número",
   date: "Data",
   select: "Múltipla Escolha",
   checkbox: "Checkbox",
+  rating: "Avaliação (Estrelas)",
 };
 
 export const createFormSchema = z.object({
@@ -20,6 +33,13 @@ export const createFormSchema = z.object({
 
 export const updateFormSchema = createFormSchema.extend({
   published: z.boolean().optional(),
+});
+
+// Lógica condicional (PRO): exibir campo conforme a resposta de outro.
+export const visibilitySchema = z.object({
+  fieldId: z.string().min(1),
+  operator: z.enum(["equals", "not_equals"]),
+  value: z.string().max(200),
 });
 
 export const createFieldSchema = z
@@ -43,6 +63,10 @@ export const createFieldSchema = z
         const filtered = opts.filter((opt) => opt.trim() !== "");
         return filtered.length > 0 ? filtered : undefined;
       }),
+    visibility: visibilitySchema
+      .optional()
+      .nullable()
+      .transform((v) => v ?? undefined),
   })
   .refine(
     (data) => {
@@ -107,6 +131,24 @@ export const formSettingsSchema = z.object({
 
   allowMultipleResponses: z.boolean().optional().default(false),
 
+  // Apresentação: modo conversacional (uma pergunta por vez)
+  conversational: z.boolean().optional().default(false),
+
+  // PRO: Agendamento e limites (datas como ISO string ou "")
+  opensAt: z.string().optional().or(z.literal("")).nullable(),
+  closesAt: z.string().optional().or(z.literal("")).nullable(),
+  maxResponses: z.coerce.number().int().min(1).max(1000000).optional().nullable(),
+  closedMessage: z.string().max(500, "Mensagem muito longa").optional().or(z.literal("")),
+  capturePartials: z.boolean().optional().default(false),
+
+  // Página de obrigado (tela de sucesso)
+  thankYouTitle: z.string().max(100, "Título muito longo").optional().or(z.literal("")),
+  thankYouMessage: z.string().max(500, "Mensagem muito longa").optional().or(z.literal("")),
+  thankYouRedirectUrl: z.string().url("URL inválida").optional().or(z.literal("")),
+
+  // Email de confirmação ao respondente
+  confirmationEmail: z.boolean().optional().default(false),
+
   // PRO: Anti-spam / CAPTCHA
   captchaEnabled: z.boolean().optional().default(false),
   captchaProvider: z.enum(captchaProviders).optional().or(z.literal("")),
@@ -147,6 +189,10 @@ export const registerSchema = z.object({
   name: z.string().min(2, "Nome muito curto").max(100, "Nome muito longo").optional(),
 });
 
+export const updateProfileSchema = z.object({
+  name: z.string().trim().min(1, "Nome é obrigatório").max(100, "Nome muito longo"),
+});
+
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Senha atual é obrigatória"),
@@ -171,3 +217,4 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

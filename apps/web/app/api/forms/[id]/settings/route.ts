@@ -75,6 +75,18 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       notifyEmails: validatedData.notifyEmails || [],
       webhookUrl: validatedData.webhookUrl || null,
       allowMultipleResponses,
+      conversational: validatedData.conversational ?? false,
+      thankYouTitle: validatedData.thankYouTitle || null,
+      thankYouMessage: validatedData.thankYouMessage || null,
+      thankYouRedirectUrl: validatedData.thankYouRedirectUrl || null,
+      confirmationEmail: validatedData.confirmationEmail ?? false,
+      // PRO: Agendamento e limites (só persistidos para usuários Pro)
+      opensAt: isPro && validatedData.opensAt ? new Date(validatedData.opensAt) : null,
+      closesAt: isPro && validatedData.closesAt ? new Date(validatedData.closesAt) : null,
+      maxResponses: isPro ? validatedData.maxResponses ?? null : null,
+      closedMessage: isPro ? validatedData.closedMessage || null : null,
+      // PRO: Respostas parciais
+      capturePartials: isPro ? (validatedData.capturePartials || false) : false,
       captchaEnabled: isPro ? (validatedData.captchaEnabled || false) : false,
       captchaProvider: isPro ? (validatedData.captchaProvider || null) : null,
       captchaSiteKey: isPro ? (validatedData.captchaSiteKey || null) : null,

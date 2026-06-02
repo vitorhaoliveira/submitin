@@ -79,7 +79,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         fields: true,
         settings: true,
         _count: {
-          select: { responses: true },
+          // Limite/contagem consideram apenas respostas completas (não parciais)
+          select: { responses: { where: { partial: false } } },
         },
       },
     });
@@ -133,9 +134,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const values = sanitizeFormValues(rawValues);
+    const partialId = typeof body?.partialId === "string" ? body.partialId : null;
 
     try {
-      const response = await createFormResponse(form, values);
+      const response = await createFormResponse(form, values, partialId);
       return NextResponse.json({ success: true, id: response.id }, { status: 201 });
     } catch (err: unknown) {
       const status =

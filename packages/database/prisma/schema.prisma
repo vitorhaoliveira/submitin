@@ -81,6 +81,8 @@ model Form {
   name        String
   description String?
   published   Boolean  @default(false)
+  // Analytics (PRO): nº de visualizações do form público; base da taxa de conversão
+  views       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -104,6 +106,8 @@ model Field {
   required    Boolean @default(false)
   order       Int
   options     Json?
+  // Lógica condicional (PRO): { fieldId, operator: "equals"|"not_equals", value }
+  visibility  Json?
 
   formId String
   form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
@@ -117,6 +121,9 @@ model Field {
 model Response {
   id          String   @id @default(cuid())
   submittedAt DateTime @default(now())
+  // PRO: Respostas parciais — true enquanto o lead não enviou o formulário
+  partial     Boolean  @default(false)
+  updatedAt   DateTime @default(now()) @updatedAt
 
   formId String
   form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
@@ -124,6 +131,7 @@ model Response {
   fieldValues FieldValue[]
 
   @@index([formId])
+  @@index([formId, partial])
   @@map("responses")
 }
 
@@ -152,6 +160,26 @@ model FormSettings {
 
   // Comportamento: permitir botão "Enviar outra resposta" na tela de sucesso
   allowMultipleResponses Boolean @default(false)
+
+  // Apresentação: modo conversacional (uma pergunta por vez, estilo Typeform)
+  conversational Boolean @default(false)
+
+  // PRO: Agendamento e limites
+  opensAt       DateTime? // abre para respostas a partir desta data
+  closesAt      DateTime? // encerra respostas após esta data
+  maxResponses  Int?      // encerra após N respostas
+  closedMessage String?   // mensagem exibida quando encerrado
+
+  // PRO: Respostas parciais (capturar leads que não concluíram)
+  capturePartials Boolean @default(false)
+
+  // Página de obrigado (tela de sucesso personalizada)
+  thankYouTitle       String?
+  thankYouMessage     String?
+  thankYouRedirectUrl String?
+
+  // Enviar email de confirmação ao respondente (se houver campo de email)
+  confirmationEmail Boolean @default(false)
 
   // PRO: Anti-spam / CAPTCHA
   captchaEnabled   Boolean @default(false)

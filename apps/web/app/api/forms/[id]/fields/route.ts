@@ -60,6 +60,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         placeholder: validatedData.placeholder || null,
         required: validatedData.required,
         options: optionsData,
+        visibility: validatedData.visibility ?? undefined,
         order: maxOrder + 1,
         formId: id,
       },

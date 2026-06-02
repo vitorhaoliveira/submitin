@@ -33,6 +33,7 @@ import {
   Edit,
   Trash2,
   Copy,
+  CopyPlus,
   Search,
   ExternalLink,
   Loader2,
@@ -71,6 +72,7 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
     form: null,
   });
   const [isDeleting, setIsDeleting] = useState(false);
+  const [duplicatingId, setDuplicatingId] = useState<string | null>(null);
 
   const filteredForms = forms.filter((form) =>
     form.name.toLowerCase().includes(search.toLowerCase())
@@ -97,6 +99,25 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
       title: t("linkCopied"),
       description: t("integrationUrlCopiedDesc"),
     });
+  }
+
+  async function handleDuplicate(form: Form) {
+    setDuplicatingId(form.id);
+    try {
+      const response = await fetch(`/api/forms/${form.id}/duplicate`, { method: "POST" });
+      if (!response.ok) throw new Error();
+      const newForm: Form = await response.json();
+      setForms((prev) => [newForm, ...prev]);
+      toast({ title: t("formDuplicated"), description: t("formDuplicatedDesc") });
+    } catch {
+      toast({
+        title: tCommon("error"),
+        description: t("duplicateError"),
+        variant: "destructive",
+      });
+    } finally {
+      setDuplicatingId(null);
+    }
   }
 
   async function handleDelete() {
@@ -200,7 +221,7 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
           {filteredForms.map((form, index) => (
             <Card
               key={form.id}
-              className="group animate-fade-in-up"
+              className="group animate-fade-in-up transition-all hover:-translate-y-0.5 hover:border-primary/30"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <CardHeader className="pb-3">
@@ -247,6 +268,17 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
                         <DropdownMenuItem onClick={() => copyIntegrationUrl(form.slug)}>
                           <Copy className="w-4 h-4 mr-2" />
                           {t("copyIntegrationUrl")}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDuplicate(form)}
+                          disabled={duplicatingId === form.id}
+                        >
+                          {duplicatingId === form.id ? (
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          ) : (
+                            <CopyPlus className="w-4 h-4 mr-2" />
+                          )}
+                          {t("duplicate")}
                         </DropdownMenuItem>
                         {form.published && (
                           <DropdownMenuItem asChild>

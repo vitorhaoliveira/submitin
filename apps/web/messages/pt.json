@@ -22,7 +22,8 @@
     "add": "Adicionar",
     "update": "Atualizar",
     "remove": "Remover",
-    "required": "Obrigatório"
+    "required": "Obrigatório",
+    "view": "Visualizar"
   },
   "landing": {
     "seo": {
@@ -30,13 +31,173 @@
       "keywords": "formulários online, criar formulário, pesquisa, survey, form builder, coleta de respostas, Submitin"
     },
     "hero": {
-      "badge": "Novo: Notificações em tempo real",
+      "badge": "Grátis e sem escrever uma linha de código",
       "title": "Crie formulários",
       "titleHighlight": "incríveis",
-      "titleEnd": "em minutos",
-      "subtitle": "Construa formulários personalizados, compartilhe com um link e colete respostas de forma simples. Sem código, sem complicação.",
-      "cta": "Criar Primeiro Formulário",
-      "ctaSecondary": "Ver Recursos"
+      "titleEnd": "e colete respostas em minutos",
+      "subtitle": "Monte seu formulário, compartilhe um link e veja as respostas chegarem em tempo real. Simples, bonito e grátis para começar.",
+      "cta": "Criar meu formulário grátis",
+      "ctaSecondary": "Ver em ação",
+      "microProof": "Grátis para começar · Sem cartão de crédito · Sem código"
+    },
+    "trust": {
+      "guarantees": {
+        "0": "Sem cartão de crédito",
+        "1": "Seus dados são seus — exporte em CSV",
+        "2": "Proteção contra spam",
+        "3": "Sem precisar de código"
+      }
+    },
+    "howItWorks": {
+      "title": "Comece em 3 passos",
+      "subtitle": "Do zero ao primeiro formulário publicado em menos de 2 minutos.",
+      "steps": {
+        "0": {
+          "title": "Crie o formulário",
+          "description": "Adicione campos de texto, email, data, múltipla escolha e mais — tudo visual, sem código."
+        },
+        "1": {
+          "title": "Compartilhe o link",
+          "description": "Cada formulário ganha um link público único. Compartilhe ou incorpore no seu site."
+        },
+        "2": {
+          "title": "Receba respostas",
+          "description": "Acompanhe tudo no painel, receba emails a cada envio e exporte para CSV."
+        }
+      }
+    },
+    "useCases": {
+      "title": "Para o que você pode usar",
+      "subtitle": "Crie qualquer formulário em minutos. Alguns exemplos prontos para começar:",
+      "items": {
+        "0": {
+          "title": "Contato",
+          "description": "Receba mensagens e dúvidas direto do seu site."
+        },
+        "1": {
+          "title": "Inscrição de evento",
+          "description": "Confirmações de presença e inscrições organizadas."
+        },
+        "2": {
+          "title": "Pesquisa de satisfação",
+          "description": "Avaliações por estrelas e feedback dos clientes."
+        },
+        "3": {
+          "title": "Pedido / Orçamento",
+          "description": "Receba pedidos e solicitações pelo WhatsApp."
+        },
+        "4": {
+          "title": "Lista de espera",
+          "description": "Capte interessados antes do lançamento."
+        },
+        "5": {
+          "title": "E muito mais",
+          "description": "Formulários de cadastro, reservas, suporte e o que imaginar."
+        }
+      }
+    },
+    "templates": {
+      "badge": "Modelos prontos",
+      "title": "Comece com um modelo, publique em minutos",
+      "subtitle": "Escolha um modelo, ajuste os campos do seu jeito e gere o link público — sem escrever código.",
+      "fields": "campos",
+      "useTemplate": "Usar modelo",
+      "blankTitle": "Começar do zero",
+      "blankDescription": "Crie um formulário em branco e adicione os campos que quiser.",
+      "cta": "Ver todos os modelos"
+    },
+    "stats": {
+      "fieldTypes": "Tipos de campo",
+      "templates": "Modelos prontos",
+      "toPublish": "Para publicar",
+      "code": "Linhas de código"
+    },
+    "demo": {
+      "title": "Veja o Submitin em ação",
+      "subtitle": "Do construtor ao painel de respostas — explore como funciona.",
+      "tabBuilder": "Construtor",
+      "tabForm": "Formulário público",
+      "tabResponses": "Respostas",
+      "builder": {
+        "formName": "Formulário de contato",
+        "addField": "Adicionar campo",
+        "required": "Obrigatório"
+      },
+      "form": {
+        "title": "Formulário de contato",
+        "description": "Responda em menos de 1 minuto.",
+        "nameLabel": "Nome",
+        "namePlaceholder": "Seu nome",
+        "emailLabel": "Email",
+        "emailPlaceholder": "voce@email.com",
+        "messageLabel": "Mensagem",
+        "messagePlaceholder": "Como podemos ajudar?",
+        "subjectLabel": "Assunto",
+        "subjectOptions": {
+          "0": "Dúvida",
+          "1": "Orçamento",
+          "2": "Suporte"
+        },
+        "submit": "Enviar",
+        "submitting": "Enviando...",
+        "successTitle": "Resposta enviada!",
+        "successSubtitle": "Obrigado pelo contato. Já avisamos a equipe.",
+        "poweredBy": "Criado com Submitin"
+      },
+      "responses": {
+        "title": "Respostas",
+        "export": "Exportar CSV",
+        "colName": "Nome",
+        "colEmail": "Email",
+        "colDate": "Recebida",
+        "rows": {
+          "0": {
+            "name": "Ana Souza",
+            "email": "ana@email.com",
+            "date": "Há 2 min"
+          },
+          "1": {
+            "name": "Carlos Lima",
+            "email": "carlos@email.com",
+            "date": "Há 1 h"
+          },
+          "2": {
+            "name": "Marina Reis",
+            "email": "marina@email.com",
+            "date": "Ontem"
+          }
+        }
+      }
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "subtitle": "Tudo o que você precisa saber antes de começar.",
+      "items": {
+        "0": {
+          "q": "Preciso saber programar?",
+          "a": "Não. Você monta formulários visualmente, adicionando campos com poucos cliques — sem escrever código."
+        },
+        "1": {
+          "q": "É realmente grátis?",
+          "a": "Sim. Você cria formulários, publica e coleta respostas gratuitamente — sem cartão de crédito para começar."
+        },
+        "2": {
+          "q": "Quanto tempo leva para criar um formulário?",
+          "a": "Menos de 2 minutos: escolha um modelo pronto, ajuste os campos e compartilhe o link."
+        },
+        "3": {
+          "q": "Meus dados ficam presos na plataforma?",
+          "a": "Não. Você pode exportar todas as respostas em CSV a qualquer momento."
+        },
+        "4": {
+          "q": "Consigo integrar com outros sistemas?",
+          "a": "Sim. Use webhooks para enviar cada resposta automaticamente para a URL que você configurar."
+        },
+        "5": {
+          "q": "Como funciona a proteção contra spam?",
+          "a": "Há rate limiting por IP em todas as submissões e, no plano Pro, você pode ativar CAPTCHA (Cloudflare Turnstile)."
+        }
+      }
     },
     "features": {
       "builder": {
@@ -58,20 +219,20 @@
         "description": "Receba um email sempre que alguém responder seu formulário."
       },
       "embed": {
-        "title": "Embed em Sites",
-        "description": "Incorpore seu formulário em qualquer site com um simples código iframe."
+        "title": "No seu site",
+        "description": "Mostre o formulário dentro do seu próprio site, sem precisar de programador."
       },
       "webhooks": {
-        "title": "Webhooks",
-        "description": "Integre com outros sistemas enviando dados para sua URL automaticamente."
+        "title": "Integrações automáticas",
+        "description": "Envie cada resposta automaticamente para outras ferramentas que você já usa."
       },
       "secureLogin": {
-        "title": "Login Seguro",
-        "description": "Acesse sua conta com email e senha protegidos por criptografia."
+        "title": "Acesso protegido",
+        "description": "Sua conta e os dados coletados ficam seguros e protegidos."
       },
       "security": {
-        "title": "Segurança",
-        "description": "Proteção contra spam, rate limiting e sanitização de inputs inclusos."
+        "title": "Proteção anti-spam",
+        "description": "Bloqueio automático de robôs e respostas falsas, sem você configurar nada."
       },
       "performance": {
         "title": "Rápido e Leve",
@@ -79,11 +240,14 @@
       }
     },
     "cta": {
-      "title": "Pronto para começar?",
-      "subtitle": "Crie sua conta gratuitamente e comece a coletar respostas em menos de 2 minutos.",
-      "button": "Começar Agora — É Grátis"
+      "title": "Comece de graça agora",
+      "subtitle": "Crie seu primeiro formulário em menos de 2 minutos. Sem cartão, sem código.",
+      "button": "Criar meu formulário grátis",
+      "secondary": "Ver modelos"
     },
     "nav": {
+      "howItWorks": "Como funciona",
+      "templates": "Modelos",
       "pricing": "Preços",
       "login": "Entrar",
       "getStarted": "Começar Grátis"
@@ -172,11 +336,41 @@
     },
     "footer": {
       "copyright": "Feito com ❤️ por Vitor Hugo",
+      "tagline": "Formulários incríveis e respostas em minutos. Grátis para começar.",
+      "productTitle": "Produto",
+      "legalTitle": "Legal",
+      "ctaButton": "Criar grátis",
       "terms": "Termos de Uso",
       "privacy": "Privacidade",
       "support": "Suporte",
       "supportContact": "Dúvidas? Fale conosco:"
     }
+  },
+  "guest": {
+    "seoTitle": "Crie seu formulário grátis | Submitin",
+    "title": "Monte seu formulário",
+    "subtitle": "Adicione campos e veja a prévia em tempo real. Crie uma conta para salvar e publicar.",
+    "formName": "Nome do formulário",
+    "untitled": "Formulário sem título",
+    "addField": "Adicionar campo",
+    "editField": "Editar campo",
+    "fieldType": "Tipo de campo",
+    "fieldLabel": "Rótulo do campo",
+    "fieldLabelPlaceholder": "Ex: Seu nome",
+    "placeholder": "Texto de exemplo (placeholder)",
+    "options": "Opções (uma por linha)",
+    "optionsPlaceholder": "Opção 1\nOpção 2\nOpção 3",
+    "required": "Obrigatório",
+    "cancel": "Cancelar",
+    "add": "Adicionar",
+    "saveField": "Salvar",
+    "preview": "Prévia",
+    "empty": "Adicione campos para ver a prévia do seu formulário.",
+    "submit": "Enviar",
+    "signIn": "Entrar",
+    "save": "Salvar meu formulário",
+    "banner": "Você está testando sem conta. Crie uma conta gratuita para salvar e publicar.",
+    "claiming": "Salvando seu formulário..."
   },
   "auth": {
     "accountTitle": "Conta",
@@ -268,18 +462,24 @@
     "stats": {
       "totalForms": "Total de Formulários",
       "totalResponses": "Total de Respostas",
-      "publishedForms": "Formulários Publicados"
+      "publishedForms": "Formulários Publicados",
+      "drafts": "Rascunhos"
     },
     "nav": {
       "forms": "Formulários",
       "account": "Conta",
       "settings": "Configurações",
       "logout": "Sair"
-    }
+    },
+    "greeting": "Bem-vindo de volta",
+    "overview": "Veja o que está acontecendo com seus formulários.",
+    "seeAll": "Ver todos",
+    "quickStart": "Criar um novo formulário",
+    "quickStartDesc": "Escolha um modelo ou comece do zero — pronto em segundos."
   },
   "account": {
     "title": "Conta",
-    "subtitle": "Gerencie sua conta e altere sua senha",
+    "subtitle": "Gerencie suas informações, uso e segurança",
     "changePasswordTitle": "Alterar senha",
     "changePasswordDescription": "Digite sua senha atual e escolha uma nova senha.",
     "currentPasswordLabel": "Senha atual",
@@ -291,7 +491,32 @@
     "passwordsDoNotMatch": "As senhas não coincidem",
     "submit": "Alterar senha",
     "submitting": "Alterando...",
-    "changePasswordSuccess": "Senha alterada com sucesso!"
+    "changePasswordSuccess": "Senha alterada com sucesso!",
+    "profileTitle": "Perfil",
+    "profileDescription": "Suas informações pessoais.",
+    "nameLabel": "Nome",
+    "namePlaceholder": "Seu nome",
+    "emailLabel": "Email",
+    "emailReadonly": "Seu email não pode ser alterado.",
+    "saveProfile": "Salvar alterações",
+    "profileSaved": "Perfil atualizado!",
+    "noChanges": "Nenhuma alteração para salvar.",
+    "memberSince": "Membro desde",
+    "planLabel": "Plano atual",
+    "accountId": "ID da conta",
+    "usageTitle": "Uso",
+    "usageDescription": "Sua atividade no Submitin.",
+    "formsUsage": "Formulários",
+    "responsesUsage": "Respostas",
+    "publishedUsage": "Publicados",
+    "unlimited": "Ilimitado",
+    "ofLimit": "de {limit}",
+    "planFree": "Free",
+    "planPro": "Pro",
+    "upgradeCta": "Assinar o Pro",
+    "managePlan": "Gerenciar plano",
+    "detailsTitle": "Detalhes da conta",
+    "securityTitle": "Segurança"
   },
   "formsGrid": {
     "title": "Formulários",
@@ -304,6 +529,10 @@
     "copyLink": "Copiar Link",
     "copyIntegrationUrl": "Copiar URL de integração (Framer)",
     "openForm": "Abrir Formulário",
+    "duplicate": "Duplicar",
+    "formDuplicated": "Formulário duplicado",
+    "formDuplicatedDesc": "Uma cópia foi criada como rascunho.",
+    "duplicateError": "Não foi possível duplicar o formulário.",
     "linkCopied": "Link copiado!",
     "linkCopiedDesc": "O link do formulário foi copiado para a área de transferência.",
     "integrationUrlCopiedDesc": "URL de integração copiada para a área de transferência.",
@@ -317,6 +546,7 @@
   },
   "formBuilder": {
     "title": "Editar Formulário",
+    "guestBanner": "Você está testando sem conta. Crie uma conta gratuita para salvar e publicar.",
     "info": "Informações",
     "fields": "Campos",
     "fieldsDesc": "Adicione e organize os campos do seu formulário",
@@ -345,8 +575,22 @@
     "notifyEmailPlaceholder": "seu@email.com",
     "notifyEmailHelp": "Receba um email a cada nova resposta",
     "behaviorSection": "Comportamento",
+    "confirmationEmail": "Email de confirmação ao respondente",
+    "confirmationEmailHelp": "Envia um email de confirmação para quem responder (se o formulário tiver um campo de email preenchido).",
+    "thankYouSection": "Página de obrigado",
+    "thankYouSectionHelp": "Personalize a mensagem que aparece após o envio (opcional).",
+    "thankYouTitle": "Título",
+    "thankYouTitlePlaceholder": "Resposta enviada!",
+    "thankYouMessage": "Mensagem",
+    "thankYouMessagePlaceholder": "Obrigado! Em breve entraremos em contato.",
+    "thankYouRedirect": "Redirecionar para (opcional)",
+    "thankYouRedirectHelp": "Se preenchido, o respondente é levado a esta página após enviar.",
     "allowMultipleResponses": "Permitir mais de uma resposta",
     "allowMultipleResponsesHelp": "Exibir o botão \"Enviar outra resposta\" após o envio. Desative para uma resposta por pessoa.",
+    "conversational": {
+      "label": "Modo conversacional",
+      "help": "Mostra uma pergunta por vez, estilo conversa. Costuma aumentar a taxa de conclusão."
+    },
     "webhookUrl": "Webhook URL",
     "webhookUrlPlaceholder": "https://...",
     "webhookUrlHelp": "Envie as respostas para uma URL externa",
@@ -399,6 +643,9 @@
     "shareDesc": "Compartilhe seu formulário via link ou incorpore em seu site",
     "notPublishedWarning": "Este formulário ainda não está publicado. Publique-o primeiro para compartilhar.",
     "directLink": "Link Direto",
+    "qrCode": "QR Code",
+    "qrCodeDesc": "Imprima ou compartilhe para receber respostas pelo celular. Ideal para lojas, eventos e balcões.",
+    "qrCodeDownload": "Baixar QR Code",
     "integrationUrl": "URL para integração (Framer, etc.)",
     "integrationUrlDesc": "Use esta URL no Framer ou em outro site para enviar as respostas para este formulário. O body deve ser JSON: { \"values\": { \"Nome do campo\": \"valor\", ... } }. Os nomes das chaves devem coincidir com os labels dos campos.",
     "integrationUrlCopiedDesc": "URL de integração copiada para a área de transferência.",
@@ -430,15 +677,46 @@
     "codeCopiedDesc": "Código copiado para a área de transferência.",
     "fieldTypes": {
       "text": "Texto",
+      "textarea": "Texto Longo",
       "email": "Email",
+      "phone": "Telefone",
       "number": "Número",
       "date": "Data",
       "select": "Múltipla Escolha",
-      "checkbox": "Checkbox"
+      "checkbox": "Checkbox",
+      "rating": "Avaliação (Estrelas)"
     },
     "status": {
       "draft": "Rascunho",
       "published": "Publicado"
+    },
+    "conditional": {
+      "title": "Lógica condicional",
+      "proHint": "Disponível no plano Pro — exiba este campo só quando outra resposta corresponder.",
+      "noFields": "Adicione outro campo ao formulário primeiro — a lógica condicional exibe este campo conforme a resposta de outro.",
+      "showIf": "Mostrar este campo apenas se:",
+      "equals": "é igual a",
+      "notEquals": "é diferente de",
+      "value": "valor",
+      "badge": "Condicional",
+      "emptyValue": "Informe um valor para comparar — sem ele, esta regra é ignorada e o campo sempre aparece.",
+      "needsChoiceField": "Adicione antes um campo de múltipla escolha, sim/não ou avaliação — a lógica condicional depende de um campo com respostas conhecidas."
+    },
+    "schedule": {
+      "section": "Agendamento e limites",
+      "help": "Controle quando este formulário aceita respostas.",
+      "proHint": "Disponível no plano Pro — agende datas de abertura/encerramento e um limite de respostas.",
+      "opensAt": "Abre em",
+      "closesAt": "Encerra em",
+      "maxResponses": "Limite de respostas",
+      "maxResponsesPlaceholder": "ex: 100",
+      "closedMessage": "Mensagem de encerramento",
+      "closedMessagePlaceholder": "Este formulário não está mais aceitando respostas."
+    },
+    "partials": {
+      "label": "Capturar respostas parciais",
+      "help": "Salve leads que preenchem um contato mas não enviam.",
+      "proHint": "Disponível no plano Pro — capture leads que começam mas não concluem."
     }
   },
   "responses": {
@@ -446,6 +724,10 @@
     "subtitle": "Visualize todas as respostas do formulário",
     "backToForm": "Voltar ao Formulário",
     "exportCSV": "Exportar CSV",
+    "charts": {
+      "byDay": "Respostas por dia",
+      "noData": "Sem dados ainda"
+    },
     "noResponses": {
       "title": "Nenhuma resposta ainda",
       "subtitle": "As respostas aparecerão aqui quando alguém preencher o formulário.",
@@ -454,33 +736,66 @@
     },
     "table": {
       "submittedAt": "Enviado em",
-      "actions": "Ações"
+      "actions": "Ações",
+      "fieldsFilled": "campos preenchidos"
     },
     "responseDeleted": "Resposta excluída!",
     "deleteError": "Não foi possível excluir a resposta.",
     "deleteTitle": "Excluir resposta",
     "deleteConfirm": "Tem certeza que deseja excluir esta resposta? Esta ação não pode ser desfeita.",
-    "deleting": "Excluindo..."
+    "deleting": "Excluindo...",
+    "exportSuccess": "CSV exportado!",
+    "exportSuccessDesc": "{count} respostas exportadas com sucesso.",
+    "analytics": {
+      "views": "Visualizações",
+      "conversion": "Conversão",
+      "upgradeTitle": "Desbloqueie o analytics avançado",
+      "upgradeDesc": "Acompanhe visualizações, taxa de conversão e mais no plano Pro.",
+      "upgradeCta": "Assinar o Pro"
+    },
+    "refresh": "Atualizar",
+    "copyLink": "Copiar link",
+    "openForm": "Abrir formulário",
+    "partials": {
+      "title": "Respostas parciais",
+      "subtitle": "Leads que começaram mas ainda não enviaram.",
+      "anonymous": "Sem contato",
+      "fieldsFilled": "campos preenchidos"
+    }
   },
   "newForm": {
     "title": "Criar Novo Formulário",
-    "subtitle": "Dê um nome ao seu formulário para começar",
+    "subtitle": "Comece com um modelo pronto ou crie do zero",
     "nameLabel": "Nome do Formulário",
     "namePlaceholder": "Ex: Pesquisa de Satisfação",
     "descLabel": "Descrição (opcional)",
     "descPlaceholder": "Descreva o propósito do formulário...",
     "create": "Criar Formulário",
     "creating": "Criando...",
-    "createError": "Não foi possível criar o formulário."
+    "createError": "Não foi possível criar o formulário.",
+    "templatesTitle": "Comece com um modelo",
+    "templatesSubtitle": "Modelos prontos para os casos mais comuns — você ajusta tudo depois.",
+    "fieldsCount": "campos",
+    "blankTitle": "Começar do zero",
+    "blankDescription": "Crie um formulário em branco e adicione os campos que quiser.",
+    "orBlank": "ou crie um formulário em branco"
   },
   "publicForm": {
     "seoDescriptionFallback": "Preencha o formulário",
     "submit": "Enviar",
     "submitting": "Enviando...",
+    "estimatedTime": "Leva ~{minutes} min",
+    "estimatedTimeShort": "Leva menos de 1 min",
+    "fieldValid": "Tudo certo",
+    "next": "Continuar",
+    "back": "Voltar",
+    "stepOf": "{current} de {total}",
+    "enterHint": "pressione Enter ↵",
     "success": {
       "title": "Resposta enviada!",
       "subtitle": "Obrigado por preencher o formulário.",
-      "another": "Enviar outra resposta"
+      "another": "Enviar outra resposta",
+      "redirecting": "Redirecionando..."
     },
     "errors": {
       "required": "Este campo é obrigatório",
@@ -489,7 +804,11 @@
       "notFound": "Formulário não encontrado",
       "limitReached": "Este formulário atingiu o limite de respostas."
     },
-    "poweredBy": "Criado com"
+    "poweredBy": "Criado com",
+    "closed": {
+      "message": "Este formulário não está mais aceitando respostas.",
+      "scheduled": "Este formulário ainda não está aceitando respostas."
+    }
   },
   "legal": {
     "terms": {
@@ -514,5 +833,23 @@
     "serverError": "Erro interno do servidor",
     "formNotFound": "Formulário não encontrado",
     "limitReached": "Limite atingido"
+  },
+  "nav": {
+    "dashboard": "Painel",
+    "forms": "Formulários",
+    "account": "Conta",
+    "billing": "Plano",
+    "login": "Entrar",
+    "signup": "Criar conta",
+    "logout": "Sair",
+    "quickCreate": "Criar formulário",
+    "menu": "Menu",
+    "collapse": "Recolher",
+    "expand": "Expandir",
+    "toggleTheme": "Alternar tema",
+    "lightMode": "Claro",
+    "darkMode": "Escuro",
+    "sectionMain": "Geral",
+    "sectionGeneral": "Conta"
   }
 }

@@ -3,31 +3,58 @@
 @tailwind utilities;
 
 @layer base {
-  :root,
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 6.5%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 6.5%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 160 84% 39%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 38 92% 50%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 160 84% 39%;
+  :root {
+    /* Índigo Real — tema claro (fundo branco) sério com personalidade própria */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    /* accent neutro e sutil para hovers; o índigo/violeta dos gradientes vem das classes abaixo */
+    --accent: 220 14% 96%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 243 75% 59%;
     --radius: 0.75rem;
   }
 
+  .dark {
+    --background: 222 47% 7%;
+    --foreground: 210 20% 96%;
+    --card: 222 45% 9%;
+    --card-foreground: 210 20% 96%;
+    --popover: 222 45% 9%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 243 75% 66%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 30% 16%;
+    --secondary-foreground: 210 20% 96%;
+    --muted: 222 30% 16%;
+    --muted-foreground: 215 16% 65%;
+    --accent: 222 30% 18%;
+    --accent-foreground: 210 20% 96%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 25% 20%;
+    --input: 222 25% 20%;
+    --ring: 243 75% 66%;
+  }
+
   html {
+    color-scheme: light;
+  }
+
+  html.dark {
     color-scheme: dark;
   }
 }
@@ -110,17 +137,197 @@ html {
   animation-delay: 400ms;
 }
 
-/* Gradient backgrounds */
-.bg-gradient-radial {
-  background-color: hsl(var(--background));
-  background-image: radial-gradient(ellipse at top, hsl(var(--primary) / 0.15), transparent 50%),
-    radial-gradient(ellipse at bottom, hsl(var(--accent) / 0.1), transparent 50%);
+.animation-delay-500 {
+  animation-delay: 500ms;
 }
 
-/* Glass effect */
+.animation-delay-600 {
+  animation-delay: 600ms;
+}
+
+/* Pause animation until visible (respect entrance only) */
+.animate-fade-in-up {
+  opacity: 0;
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+/* Subtle pulsing glow for accents */
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2.5s ease-in-out infinite;
+}
+
+/* Floating motion for decorative elements */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Success check pop (used by interactive demo) */
+@keyframes pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-pop-in {
+  animation: pop-in 0.4s ease-out forwards;
+}
+
+/* Brand gradient stops (índigo -> âmbar), usados nos gradientes da marca */
+:root {
+  --brand-from: 243 75% 59%; /* indigo-600 */
+  --brand-to: 38 92% 50%; /* amber-500 */
+}
+
+/* Gradient backgrounds: leves tons da cor principal sobre o branco */
+.bg-gradient-radial {
+  background-color: hsl(var(--background));
+  background-image: radial-gradient(ellipse at top, hsl(var(--brand-from) / 0.08), transparent 55%),
+    radial-gradient(ellipse at bottom, hsl(var(--brand-to) / 0.06), transparent 55%);
+}
+
+/* Hero spotlight: glow radial índigo/violeta sutil atrás do hero */
+.bg-hero {
+  background-color: hsl(var(--background));
+  background-image: radial-gradient(60% 50% at 50% 0%, hsl(var(--brand-from) / 0.1), transparent 70%),
+    radial-gradient(40% 40% at 85% 30%, hsl(var(--brand-to) / 0.08), transparent 70%);
+}
+
+/* Subtle grid pattern overlay */
+.bg-grid {
+  background-image: linear-gradient(to right, hsl(var(--border) / 0.7) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / 0.7) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* Animated gradient text (índigo -> violeta) */
+.text-gradient {
+  background-image: linear-gradient(to right, hsl(var(--brand-from)), hsl(var(--brand-to)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Marca: caixa de ícone/realce sólida (índigo -> âmbar) */
+.bg-brand-gradient {
+  background-image: linear-gradient(to bottom right, hsl(var(--brand-from)), hsl(var(--brand-to)));
+}
+
+/* Marca: tinta suave para banners/cards (mescla índigo + âmbar sobre o card) */
+.bg-brand-soft {
+  background-image: radial-gradient(120% 120% at 0% 0%, hsl(var(--brand-from) / 0.14), transparent 55%),
+    radial-gradient(120% 120% at 100% 100%, hsl(var(--brand-to) / 0.12), transparent 55%);
+}
+
+/* Glass effect (claro): cartão translúcido com borda e sombra sutil */
 .glass {
-  background: hsl(var(--card) / 0.5);
+  background: hsl(0 0% 100% / 0.7);
   backdrop-filter: blur(12px);
-  border: 1px solid hsl(var(--border) / 0.5);
+  border: 1px solid hsl(var(--border) / 0.8);
+  box-shadow: 0 1px 3px hsl(222 47% 11% / 0.04), 0 1px 2px hsl(222 47% 11% / 0.03);
+}
+
+/* Success badge: pop + soft glow ring expanding outward */
+@keyframes success-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+.animate-success-ring {
+  animation: success-ring 1.4s ease-out forwards;
+}
+
+/* Confetti: pieces fall and drift, fading near the end */
+@keyframes confetti-fall {
+  0% {
+    transform: translate3d(0, -10%, 0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--confetti-x, 0), 110vh, 0) rotate(var(--confetti-rot, 540deg));
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  will-change: transform, opacity;
+  animation: confetti-fall var(--confetti-dur, 2.6s) var(--confetti-delay, 0s)
+    cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+
+/* Checkmark pop for inline field validation */
+@keyframes check-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-check-pop {
+  animation: check-pop 0.28s ease-out forwards;
+}
+
+/* Reduced motion: disable entrance/looping animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in-up,
+  .animate-pulse-soft,
+  .animate-float,
+  .animate-pop-in,
+  .animate-success-ring,
+  .animate-check-pop,
+  .confetti-piece {
+    animation: none;
+    opacity: 1;
+  }
+  .confetti-piece {
+    display: none;
+  }
 }
 
