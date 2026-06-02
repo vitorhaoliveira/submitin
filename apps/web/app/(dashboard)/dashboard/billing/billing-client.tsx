@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { Button } from "@submitin/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
-import { Loader2, Check, Crown, Sparkles, Phone } from "lucide-react";
+import { Loader2, Check, X, Crown, Sparkles, Phone } from "lucide-react";
 import { PLANS, type PlanType, isPaid as isPaidPlan } from "@/lib/stripe";
 import { SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_TEL } from "@/lib/utils";
 import { useTranslations } from "@/lib/i18n-context";
@@ -24,6 +24,35 @@ const PLAN_DESC: Record<PlanType, string> = {
   plus: "Para quem está crescendo",
   premium: "Tudo ilimitado, sem limites",
 };
+
+// Matriz de comparação detalhada (booleano = ✓/✗, string = valor exibido).
+type CellValue = boolean | string;
+const COMPARISON: { label: string; free: CellValue; plus: CellValue; premium: CellValue }[] = [
+  { label: "Formulários", free: "5", plus: "20", premium: "Ilimitados" },
+  { label: "Respostas por mês", free: "100", plus: "5.000", premium: "Ilimitadas" },
+  { label: "Notificações por email", free: true, plus: true, premium: true },
+  { label: "Webhooks", free: true, plus: true, premium: true },
+  { label: "Incorporar em site (embed)", free: true, plus: true, premium: true },
+  { label: "Lógica condicional (campos)", free: false, plus: true, premium: true },
+  { label: "Remover branding Submitin", free: false, plus: true, premium: true },
+  { label: "Tema personalizado", free: false, plus: true, premium: true },
+  { label: "Anti-spam (CAPTCHA)", free: false, plus: false, premium: true },
+  { label: "Respostas parciais (leads)", free: false, plus: false, premium: true },
+  { label: "Agendamento do formulário", free: false, plus: false, premium: true },
+  { label: "Analytics avançado", free: false, plus: false, premium: true },
+  { label: "Suporte", free: "Comunidade", plus: "Email", premium: "Prioritário" },
+];
+
+function ComparisonCell({ value }: { value: CellValue }) {
+  if (typeof value === "boolean") {
+    return value ? (
+      <Check className="h-4 w-4 text-emerald-600 mx-auto" />
+    ) : (
+      <X className="h-4 w-4 text-muted-foreground/40 mx-auto" />
+    );
+  }
+  return <span className="text-sm">{value}</span>;
+}
 
 function formatBRL(value: number): string {
   return value === 0 ? "Grátis" : `R$ ${value}`;
@@ -249,6 +278,67 @@ export function BillingClient() {
           );
         })}
       </div>
+
+      {/* Comparação detalhada dos planos */}
+      <Card className="mb-8 overflow-hidden">
+        <CardHeader>
+          <CardTitle className="text-xl">Compare os planos em detalhe</CardTitle>
+          <CardDescription>Veja exatamente o que está incluído em cada plano.</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-4 font-semibold">Recurso</th>
+                  {PLAN_ORDER.map((planKey) => (
+                    <th
+                      key={planKey}
+                      className={`p-4 text-center font-semibold ${
+                        currentPlan === planKey ? "bg-primary/5 text-primary" : ""
+                      }`}
+                    >
+                      {PLANS[planKey].name}
+                      {currentPlan === planKey && (
+                        <span className="block text-[10px] font-normal text-muted-foreground">
+                          plano atual
+                        </span>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {COMPARISON.map((row) => (
+                  <tr key={row.label} className="border-b last:border-b-0 hover:bg-muted/40">
+                    <td className="p-4 font-medium">{row.label}</td>
+                    <td className={`p-4 text-center ${currentPlan === "free" ? "bg-primary/5" : ""}`}>
+                      <ComparisonCell value={row.free} />
+                    </td>
+                    <td className={`p-4 text-center ${currentPlan === "plus" ? "bg-primary/5" : ""}`}>
+                      <ComparisonCell value={row.plus} />
+                    </td>
+                    <td className={`p-4 text-center ${currentPlan === "premium" ? "bg-primary/5" : ""}`}>
+                      <ComparisonCell value={row.premium} />
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <td className="p-4" />
+                  {PLAN_ORDER.map((planKey) => (
+                    <td key={planKey} className="p-4 text-center font-semibold">
+                      {formatBRL(PLANS[planKey].price)}
+                      {PLANS[planKey].price > 0 && (
+                        <span className="text-xs font-normal text-muted-foreground"> /mês</span>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Portal de cobrança para assinantes */}
       {isPaid && hasStripeCustomer && (
