@@ -30,7 +30,7 @@ export function ProductDemo() {
     <div className="max-w-4xl mx-auto">
       {/* Tabs */}
       <div className="flex justify-center mb-8">
-        <div className="inline-flex p-1 rounded-lg bg-muted/50 border border-border/60">
+        <div className="inline-flex p-1 rounded-lg bg-muted border">
           {tabs.map((item) => (
             <button
               key={item.id}
@@ -48,11 +48,11 @@ export function ProductDemo() {
       </div>
 
       {/* Window */}
-      <div className="rounded-xl border border-border/70 bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
-        <div className="flex items-center gap-2 px-4 h-10 border-b border-border/60 bg-muted/40">
-          <span className="w-3 h-3 rounded-full bg-red-400/80" />
-          <span className="w-3 h-3 rounded-full bg-yellow-400/80" />
-          <span className="w-3 h-3 rounded-full bg-green-400/80" />
+      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+        <div className="flex items-center gap-2 px-4 h-10 border-b border-border bg-muted/40">
+          <span className="w-3 h-3 rounded-full bg-zinc-300" />
+          <span className="w-3 h-3 rounded-full bg-zinc-300" />
+          <span className="w-3 h-3 rounded-full bg-zinc-300" />
         </div>
 
         <div className="p-6 md:p-8 min-h-[380px]">
@@ -81,8 +81,8 @@ function BuilderPanel({ t }: { t: T }) {
   return (
     <div className="space-y-3 animate-fade-in-up">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-md bg-primary/15 flex items-center justify-center">
-          <FileText className="w-4 h-4 text-primary" />
+        <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+          <FileText className="w-4 h-4 text-background" />
         </div>
         <span className="font-semibold">{t("demo.builder.formName")}</span>
       </div>
@@ -90,23 +90,23 @@ function BuilderPanel({ t }: { t: T }) {
       {fields.map((field, i) => (
         <div
           key={i}
-          className="flex items-center gap-3 p-3 rounded-lg border border-border/60 bg-background/50 hover:border-primary/40 transition-colors animate-fade-in-up"
+          className="flex items-center gap-3 p-3 rounded-lg border border-border bg-background/50 hover:border-foreground/20 transition-colors animate-fade-in-up"
           style={{ animationDelay: `${(i + 1) * 80}ms` }}
         >
           <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab shrink-0" />
-          <div className="w-8 h-8 rounded-md bg-primary/10 text-primary flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-md border bg-background text-foreground flex items-center justify-center shrink-0">
             {field.icon}
           </div>
           <span className="flex-1 text-sm font-medium">{field.label}</span>
           {field.required && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+            <span className="text-xs px-2 py-0.5 rounded-full border bg-background text-foreground">
               {t("demo.builder.required")}
             </span>
           )}
         </div>
       ))}
 
-      <button className="w-full flex items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:border-primary/50 hover:text-primary transition-colors">
+      <button className="w-full flex items-center justify-center gap-2 p-3 rounded-lg border border-dashed border-border text-sm text-muted-foreground hover:border-foreground/20 hover:text-foreground transition-colors">
         <Plus className="w-4 h-4" />
         {t("demo.builder.addField")}
       </button>
@@ -176,10 +176,10 @@ function ResponsesPanel({ t }: { t: T }) {
         </Button>
       </div>
 
-      <div className="rounded-lg border border-border/60 overflow-hidden">
+      <div className="rounded-lg border border-border overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-border/60 bg-muted/40 text-left">
+            <tr className="border-b border-border bg-muted/40 text-left">
               <th className="p-3 font-semibold">{t("demo.responses.colName")}</th>
               <th className="p-3 font-semibold">{t("demo.responses.colEmail")}</th>
               <th className="p-3 font-semibold">{t("demo.responses.colDate")}</th>
@@ -202,7 +202,7 @@ function ResponsesPanel({ t }: { t: T }) {
       </div>
 
       <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-3">
-        <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+        <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
         {t("features.email.title")}
       </p>
     </div>

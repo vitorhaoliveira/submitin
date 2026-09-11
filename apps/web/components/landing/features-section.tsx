@@ -16,16 +16,16 @@ export async function FeaturesSection() {
 
   return (
     <section id="features" className="container mx-auto px-4 py-24">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+      <div className="text-center mb-12">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight">
           {t("features.sectionTitle")}
         </h2>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
           {t("features.sectionSubtitle")}
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px overflow-hidden rounded-xl border bg-border max-w-5xl mx-auto">
         {features.map((f, i) => (
           <FeatureCard
             key={f.key}

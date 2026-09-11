@@ -31,7 +31,7 @@ export async function PricingSection() {
   return (
     <section id="pricing" className="bg-muted/30">
       <div className="container mx-auto px-4 py-24">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("pricing.title")}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">{t("pricing.subtitle")}</p>
         </div>

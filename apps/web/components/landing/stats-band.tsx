@@ -11,16 +11,14 @@ export async function StatsBand() {
   ];
 
   return (
-    <section className="border-y border-border bg-muted/20">
-      <div className="container mx-auto px-4 py-10">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-          {stats.map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-gradient">{s.value}</div>
-              <div className="text-sm text-muted-foreground mt-1">{s.label}</div>
-            </div>
-          ))}
-        </div>
+    <section className="container mx-auto px-4 py-12">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-px overflow-hidden rounded-xl border bg-border max-w-4xl mx-auto">
+        {stats.map((s) => (
+          <div key={s.label} className="bg-background p-6 text-center">
+            <div className="text-2xl md:text-3xl font-semibold tracking-tight">{s.value}</div>
+            <div className="text-sm text-muted-foreground mt-1">{s.label}</div>
+          </div>
+        ))}
       </div>
     </section>
   );

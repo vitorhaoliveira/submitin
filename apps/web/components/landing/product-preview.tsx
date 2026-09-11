@@ -36,17 +36,14 @@ export function ProductPreview() {
 
   return (
     <div className="relative">
-      {/* Glow decorativo */}
-      <div className="absolute -inset-4 bg-gradient-to-tr from-primary/20 to-amber-400/25 blur-3xl rounded-3xl -z-10 animate-pulse-soft" />
-
-      <div className="rounded-xl border border-border/70 bg-card/80 backdrop-blur-sm shadow-2xl overflow-hidden">
+      <div className="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
         {/* Browser chrome */}
-        <div className="flex items-center gap-2 px-4 h-10 border-b border-border/60 bg-muted/40">
-          <span className="w-3 h-3 rounded-full bg-red-400/80" />
-          <span className="w-3 h-3 rounded-full bg-yellow-400/80" />
-          <span className="w-3 h-3 rounded-full bg-green-400/80" />
-          <div className="ml-3 flex-1 flex items-center gap-2 h-6 px-3 rounded-md bg-background/70 border border-border/50 text-xs text-muted-foreground">
-            <Lock className="w-3 h-3 text-primary" />
+        <div className="flex items-center gap-2 px-4 h-10 border-b border-border bg-muted/40">
+          <span className="w-3 h-3 rounded-full bg-zinc-300" />
+          <span className="w-3 h-3 rounded-full bg-zinc-300" />
+          <span className="w-3 h-3 rounded-full bg-zinc-300" />
+          <div className="ml-3 flex-1 flex items-center gap-2 h-6 px-3 rounded-md bg-background border border-border text-xs text-muted-foreground">
+            <Lock className="w-3 h-3" />
             <span className="truncate">submitin.app/f/contato</span>
           </div>
         </div>
@@ -55,8 +52,8 @@ export function ProductPreview() {
         <div className="p-5 sm:p-6">
           {/* Branding header */}
           <div className="flex items-center justify-center gap-2 mb-5">
-            <div className="w-7 h-7 rounded-lg bg-primary/20 flex items-center justify-center">
-              <FileText className="w-4 h-4 text-primary" />
+            <div className="w-7 h-7 rounded-md bg-foreground flex items-center justify-center">
+              <FileText className="w-4 h-4 text-background" />
             </div>
             <span className="font-semibold text-sm">Submitin</span>
           </div>
@@ -64,8 +61,8 @@ export function ProductPreview() {
           {status === "done" ? (
             <Card className="text-center animate-pop-in">
               <CardContent className="pt-10 pb-8">
-                <div className="w-14 h-14 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-5">
-                  <CheckCircle className="w-7 h-7 text-emerald-500" />
+                <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-5">
+                  <CheckCircle className="w-7 h-7 text-emerald-600" />
                 </div>
                 <h2 className="text-xl font-bold mb-1">{t("demo.form.successTitle")}</h2>
                 <p className="text-sm text-muted-foreground mb-6">

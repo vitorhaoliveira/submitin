@@ -124,36 +124,6 @@ html {
   animation: fade-in-up 0.3s ease-out forwards;
 }
 
-/* Subtle pulsing glow for accents */
-@keyframes pulse-soft {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
-}
-
-.animate-pulse-soft {
-  animation: pulse-soft 2.5s ease-in-out infinite;
-}
-
-/* Floating motion for decorative elements */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
 /* Success check pop (used by interactive demo) */
 @keyframes pop-in {
   0% {
@@ -173,26 +143,6 @@ html {
   animation: pop-in 0.4s ease-out forwards;
 }
 
-/* Brand gradient stops (índigo -> âmbar), usados nos gradientes da marca */
-:root {
-  --brand-from: 243 75% 59%; /* indigo-600 */
-  --brand-to: 38 92% 50%; /* amber-500 */
-}
-
-/* Gradient backgrounds: leves tons da cor principal sobre o branco */
-.bg-gradient-radial {
-  background-color: hsl(var(--background));
-  background-image: radial-gradient(ellipse at top, hsl(var(--brand-from) / 0.08), transparent 55%),
-    radial-gradient(ellipse at bottom, hsl(var(--brand-to) / 0.06), transparent 55%);
-}
-
-/* Hero spotlight: glow radial índigo/violeta sutil atrás do hero */
-.bg-hero {
-  background-color: hsl(var(--background));
-  background-image: radial-gradient(60% 50% at 50% 0%, hsl(var(--brand-from) / 0.1), transparent 70%),
-    radial-gradient(40% 40% at 85% 30%, hsl(var(--brand-to) / 0.08), transparent 70%);
-}
-
 /* Subtle grid pattern overlay */
 .bg-grid {
   background-image: linear-gradient(to right, hsl(var(--border) / 0.7) 1px, transparent 1px),
@@ -200,33 +150,6 @@ html {
   background-size: 56px 56px;
   -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
   mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
-}
-
-/* Animated gradient text (índigo -> violeta) */
-.text-gradient {
-  background-image: linear-gradient(to right, hsl(var(--brand-from)), hsl(var(--brand-to)));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Marca: caixa de ícone/realce sólida (índigo -> âmbar) */
-.bg-brand-gradient {
-  background-image: linear-gradient(to bottom right, hsl(var(--brand-from)), hsl(var(--brand-to)));
-}
-
-/* Marca: tinta suave para banners/cards (mescla índigo + âmbar sobre o card) */
-.bg-brand-soft {
-  background-image: radial-gradient(120% 120% at 0% 0%, hsl(var(--brand-from) / 0.14), transparent 55%),
-    radial-gradient(120% 120% at 100% 100%, hsl(var(--brand-to) / 0.12), transparent 55%);
-}
-
-/* Glass effect (claro): cartão translúcido com borda e sombra sutil */
-.glass {
-  background: hsl(0 0% 100% / 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid hsl(var(--border) / 0.8);
-  box-shadow: 0 1px 3px hsl(222 47% 11% / 0.04), 0 1px 2px hsl(222 47% 11% / 0.03);
 }
 
 /* Success badge: pop + soft glow ring expanding outward */
@@ -290,8 +213,6 @@ html {
 /* Reduced motion: disable entrance/looping animations */
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-in-up,
-  .animate-pulse-soft,
-  .animate-float,
   .animate-pop-in,
   .animate-success-ring,
   .animate-check-pop,

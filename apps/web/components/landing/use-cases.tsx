@@ -21,7 +21,7 @@ export async function UseCases() {
 
   return (
     <section className="container mx-auto px-4 py-24">
-      <div className="text-center mb-16">
+      <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("useCases.title")}</h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">{t("useCases.subtitle")}</p>
       </div>
@@ -32,9 +32,9 @@ export async function UseCases() {
           return (
             <div
               key={i}
-              className="group flex items-start gap-4 rounded-xl border border-border bg-card/50 p-5 transition-all hover:border-primary/40 hover:-translate-y-0.5"
+              className="group flex items-start gap-4 rounded-xl border border-border bg-card/50 p-5 transition-all hover:border-foreground/20 hover:-translate-y-0.5"
             >
-              <div className="w-11 h-11 shrink-0 rounded-lg bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
+              <div className="w-11 h-11 shrink-0 rounded-lg border bg-background text-foreground flex items-center justify-center transition-transform">
                 <Icon className="w-5 h-5" />
               </div>
               <div>

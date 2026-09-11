@@ -15,21 +15,21 @@ export async function LandingFooter() {
   ];
 
   const linkClass =
-    "text-base text-muted-foreground hover:text-primary transition-colors";
+    "text-sm text-muted-foreground hover:text-foreground transition-colors";
 
   return (
-    <footer className="border-t border-border bg-muted/20">
+    <footer className="border-t">
       <div className="container mx-auto px-4 py-14">
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-12">
           {/* Marca */}
           <div className="space-y-4 max-w-sm">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center">
-                <FileText className="w-5 h-5 text-primary" />
+              <div className="w-9 h-9 rounded-md bg-foreground flex items-center justify-center">
+              <FileText className="w-5 h-5 text-background" />
               </div>
-              <span className="font-semibold text-xl">Submitin</span>
+              <span className="font-semibold text-lg tracking-tight">Submitin</span>
             </Link>
-            <p className="text-base text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {t("footer.tagline")}
             </p>
             <Button asChild>
@@ -43,7 +43,7 @@ export async function LandingFooter() {
           {/* Colunas de links agrupadas */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-12 gap-y-8">
             <div>
-              <h4 className="font-semibold text-base mb-3">{t("footer.productTitle")}</h4>
+              <h4 className="font-medium text-sm mb-3">{t("footer.productTitle")}</h4>
               <ul className="space-y-2">
                 {productLinks.map((link) => (
                   <li key={link.href}>
@@ -56,7 +56,7 @@ export async function LandingFooter() {
             </div>
 
             <div>
-              <h4 className="font-semibold text-base mb-3">{t("footer.legalTitle")}</h4>
+              <h4 className="font-medium text-sm mb-3">{t("footer.legalTitle")}</h4>
               <ul className="space-y-2">
                 <li>
                   <Link href="/termos" className={linkClass}>
@@ -72,13 +72,13 @@ export async function LandingFooter() {
             </div>
 
             <div>
-              <h4 className="font-semibold text-base mb-3">{t("footer.support")}</h4>
+              <h4 className="font-medium text-sm mb-3">{t("footer.support")}</h4>
               <a
                 href={SUPPORT_PHONE_TEL}
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-base text-muted-foreground hover:text-primary transition-colors"
+                className="inline-flex items-center gap-2 text-base text-muted-foreground hover:text-foreground transition-colors"
               >
-                <MessageCircle className="w-4 h-4 shrink-0 text-primary" />
+                <MessageCircle className="w-4 h-4 shrink-0 text-foreground" />
                 {SUPPORT_PHONE_DISPLAY}
               </a>
             </div>

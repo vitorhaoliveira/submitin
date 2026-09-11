@@ -19,13 +19,13 @@ export function LandingHeader() {
   ];
 
   return (
-    <header className="border-b border-border/50 backdrop-blur-md bg-background/70 sticky top-0 z-50">
+    <header className="border-b bg-background/90 backdrop-blur sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-            <FileText className="w-4 h-4 text-primary" />
+          <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+              <FileText className="w-4 h-4 text-background" />
           </div>
-          <span className="font-semibold text-lg">Submitin</span>
+          <span className="font-semibold tracking-tight">Submitin</span>
         </Link>
 
         {/* Desktop nav */}
@@ -42,7 +42,7 @@ export function LandingHeader() {
           <Button size="sm" asChild>
             <Link href="/dashboard/forms/new">
               {t("nav.getStarted")}
-              <ArrowRight className="w-4 h-4 ml-1" />
+              <ArrowRight />
             </Link>
           </Button>
         </nav>
@@ -63,7 +63,7 @@ export function LandingHeader() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-border/50 bg-background/95 backdrop-blur-md">
+        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
           <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
@@ -75,7 +75,7 @@ export function LandingHeader() {
                 {link.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-border/50">
+            <div className="flex flex-col gap-2 pt-3 mt-2 border-t border-border">
               <Button variant="outline" asChild>
                 <Link href="/login" onClick={() => setOpen(false)}>
                   {t("nav.login")}
@@ -84,7 +84,7 @@ export function LandingHeader() {
               <Button asChild>
                 <Link href="/dashboard/forms/new" onClick={() => setOpen(false)}>
                   {t("nav.getStarted")}
-                  <ArrowRight className="w-4 h-4 ml-1" />
+                  <ArrowRight />
                 </Link>
               </Button>
             </div>

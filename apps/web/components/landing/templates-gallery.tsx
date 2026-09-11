@@ -29,12 +29,12 @@ export async function TemplatesGallery() {
   return (
     <section id="templates" className="container mx-auto px-4 py-24">
       <div className="text-center mb-14">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-600 text-sm mb-4">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-muted-foreground text-sm mb-4">
           <FileText className="w-4 h-4" />
           {t("templates.badge")}
         </div>
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">{t("templates.title")}</h2>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+        <h2 className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight">{t("templates.title")}</h2>
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
           {t("templates.subtitle")}
         </p>
       </div>
@@ -48,10 +48,10 @@ export async function TemplatesGallery() {
             <Link
               key={tpl.id}
               href={`/dashboard/forms/new?template=${tpl.id}`}
-              className="group flex flex-col rounded-xl border border-border bg-card p-5 shadow-sm transition-all hover:border-primary/50 hover:shadow-md hover:-translate-y-1"
+              className="group flex flex-col rounded-xl border bg-card p-5 transition-colors hover:bg-muted/40"
             >
               <div className="flex items-center justify-between mb-3">
-                <div className="w-11 h-11 rounded-lg bg-primary/10 text-primary flex items-center justify-center transition-transform group-hover:scale-110">
+                <div className="w-10 h-10 rounded-md border bg-background text-foreground flex items-center justify-center">
                   <Icon className="w-5 h-5" />
                 </div>
                 <span className="text-xs text-muted-foreground">
@@ -59,7 +59,7 @@ export async function TemplatesGallery() {
                 </span>
               </div>
 
-              <h3 className="font-semibold mb-1 group-hover:text-primary transition-colors">
+              <h3 className="font-semibold mb-1 group-hover:text-foreground transition-colors">
                 {tpl.name}
               </h3>
               <p className="text-sm text-muted-foreground mb-4 flex-1">{tpl.description}</p>
@@ -80,7 +80,7 @@ export async function TemplatesGallery() {
                 )}
               </div>
 
-              <span className="inline-flex items-center gap-1 text-sm font-medium text-primary">
+              <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
                 {t("templates.useTemplate")}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </span>
@@ -91,10 +91,10 @@ export async function TemplatesGallery() {
         {/* Card "começar do zero" */}
         <Link
           href="/dashboard/forms/new"
-          className="group flex flex-col items-center justify-center text-center rounded-xl border border-dashed border-border bg-muted/30 p-5 transition-all hover:border-primary/50 hover:bg-muted/50"
+          className="group flex flex-col items-center justify-center text-center rounded-xl border border-dashed border-border bg-muted/30 p-5 transition-all hover:border-foreground/20 hover:bg-muted/50"
         >
-          <div className="w-11 h-11 rounded-lg bg-background border border-border flex items-center justify-center mb-3 transition-transform group-hover:scale-110">
-            <Plus className="w-5 h-5 text-primary" />
+          <div className="w-11 h-11 rounded-lg bg-background border border-border flex items-center justify-center mb-3 transition-transform">
+            <Plus className="w-5 h-5 text-foreground" />
           </div>
           <h3 className="font-semibold mb-1">{t("templates.blankTitle")}</h3>
           <p className="text-sm text-muted-foreground">{t("templates.blankDescription")}</p>
@@ -105,7 +105,7 @@ export async function TemplatesGallery() {
         <Button size="lg" asChild>
           <Link href="/dashboard/forms/new">
             {t("templates.cta")}
-            <ArrowRight className="w-5 h-5 ml-1" />
+            <ArrowRight />
           </Link>
         </Button>
       </div>
