@@ -3,10 +3,13 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@submitin/database";
 import { createFieldSchema } from "@/lib/validations";
 import { MAX_FIELDS_PER_FORM } from "@/lib/security";
+import { blockDocumentForm } from "@/lib/documents/service";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const blocked = await blockDocumentForm(id);
+    if (blocked) return blocked;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });

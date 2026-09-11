@@ -29,6 +29,7 @@ export default async function ResponsesPage({
         fields: {
           orderBy: { order: "asc" },
         },
+        document: { select: { id: true } },
       },
     }),
     prisma.user.findUnique({
@@ -50,6 +51,10 @@ export default async function ResponsesPage({
 
   if (!form) {
     notFound();
+  }
+  // Respostas de documento ficam na tela de Envios.
+  if (form.document) {
+    redirect(`/dashboard/documents/${form.document.id}/envios`);
   }
 
   // Separa respostas completas (tabela principal) de parciais (leads PRO).

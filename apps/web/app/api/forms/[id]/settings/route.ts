@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma, Prisma } from "@submitin/database";
 import { formSettingsSchema } from "@/lib/validations";
 import { isPaid, isPremium } from "@/lib/stripe";
+import { blockDocumentForm } from "@/lib/documents/service";
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -36,6 +37,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const blocked = await blockDocumentForm(id);
+    if (blocked) return blocked;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });

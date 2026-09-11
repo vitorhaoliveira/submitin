@@ -39,6 +39,7 @@ import { fmt, useFieldTypeLabel } from "./shared";
 import { PageHeader } from "@/components/page-header";
 import { VariablesEditor, type DocField } from "./variables-editor";
 import { InvitesCard } from "./invites-card";
+import { ShareExtras } from "./share-extras";
 import { FormSettingsCard, type DocumentFormSettings } from "./form-settings-card";
 
 type Props = {
@@ -219,12 +220,6 @@ export function DocumentDetailClient({
           }
           actions={
             <>
-              <Link href={`/dashboard/forms/${form.id}`}>
-                <Button variant="outline">
-                  <Pencil />
-                  {t("detail.editFields")}
-                </Button>
-              </Link>
               <Link href={`/dashboard/documents/${document.id}/envios`}>
                 <Button>
                   <Inbox />
@@ -286,12 +281,7 @@ export function DocumentDetailClient({
               </Button>
             </div>
           </div>
-          <p className="text-xs text-muted-foreground">
-            {t("detail.link.embedHint")}{" "}
-            <Link href={`/dashboard/forms/${form.id}`} className="text-primary hover:underline">
-              {t("detail.editFields")}
-            </Link>
-          </p>
+          <ShareExtras url={publicUrl} slug={form.slug} />
         </CardContent>
       </Card>
 
@@ -310,11 +300,6 @@ export function DocumentDetailClient({
             <CardTitle>{t("detail.fields.title")}</CardTitle>
             <CardDescription>{t("detail.fields.desc")}</CardDescription>
           </div>
-          <Link href={`/dashboard/forms/${form.id}`}>
-            <Button variant="outline" size="sm">
-              {t("detail.editFields")}
-            </Button>
-          </Link>
         </CardHeader>
         <CardContent className="space-y-3">
           {keysWithoutField.length > 0 && (

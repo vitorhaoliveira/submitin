@@ -3,11 +3,14 @@ import { auth } from "@/lib/auth";
 import { prisma, Prisma } from "@submitin/database";
 import { generateSlug } from "@/lib/utils";
 import { maxFormsFor } from "@/lib/stripe";
+import { blockDocumentForm } from "@/lib/documents/service";
 
 // POST /api/forms/[id]/duplicate — cria uma cópia do formulário (campos + configurações)
 export async function POST(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
+    const blocked = await blockDocumentForm(id);
+    if (blocked) return blocked;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });

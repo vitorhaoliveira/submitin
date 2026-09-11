@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma, Prisma } from "@submitin/database";
 import { z } from "zod";
 import { createFieldSchema, fieldTypes } from "@/lib/validations";
+import { blockDocumentForm } from "@/lib/documents/service";
 
 export async function PUT(
   request: NextRequest,
@@ -10,6 +11,8 @@ export async function PUT(
 ) {
   try {
     const { id, fieldId } = await params;
+    const blocked = await blockDocumentForm(id);
+    if (blocked) return blocked;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
@@ -114,6 +117,8 @@ export async function DELETE(
 ) {
   try {
     const { id, fieldId } = await params;
+    const blocked = await blockDocumentForm(id);
+    if (blocked) return blocked;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });

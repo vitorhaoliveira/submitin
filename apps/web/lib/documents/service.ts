@@ -239,6 +239,22 @@ export function monthlyDocumentUsage(userId: string): Promise<number> {
   });
 }
 
+/**
+ * Formulários de documento são editados só pela tela do documento (variáveis,
+ * entrega, aparência). Rotas do editor de formulário normal recusam esses forms.
+ */
+export async function blockDocumentForm(formId: string): Promise<Response | null> {
+  const document = await prisma.document.findUnique({ where: { formId }, select: { id: true } });
+  if (!document) return null;
+  return Response.json(
+    {
+      error: "Este formulário pertence a um documento. Edite pela tela do documento.",
+      documentId: document.id,
+    },
+    { status: 409 }
+  );
+}
+
 /** Converte erros das rotas de documentos em JSON ({ error, details }). */
 export function documentErrorResponse(err: unknown, fallback: string): Response {
   if (err instanceof HttpError) {
