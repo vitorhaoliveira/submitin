@@ -6,3 +6,4 @@ export * from "./pdf";
 export * from "./fonts";
 export * from "./branding";
 export * from "./input";
+export * from "./acceptance";

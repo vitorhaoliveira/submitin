@@ -26,6 +26,7 @@ import type { CustomTheme } from "@/lib/theme-utils";
 
 export type DocumentFormSettings = {
   description: string;
+  requireAcceptance: boolean;
   conversational: boolean;
   thankYouTitle: string;
   thankYouMessage: string;
@@ -126,6 +127,7 @@ export function FormSettingsCard({
     try {
       const body: Record<string, unknown> = {
         description: s.description,
+        requireAcceptance: s.requireAcceptance,
         conversational: s.conversational,
         thankYouTitle: s.thankYouTitle,
         thankYouMessage: s.thankYouMessage,
@@ -199,6 +201,20 @@ export function FormSettingsCard({
             id="doc-form-conversational"
             checked={s.conversational}
             onCheckedChange={(v: boolean) => set("conversational", v)}
+          />
+        </div>
+
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <Label htmlFor="doc-form-acceptance" className="text-sm font-semibold">
+              {t("acceptance")}
+            </Label>
+            <p className="text-sm text-muted-foreground">{t("acceptanceDesc")}</p>
+          </div>
+          <Switch
+            id="doc-form-acceptance"
+            checked={s.requireAcceptance}
+            onCheckedChange={(v: boolean) => set("requireAcceptance", v)}
           />
         </div>
 

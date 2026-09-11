@@ -1065,7 +1065,10 @@
       "title": "Documento enviado!",
       "subtitle": "Pronto! A empresa já recebeu seu documento.",
       "copy": "Você vai receber uma cópia em PDF no seu e-mail em instantes."
-    }
+    },
+    "acceptanceRequired": "Marque a declaração para confirmar o documento.",
+    "previewRetry": "Tentar de novo",
+    "previewUnavailableRetry": "Não conseguimos gerar a prévia do documento agora. Tente de novo em instantes."
   },
   "legal": {
     "terms": {
@@ -1298,7 +1301,9 @@
         "save": "Salvar formulário",
         "saved": "Formulário salvo",
         "error": "Não foi possível salvar.",
-        "seePlans": "Ver planos"
+        "seePlans": "Ver planos",
+        "acceptance": "Exigir aceite eletrônico",
+        "acceptanceDesc": "Na revisão, o cliente marca que leu e aceita o documento. O PDF ganha uma página com data, hora, IP e navegador desse aceite, e um código para verificar o arquivo."
       },
       "share": {
         "toggle": "Incorporar no site e QR code",
@@ -1344,7 +1349,9 @@
       "next": "Próxima",
       "page": "Página {page} de {pages}",
       "autoRefresh": "Atualizando…",
-      "viaLink": "Link de"
+      "viaLink": "Link de",
+      "accepted": "Aceite eletrônico",
+      "verify": "verificar"
     },
     "table": {
       "name": "Documento",

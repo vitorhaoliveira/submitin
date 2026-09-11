@@ -207,6 +207,11 @@ export function publicPdfUrl(generationId: string): string {
   return `${appBaseUrl()}/api/public/documents/${generationId}/pdf?token=${tokenFor("document-pdf", generationId)}`;
 }
 
+/** Página pública de verificação do documento (código = accessToken da geração). */
+export function verifyDocumentUrl(accessToken: string): string {
+  return `${appBaseUrl()}/v/${accessToken}`;
+}
+
 export function verifyPdfToken(generationId: string, token: string | null): boolean {
   return verifyToken("document-pdf", generationId, token);
 }
