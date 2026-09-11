@@ -14,6 +14,7 @@ import { useTranslations } from "@/lib/i18n-context";
 import { toast } from "@/hooks/use-toast";
 import { fmt, useFieldTypeLabel } from "./shared";
 import { clearGuestDocument, loadGuestDocument, saveGuestDocument } from "@/lib/guest-document";
+import { ModelPicker } from "@/components/templates/model-picker";
 
 type Preview = {
   fileName: string;
@@ -71,7 +72,8 @@ export function NewDocumentClient({
       const modelFile = new File([blob], `${model.slug}.docx`, {
         type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
       });
-      await analyze(modelFile);
+      setModelSlug(model.slug);
+      await analyze(modelFile, model.slug);
       if (!cancelled) setName(model.title);
     })();
     return () => {
@@ -102,7 +104,7 @@ export function NewDocumentClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claim]);
 
-  async function analyze(selected: File) {
+  async function analyze(selected: File, modelo: string | null = modelSlug) {
     setFile(selected);
     setPreview(null);
     setError(null);
@@ -110,7 +112,7 @@ export function NewDocumentClient({
     try {
       const body = new FormData();
       body.append("file", selected);
-      if (modelSlug) body.append("modelo", modelSlug);
+      if (modelo) body.append("modelo", modelo);
       const res = await fetch("/api/documents/preview", { method: "POST", body });
       const data = await res.json();
       if (!res.ok) {
@@ -266,6 +268,10 @@ export function NewDocumentClient({
                 {t("guest.sample")}
               </a>
             </p>
+          )}
+
+          {!model && !analyzing && (
+            <ModelPicker title={t("models.title")} subtitle={t("models.subtitle")} />
           )}
 
           <Card>

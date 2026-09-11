@@ -1375,6 +1375,10 @@
       "readyText": "Crie sua conta grátis para salvar, publicar o link e receber o primeiro PDF. Leva menos de um minuto e não pede cartão.",
       "signup": "Criar conta grátis e salvar",
       "haveAccount": "Já tenho conta"
+    },
+    "models": {
+      "title": "Ou comece por um modelo pronto",
+      "subtitle": "Contratos e termos com as variáveis já marcadas. Você ajusta o texto e os dados da empresa depois."
     }
   }
 }
