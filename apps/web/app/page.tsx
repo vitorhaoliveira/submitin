@@ -2,12 +2,10 @@ import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 import { buildMetadata, getBaseUrl } from "@/lib/seo";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { HeroSection } from "@/components/landing/hero-section";
-import { TrustBar } from "@/components/landing/trust-bar";
-import { StatsBand } from "@/components/landing/stats-band";
-import { HowItWorks } from "@/components/landing/how-it-works";
-import { TemplatesGallery } from "@/components/landing/templates-gallery";
+import { AudienceStrip } from "@/components/landing/audience-strip";
+import { DocumentStory } from "@/components/landing/document-story";
+import { DocumentTypes } from "@/components/landing/document-types";
 import { FeaturesSection } from "@/components/landing/features-section";
-import { DemoSection } from "@/components/landing/demo-section";
 import { FaqSection } from "@/components/landing/faq-section";
 import { CtaSection } from "@/components/landing/cta-section";
 import { LandingFooter } from "@/components/landing/landing-footer";
@@ -70,11 +68,9 @@ export default async function HomePage() {
 
       <main className="flex-1">
         <HeroSection />
-        <TrustBar />
-        <StatsBand />
-        <DemoSection />
-        <TemplatesGallery />
-        <HowItWorks />
+        <AudienceStrip />
+        <DocumentStory />
+        <DocumentTypes />
         <FeaturesSection />
         <FaqSection />
         <CtaSection />

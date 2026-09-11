@@ -8,14 +8,13 @@ export async function LandingFooter() {
   const t = await getTranslations("landing");
 
   const productLinks = [
-    { href: "#demo", label: t("nav.howItWorks") },
-    { href: "#templates", label: t("nav.templates") },
-    { href: "#features", label: t("features.sectionTitle") },
-    { href: "#faq", label: t("faq.title") },
+    { href: "#como-funciona", label: t("nav.howItWorks") },
+    { href: "#documentos", label: t("nav.documents") },
+    { href: "#recursos", label: t("nav.features") },
+    { href: "#faq", label: t("nav.faq") },
   ];
 
-  const linkClass =
-    "text-sm text-muted-foreground hover:text-foreground transition-colors";
+  const linkClass = "text-sm text-muted-foreground hover:text-foreground transition-colors";
 
   return (
     <footer className="border-t">
@@ -25,15 +24,15 @@ export async function LandingFooter() {
           <div className="space-y-4 max-w-sm">
             <Link href="/" className="flex items-center gap-2">
               <div className="w-9 h-9 rounded-md bg-brand flex items-center justify-center">
-              <FileText className="w-5 h-5 text-background" />
+                <FileText className="w-5 h-5 text-background" />
               </div>
-              <span className="font-semibold text-lg tracking-tight">Submitin</span>
+              <span className="font-display text-xl font-bold tracking-tight">
+                submitin<span className="text-pop">*</span>
+              </span>
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {t("footer.tagline")}
-            </p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{t("footer.tagline")}</p>
             <Button asChild>
-              <Link href="/dashboard/forms/new">
+              <Link href="/register">
                 {t("footer.ctaButton")}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Link>

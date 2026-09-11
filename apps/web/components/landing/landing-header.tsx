@@ -12,10 +12,10 @@ export function LandingHeader() {
   const [open, setOpen] = useState(false);
 
   const navLinks = [
-    { href: "#demo", label: t("nav.howItWorks") },
-    { href: "#templates", label: t("nav.templates") },
-    { href: "#features", label: t("features.sectionTitle") },
-    { href: "#faq", label: t("faq.title") },
+    { href: "#como-funciona", label: t("nav.howItWorks") },
+    { href: "#documentos", label: t("nav.documents") },
+    { href: "#recursos", label: t("nav.features") },
+    { href: "#faq", label: t("nav.faq") },
   ];
 
   return (
@@ -23,9 +23,11 @@ export function LandingHeader() {
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-md bg-brand flex items-center justify-center">
-              <FileText className="w-4 h-4 text-background" />
+            <FileText className="w-4 h-4 text-background" />
           </div>
-          <span className="font-semibold tracking-tight">Submitin</span>
+          <span className="font-display text-xl font-bold tracking-tight">
+            submitin<span className="text-pop">*</span>
+          </span>
         </Link>
 
         {/* Desktop nav */}
@@ -40,7 +42,7 @@ export function LandingHeader() {
             <Link href="/login">{t("nav.login")}</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href="/dashboard/forms/new">
+            <Link href="/register">
               {t("nav.getStarted")}
               <ArrowRight />
             </Link>
@@ -50,12 +52,7 @@ export function LandingHeader() {
         {/* Mobile controls */}
         <div className="flex md:hidden items-center gap-1">
           <LanguageSwitcher />
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Menu"
-          >
+          <Button variant="ghost" size="icon" onClick={() => setOpen((v) => !v)} aria-label="Menu">
             {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
@@ -82,7 +79,7 @@ export function LandingHeader() {
                 </Link>
               </Button>
               <Button asChild>
-                <Link href="/dashboard/forms/new" onClick={() => setOpen(false)}>
+                <Link href="/register" onClick={() => setOpen(false)}>
                   {t("nav.getStarted")}
                   <ArrowRight />
                 </Link>

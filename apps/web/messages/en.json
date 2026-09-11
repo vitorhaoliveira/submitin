@@ -27,18 +27,18 @@
   },
   "landing": {
     "seo": {
-      "title": "Submitin – Create amazing forms in minutes",
+      "title": "Submitin – Your Word file becomes a form, the PDF arrives ready",
       "keywords": "online forms, form builder, survey, create form, collect responses, Submitin"
     },
     "hero": {
-      "badge": "Free and without writing a single line of code",
-      "title": "Create",
-      "titleHighlight": "amazing",
-      "titleEnd": "forms and collect responses in minutes",
-      "subtitle": "Build your form, share a link and watch responses arrive in real time. Simple, beautiful and free to start.",
-      "cta": "Create my form for free",
-      "ctaSecondary": "See it in action",
-      "microProof": "Free to start · No credit card · No code"
+      "badge": "New: automatic documents",
+      "title": "Your Word file becomes a form.",
+      "titleHighlight": "ready.",
+      "titleEnd": "The PDF arrives",
+      "subtitle": "Upload the contract, record or consent form you already use. Every response becomes a filled PDF, with your formatting, straight to your inbox.",
+      "cta": "Start free",
+      "ctaSecondary": "See how it works",
+      "microProof": "Free to start · No card · Works with the Word file you already have"
     },
     "trust": {
       "guarantees": {
@@ -171,31 +171,31 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "subtitle": "Everything you need to know before getting started.",
+      "subtitle": "What schools usually ask before getting started.",
       "items": {
         "0": {
-          "q": "Do I need to know how to code?",
-          "a": "No. You build forms visually, adding fields with a few clicks — no code required."
+          "q": "Do I need to change my document?",
+          "a": "No. You just type the fields between double curly braces, like {{student_name}}, in the Word file you already use."
         },
         "1": {
-          "q": "Is it really free?",
-          "a": "Yes. You create forms, publish them and collect responses for free — no credit card to get started."
+          "q": "Will the PDF look like my Word file?",
+          "a": "Yes. Your own document is the base, so header, footer, tables and formatting are preserved. If a font in the file isn't available, we warn you on upload."
         },
         "2": {
-          "q": "How long does it take to build a form?",
-          "a": "Less than 2 minutes: pick a ready-made template, tweak the fields and share the link."
+          "q": "Does my client need to install an app?",
+          "a": "No. They open the link on their phone or computer, fill it in and submit."
         },
         "3": {
-          "q": "Is my data locked into the platform?",
-          "a": "No. You can export all your responses to CSV at any time."
+          "q": "Is it free?",
+          "a": "You start free, no credit card needed, and can generate your first documents right away."
         },
         "4": {
-          "q": "Can I integrate with other systems?",
-          "a": "Yes. Use webhooks to automatically send every response to the URL you configure."
+          "q": "What if I just need a form?",
+          "a": "That works too. Submitin is still a complete form builder, with templates, real-time responses and CSV export."
         },
         "5": {
-          "q": "How does spam protection work?",
-          "a": "There's per-IP rate limiting on every submission and, on the Pro plan, you can enable CAPTCHA (Cloudflare Turnstile)."
+          "q": "Can I integrate with other systems?",
+          "a": "Yes. Every generated document triggers a webhook with the data and the PDF link."
         }
       }
     },
@@ -240,17 +240,20 @@
       }
     },
     "cta": {
-      "title": "Start for free now",
-      "subtitle": "Build your first form in under 2 minutes. No card, no code.",
-      "button": "Create my form for free",
-      "secondary": "Browse templates"
+      "title": "Send the link. Get the document.",
+      "subtitle": "Create your free account and generate your first PDF today.",
+      "button": "Start free",
+      "secondary": "See how it works"
     },
     "nav": {
       "howItWorks": "How it works",
       "templates": "Templates",
       "pricing": "Pricing",
-      "login": "Sign In",
-      "getStarted": "Get Started"
+      "login": "Log in",
+      "getStarted": "Start free",
+      "documents": "Documents",
+      "features": "Features",
+      "faq": "FAQ"
     },
     "pricing": {
       "title": "Simple and Transparent Pricing",
@@ -336,7 +339,7 @@
     },
     "footer": {
       "copyright": "Made with ❤️ by Vitor Hugo",
-      "tagline": "Amazing forms and responses in minutes. Free to start.",
+      "tagline": "Your client fills a link, you get the finished document.",
       "productTitle": "Product",
       "legalTitle": "Legal",
       "ctaButton": "Start free",
@@ -344,6 +347,128 @@
       "privacy": "Privacy",
       "support": "Support",
       "supportContact": "Questions? Contact us:"
+    },
+    "mock": {
+      "formTitle": "Enrollment 2027",
+      "student": "Student name",
+      "studentValue": "Pedro Almeida",
+      "cpf": "Guardian CPF",
+      "cpfValue": "529.982.247-25",
+      "fee": "Monthly fee",
+      "feeValue": "389.90",
+      "send": "Submit",
+      "docTitle": "Enrollment contract",
+      "docLine1": "Student",
+      "docLine2": "Guardian CPF",
+      "docLine3": "Monthly fee",
+      "feeWords": "three hundred eighty-nine reais and ninety cents",
+      "ready": "PDF ready",
+      "emailFrom": "New document",
+      "emailSubject": "Enrollment contract — Pedro Almeida",
+      "attachment": "contract-pedro-almeida.pdf"
+    },
+    "audience": {
+      "title": "Made for anyone still filling documents by hand",
+      "items": {
+        "0": "Language schools",
+        "1": "Music schools",
+        "2": "Dance studios",
+        "3": "Driving schools",
+        "4": "Sports academies",
+        "5": "Short courses"
+      }
+    },
+    "story": {
+      "eyebrow": "How it works",
+      "title": "From Word to PDF, no copy and paste",
+      "subtitle": "Four steps. You do the first three only once.",
+      "cta": "Create my first document",
+      "steps": {
+        "0": {
+          "title": "Mark the fields in Word",
+          "description": "Type {{student_name}}, {{guardian_cpf}}… wherever each value goes. That's your template."
+        },
+        "1": {
+          "title": "The form builds itself",
+          "description": "Upload the .docx and Submitin creates one question per field, with CPF, date and money masks."
+        },
+        "2": {
+          "title": "Your client fills it on mobile",
+          "description": "Send the link on WhatsApp or embed it on your site. Invalid CPFs don't get through."
+        },
+        "3": {
+          "title": "The PDF arrives ready",
+          "description": "Seconds later, the filled document lands in your inbox, just like your Word file."
+        }
+      },
+      "wordFile": "enrollment-contract.docx",
+      "wordText": "I, {{guardian_name}}, CPF {{guardian_cpf}}, enroll {{student_name}} in {{course}}, with a monthly fee of {{monthly_fee}}.",
+      "detected": "4 fields detected",
+      "typeText": "Text",
+      "typeCpf": "CPF",
+      "typeCurrency": "Amount (R$)",
+      "fieldGuardian": "Guardian name",
+      "fieldCourse": "Course",
+      "inbox": "Inbox",
+      "now": "now"
+    },
+    "docTypes": {
+      "title": "The documents that take the most work",
+      "subtitle": "If you print, fill by hand and scan today, you can automate it.",
+      "items": {
+        "0": {
+          "title": "Enrollment contract",
+          "description": "Student, guardian, fees and due dates."
+        },
+        "1": {
+          "title": "Student record",
+          "description": "Contacts, health info, pickup authorizations."
+        },
+        "2": {
+          "title": "Image use consent",
+          "description": "Signed before the first Instagram photo."
+        },
+        "3": {
+          "title": "Enrollment certificate",
+          "description": "Requested by parents, ready in seconds."
+        },
+        "4": {
+          "title": "Service contract",
+          "description": "For private lessons, packages and events."
+        },
+        "5": {
+          "title": "Liability waiver",
+          "description": "Trips, outings and outdoor activities."
+        }
+      }
+    },
+    "bento": {
+      "title": "Built for the front desk's daily routine",
+      "subtitle": "Everything a serious document needs, without an IT project.",
+      "fidelity": {
+        "title": "True to your Word file",
+        "description": "Header, footer, tables, bold and logo: the PDF looks exactly like the document you already use."
+      },
+      "cpf": {
+        "title": "Real CPF and CNPJ checks",
+        "description": "We validate the check digits. No more contracts with a wrong CPF."
+      },
+      "words": {
+        "title": "Amounts in words",
+        "description": "R$ 389.90 becomes “three hundred eighty-nine reais and ninety cents” automatically."
+      },
+      "email": {
+        "title": "PDF in your inbox",
+        "description": "Every submission arrives with the PDF attached, and it's all kept in Submissions."
+      },
+      "webhook": {
+        "title": "Talks to your tools",
+        "description": "Webhook with the data and the PDF link for sheets, CRMs and automations."
+      },
+      "forms": {
+        "title": "Forms too",
+        "description": "Just need a form? Start from scratch or from a ready-made template."
+      }
     }
   },
   "guest": {

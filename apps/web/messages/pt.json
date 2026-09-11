@@ -27,18 +27,18 @@
   },
   "landing": {
     "seo": {
-      "title": "Submitin – Crie formulários incríveis em minutos",
+      "title": "Submitin – Seu Word vira formulário, o PDF chega pronto",
       "keywords": "formulários online, criar formulário, pesquisa, survey, form builder, coleta de respostas, Submitin"
     },
     "hero": {
-      "badge": "Grátis e sem escrever uma linha de código",
-      "title": "Crie formulários",
-      "titleHighlight": "incríveis",
-      "titleEnd": "e colete respostas em minutos",
-      "subtitle": "Monte seu formulário, compartilhe um link e veja as respostas chegarem em tempo real. Simples, bonito e grátis para começar.",
-      "cta": "Criar meu formulário grátis",
-      "ctaSecondary": "Ver em ação",
-      "microProof": "Grátis para começar · Sem cartão de crédito · Sem código"
+      "badge": "Novo: documentos automáticos",
+      "title": "Seu Word vira formulário.",
+      "titleHighlight": "pronto.",
+      "titleEnd": "O PDF chega",
+      "subtitle": "Suba o contrato, a ficha ou a autorização que você já usa. Cada resposta vira um PDF preenchido, com a sua formatação, direto no seu e-mail.",
+      "cta": "Começar grátis",
+      "ctaSecondary": "Ver como funciona",
+      "microProof": "Grátis para começar · Sem cartão · Funciona com o Word que você já tem"
     },
     "trust": {
       "guarantees": {
@@ -171,31 +171,31 @@
     },
     "faq": {
       "title": "Perguntas frequentes",
-      "subtitle": "Tudo o que você precisa saber antes de começar.",
+      "subtitle": "O que as escolas costumam perguntar antes de começar.",
       "items": {
         "0": {
-          "q": "Preciso saber programar?",
-          "a": "Não. Você monta formulários visualmente, adicionando campos com poucos cliques — sem escrever código."
+          "q": "Preciso mudar o meu documento?",
+          "a": "Não. Você só escreve os campos entre chaves duplas, como {{nome_aluno}}, no Word que já usa."
         },
         "1": {
-          "q": "É realmente grátis?",
-          "a": "Sim. Você cria formulários, publica e coleta respostas gratuitamente — sem cartão de crédito para começar."
+          "q": "O PDF fica igual ao meu Word?",
+          "a": "Sim. O próprio documento é a base, então cabeçalho, rodapé, tabelas e formatação são preservados. Se alguma fonte do arquivo não estiver disponível, avisamos no upload."
         },
         "2": {
-          "q": "Quanto tempo leva para criar um formulário?",
-          "a": "Menos de 2 minutos: escolha um modelo pronto, ajuste os campos e compartilhe o link."
+          "q": "Meu cliente precisa baixar algum app?",
+          "a": "Não. Ele abre o link no celular ou no computador, preenche e envia."
         },
         "3": {
-          "q": "Meus dados ficam presos na plataforma?",
-          "a": "Não. Você pode exportar todas as respostas em CSV a qualquer momento."
+          "q": "É grátis?",
+          "a": "Você começa de graça, sem cartão de crédito, e já gera seus primeiros documentos."
         },
         "4": {
-          "q": "Consigo integrar com outros sistemas?",
-          "a": "Sim. Use webhooks para enviar cada resposta automaticamente para a URL que você configurar."
+          "q": "E se eu só precisar de um formulário?",
+          "a": "Também dá. O Submitin continua sendo um construtor de formulários completo, com modelos, respostas em tempo real e exportação em CSV."
         },
         "5": {
-          "q": "Como funciona a proteção contra spam?",
-          "a": "Há rate limiting por IP em todas as submissões e, no plano Pro, você pode ativar CAPTCHA (Cloudflare Turnstile)."
+          "q": "Consigo integrar com outros sistemas?",
+          "a": "Sim. Cada documento gerado dispara um webhook com os dados e o link do PDF."
         }
       }
     },
@@ -240,17 +240,20 @@
       }
     },
     "cta": {
-      "title": "Comece de graça agora",
-      "subtitle": "Crie seu primeiro formulário em menos de 2 minutos. Sem cartão, sem código.",
-      "button": "Criar meu formulário grátis",
-      "secondary": "Ver modelos"
+      "title": "Mande o link. Receba o documento.",
+      "subtitle": "Crie sua conta grátis e gere o primeiro PDF ainda hoje.",
+      "button": "Começar grátis",
+      "secondary": "Ver como funciona"
     },
     "nav": {
       "howItWorks": "Como funciona",
       "templates": "Modelos",
       "pricing": "Preços",
       "login": "Entrar",
-      "getStarted": "Começar Grátis"
+      "getStarted": "Começar grátis",
+      "documents": "Documentos",
+      "features": "Recursos",
+      "faq": "Perguntas"
     },
     "pricing": {
       "title": "Planos Simples e Transparentes",
@@ -336,7 +339,7 @@
     },
     "footer": {
       "copyright": "Feito com ❤️ por Vitor Hugo",
-      "tagline": "Formulários incríveis e respostas em minutos. Grátis para começar.",
+      "tagline": "O cliente preenche um link, você recebe o documento pronto.",
       "productTitle": "Produto",
       "legalTitle": "Legal",
       "ctaButton": "Criar grátis",
@@ -344,6 +347,128 @@
       "privacy": "Privacidade",
       "support": "Suporte",
       "supportContact": "Dúvidas? Fale conosco:"
+    },
+    "mock": {
+      "formTitle": "Matrícula 2027",
+      "student": "Nome do aluno",
+      "studentValue": "Pedro Almeida",
+      "cpf": "CPF do responsável",
+      "cpfValue": "529.982.247-25",
+      "fee": "Mensalidade",
+      "feeValue": "389,90",
+      "send": "Enviar",
+      "docTitle": "Contrato de matrícula",
+      "docLine1": "Aluno(a)",
+      "docLine2": "CPF do responsável",
+      "docLine3": "Mensalidade",
+      "feeWords": "trezentos e oitenta e nove reais e noventa centavos",
+      "ready": "PDF pronto",
+      "emailFrom": "Novo documento",
+      "emailSubject": "Contrato de matrícula — Pedro Almeida",
+      "attachment": "contrato-pedro-almeida.pdf"
+    },
+    "audience": {
+      "title": "Feito para quem ainda preenche documento à mão",
+      "items": {
+        "0": "Escolas de idiomas",
+        "1": "Escolas de música",
+        "2": "Estúdios de dança",
+        "3": "Autoescolas",
+        "4": "Escolinhas esportivas",
+        "5": "Cursos livres"
+      }
+    },
+    "story": {
+      "eyebrow": "Como funciona",
+      "title": "Do Word ao PDF, sem copiar e colar",
+      "subtitle": "Quatro passos. Os três primeiros você faz uma vez só.",
+      "cta": "Criar meu primeiro documento",
+      "steps": {
+        "0": {
+          "title": "Marque os campos no Word",
+          "description": "Escreva {{nome_aluno}}, {{cpf_responsavel}}… onde cada dado deve entrar. Esse é o seu modelo."
+        },
+        "1": {
+          "title": "O formulário nasce sozinho",
+          "description": "Suba o .docx e o Submitin cria uma pergunta para cada campo, já com máscara de CPF, data e valor."
+        },
+        "2": {
+          "title": "O cliente preenche no celular",
+          "description": "Mande o link pelo WhatsApp ou coloque no site. CPF inválido não passa."
+        },
+        "3": {
+          "title": "O PDF chega pronto",
+          "description": "Em segundos, o documento preenchido chega no seu e-mail, igualzinho ao seu Word."
+        }
+      },
+      "wordFile": "contrato-matricula.docx",
+      "wordText": "Eu, {{nome_responsavel}}, CPF {{cpf_responsavel}}, matriculo {{nome_aluno}} no curso de {{curso}}, com mensalidade de {{valor_mensalidade}}.",
+      "detected": "4 campos detectados",
+      "typeText": "Texto",
+      "typeCpf": "CPF",
+      "typeCurrency": "Valor (R$)",
+      "fieldGuardian": "Nome do responsável",
+      "fieldCourse": "Curso",
+      "inbox": "Caixa de entrada",
+      "now": "agora"
+    },
+    "docTypes": {
+      "title": "Os documentos que dão mais trabalho",
+      "subtitle": "Se hoje você imprime, preenche à mão e escaneia, dá para automatizar.",
+      "items": {
+        "0": {
+          "title": "Contrato de matrícula",
+          "description": "Dados do aluno, responsável, valores e vencimento."
+        },
+        "1": {
+          "title": "Ficha do aluno",
+          "description": "Contatos, saúde, autorizações de saída."
+        },
+        "2": {
+          "title": "Autorização de uso de imagem",
+          "description": "Assinada antes da primeira foto no Instagram."
+        },
+        "3": {
+          "title": "Declaração de matrícula",
+          "description": "Pedida pelo responsável, pronta em segundos."
+        },
+        "4": {
+          "title": "Contrato de serviço",
+          "description": "Para aulas particulares, pacotes e eventos."
+        },
+        "5": {
+          "title": "Termo de responsabilidade",
+          "description": "Viagens, passeios e atividades externas."
+        }
+      }
+    },
+    "bento": {
+      "title": "Pensado para o dia a dia da secretaria",
+      "subtitle": "Tudo o que um documento sério precisa, sem virar um projeto de TI.",
+      "fidelity": {
+        "title": "Fiel ao seu Word",
+        "description": "Cabeçalho, rodapé, tabelas, negrito e logo: o PDF sai igual ao documento que você já usa."
+      },
+      "cpf": {
+        "title": "CPF e CNPJ de verdade",
+        "description": "Validamos o dígito verificador. Chega de contrato com CPF errado."
+      },
+      "words": {
+        "title": "Valor por extenso",
+        "description": "R$ 389,90 vira “trezentos e oitenta e nove reais e noventa centavos” sozinho."
+      },
+      "email": {
+        "title": "PDF no seu e-mail",
+        "description": "Cada envio chega com o PDF anexado. E fica tudo guardado na tela de Envios."
+      },
+      "webhook": {
+        "title": "Conversa com seus sistemas",
+        "description": "Webhook com os dados e o link do PDF para planilhas, CRMs e automações."
+      },
+      "forms": {
+        "title": "Formulários também",
+        "description": "Precisa só de um formulário? Crie do zero ou comece de um modelo pronto."
+      }
     }
   },
   "guest": {

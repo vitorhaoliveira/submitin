@@ -30,6 +30,8 @@
     --brand: 243 75% 59%;
     --brand-foreground: 0 0% 100%;
     --brand-soft: 238 100% 97%;
+    /* Magenta de apoio: só em rabiscos/doodles e pequenos detalhes. */
+    --pop: 316 88% 55%;
   }
 
   html {

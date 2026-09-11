@@ -88,7 +88,9 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           <FileText className="w-4 h-4 text-background" />
         </div>
         {!compact && (
-          <span className="font-semibold tracking-tight truncate">{tCommon("appName")}</span>
+          <span className="font-display text-lg font-bold tracking-tight truncate">
+            submitin<span className="text-pop">*</span>
+          </span>
         )}
       </Link>
     );
@@ -162,7 +164,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           title={compact ? t("quickCreate") : undefined}
           aria-label={t("quickCreate")}
           className={cn(
-            "mt-3 flex h-8 items-center gap-2 rounded-md border bg-background text-sm font-medium shadow-sm transition-colors hover:bg-muted",
+            "mt-3 flex h-8 items-center gap-2 rounded-full border bg-background text-sm font-medium shadow-sm transition-colors hover:bg-muted",
             compact ? "justify-center" : "px-2.5"
           )}
         >
@@ -235,7 +237,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             !compact && (
               <Link
                 href="/register"
-                className="flex h-8 items-center justify-center rounded-md bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                className="flex h-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90"
               >
                 {t("signup")}
               </Link>
