@@ -131,7 +131,7 @@ O formulário vira o meio; o entregável é um `.docx`/PDF preenchido com as res
 
 - Código: `packages/documents` (parse, mesclagem, formatação BR, extenso, PDF, marca) e `apps/web/lib/documents` (fila/entrega).
 - Telas: `/dashboard/documents`, `/dashboard/documents/new`, `/dashboard/documents/[id]`, `/dashboard/documents/[id]/envios`.
-- Fila: tabela `document_generations` (`recebida → processando → concluida | falha | limite`), processada via `after()` na submissão e recolhida pelo cron `/api/cron/documents` (`apps/web/vercel.json`, a cada 5 min — exige plano Pro da Vercel; no Hobby o cron é diário).
+- Fila: tabela `document_generations` (`recebida → processando → concluida | falha | limite`), processada via `after()` na submissão e recolhida pelo cron `/api/cron/documents` (`apps/web/vercel.json`, diário às 06h de Brasília, limite do plano Hobby da Vercel; no Pro dá para usar `*/5 * * * *`). A geração normal acontece logo após o envio; o cron só recolhe falhas e envios travados e apaga previews vencidos.
 - Testes: `GOTENBERG_URL=http://localhost:3030 pnpm --filter @submitin/documents test`
 - Spike de fidelidade com qualquer `.docx`: `GOTENBERG_URL=http://localhost:3030 pnpm --filter @submitin/documents spike arquivo.docx [respostas.json]`
 
