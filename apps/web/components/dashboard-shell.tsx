@@ -17,6 +17,7 @@ import {
   LogIn,
   Settings,
   CreditCard,
+  ShieldCheck,
   PanelLeftClose,
   PanelLeft,
   Globe,
@@ -29,6 +30,8 @@ interface DashboardShellProps {
   user: NavUser;
   /** Documentos gerados no mês × limite do plano (-1 = ilimitado). */
   usage?: { used: number; limit: number } | null;
+  /** Mostra o atalho para a área admin. */
+  isAdmin?: boolean;
   children: React.ReactNode;
 }
 
@@ -91,7 +94,7 @@ function initials(user: NavUser): string {
   return (letters || base[0] || "?").toUpperCase();
 }
 
-export function DashboardShell({ user, usage = null, children }: DashboardShellProps) {
+export function DashboardShell({ user, usage = null, isAdmin = false, children }: DashboardShellProps) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const pathname = usePathname();
@@ -128,6 +131,7 @@ export function DashboardShell({ user, usage = null, children }: DashboardShellP
   const generalNav = [
     { href: "/dashboard/account", label: t("account"), icon: Settings },
     { href: "/dashboard/billing", label: t("billing"), icon: CreditCard },
+    ...(isAdmin ? [{ href: "/admin", label: "Admin", icon: ShieldCheck }] : []),
   ];
 
   function Brand({ compact }: { compact: boolean }) {
