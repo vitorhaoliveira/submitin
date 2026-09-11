@@ -30,6 +30,14 @@ const COMPARISON: { label: string; values: Record<SoldPlan, CellValue> }[] = [
   { label: "Cliente revisa o PDF antes de enviar", values: { free: true, pro: true, unlimited: true } },
   { label: "Cópia do PDF por e-mail ao cliente", values: { free: true, pro: true, unlimited: true } },
   { label: "Links com dados já preenchidos", values: { free: true, pro: true, unlimited: true } },
+  {
+    label: "Aceite eletrônico com registro e verificação",
+    values: {
+      free: PLANS.free.limits.electronicAcceptance,
+      pro: PLANS.pro.limits.electronicAcceptance,
+      unlimited: PLANS.unlimited.limits.electronicAcceptance,
+    },
+  },
   { label: "Sua marca no formulário", values: { free: true, pro: true, unlimited: true } },
   { label: "Entrega por e-mail e webhook", values: { free: true, pro: true, unlimited: true } },
   {

@@ -61,7 +61,7 @@ type Props = {
   delivery: { emails: string[]; webhookUrl: string; emailRespondent: boolean; hasEmailField: boolean };
   invites: { id: string; token: string; label: string; usedAt: string | null; createdAt: string }[];
   formSettings: DocumentFormSettings;
-  plan: { paid: boolean; top: boolean };
+  plan: { paid: boolean; top: boolean; acceptance: boolean };
   publicUrl: string;
 };
 

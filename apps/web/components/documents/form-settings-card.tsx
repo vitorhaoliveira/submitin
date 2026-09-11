@@ -110,7 +110,7 @@ export function FormSettingsCard({
 }: {
   documentId: string;
   initial: DocumentFormSettings;
-  plan: { paid: boolean; top: boolean };
+  plan: { paid: boolean; top: boolean; acceptance: boolean };
   publicUrl: string;
 }) {
   const tDocs = useTranslations("documents");
@@ -127,7 +127,8 @@ export function FormSettingsCard({
     try {
       const body: Record<string, unknown> = {
         description: s.description,
-        requireAcceptance: s.requireAcceptance,
+        // Sem o recurso no plano, só dá para desligar (aceite ligado antes continua valendo).
+        ...(plan.acceptance || !s.requireAcceptance ? { requireAcceptance: s.requireAcceptance } : {}),
         conversational: s.conversational,
         thankYouTitle: s.thankYouTitle,
         thankYouMessage: s.thankYouMessage,
@@ -206,14 +207,29 @@ export function FormSettingsCard({
 
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1">
-            <Label htmlFor="doc-form-acceptance" className="text-sm font-semibold">
-              {t("acceptance")}
-            </Label>
+            <div className="flex flex-wrap items-center gap-2">
+              <Label htmlFor="doc-form-acceptance" className="text-sm font-semibold">
+                {t("acceptance")}
+              </Label>
+              <Badge variant="secondary" className="text-[11px]">
+                Pro
+              </Badge>
+            </div>
             <p className="text-sm text-muted-foreground">{t("acceptanceDesc")}</p>
+            {!plan.acceptance && (
+              <p className="text-sm text-muted-foreground">
+                <Lock className="mr-1 inline h-3.5 w-3.5 align-[-2px]" />
+                {t("lockedPro")}{" "}
+                <Link href="/dashboard/billing" className="font-medium text-foreground underline underline-offset-2">
+                  {t("seePlans")}
+                </Link>
+              </p>
+            )}
           </div>
           <Switch
             id="doc-form-acceptance"
             checked={s.requireAcceptance}
+            disabled={!plan.acceptance && !s.requireAcceptance}
             onCheckedChange={(v: boolean) => set("requireAcceptance", v)}
           />
         </div>
