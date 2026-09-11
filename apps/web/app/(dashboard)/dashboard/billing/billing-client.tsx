@@ -19,9 +19,12 @@ interface UserSubscription {
 
 type SoldPlan = (typeof SOLD_PLANS)[number];
 
+function limitLabel(n: number, unlimited = "Ilimitados"): string {
+  return n === -1 ? unlimited : n.toLocaleString("pt-BR");
+}
+
 function docsLabel(plan: SoldPlan): string {
-  const n = PLANS[plan].limits.documentsPerMonth;
-  return n === -1 ? "Ilimitados" : n.toLocaleString("pt-BR");
+  return limitLabel(PLANS[plan].limits.documentsPerMonth);
 }
 
 // Matriz de comparação detalhada (booleano = ✓/✗, string = valor exibido).
@@ -59,6 +62,22 @@ const COMPARISON: { label: string; values: Record<SoldPlan, CellValue> }[] = [
       free: PLANS.free.limits.captcha,
       pro: PLANS.pro.limits.captcha,
       unlimited: PLANS.unlimited.limits.captcha,
+    },
+  },
+  {
+    label: "Formulários avulsos",
+    values: {
+      free: limitLabel(PLANS.free.limits.maxForms),
+      pro: limitLabel(PLANS.pro.limits.maxForms),
+      unlimited: limitLabel(PLANS.unlimited.limits.maxForms),
+    },
+  },
+  {
+    label: "Respostas por mês (formulários avulsos)",
+    values: {
+      free: limitLabel(PLANS.free.limits.responsesPerMonth, "Ilimitadas"),
+      pro: limitLabel(PLANS.pro.limits.responsesPerMonth, "Ilimitadas"),
+      unlimited: limitLabel(PLANS.unlimited.limits.responsesPerMonth, "Ilimitadas"),
     },
   },
   { label: "Suporte", values: { free: "Comunidade", pro: "E-mail", unlimited: "Prioritário" } },

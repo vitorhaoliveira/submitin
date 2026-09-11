@@ -58,6 +58,7 @@ export const PLANS = {
       "Formulário gerado do seu .docx",
       "PDF por e-mail e webhook",
       "Selo \"Gerado com Submitin\" no PDF",
+      "+ 5 formulários avulsos (100 respostas/mês)",
     ],
     limits: {
       maxForms: 5,
@@ -84,6 +85,7 @@ export const PLANS = {
       "200 documentos por mês",
       "PDF sem o selo Submitin",
       "Tema personalizado",
+      "+ 20 formulários avulsos (5.000 respostas/mês)",
     ],
     limits: {
       maxForms: 20,
@@ -109,6 +111,7 @@ export const PLANS = {
       "Documentos ilimitados",
       "Anti-spam (CAPTCHA)",
       "Suporte prioritário",
+      "+ Formulários avulsos e respostas ilimitados",
     ],
     limits: {
       maxForms: -1,
