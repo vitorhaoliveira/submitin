@@ -20,7 +20,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Plano inválido" }, { status: 400 });
     }
 
-    const priceId = priceIdForPlan(requestedPlan);
+    const interval = body.interval === "year" ? "year" : "month";
+    const priceId = priceIdForPlan(requestedPlan, interval);
 
     if (!priceId) {
       return NextResponse.json(

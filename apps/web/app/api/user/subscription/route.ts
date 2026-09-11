@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@submitin/database";
+import { intervalFromPriceId } from "@/lib/stripe";
 
 export async function GET(req: NextRequest) {
   try {
@@ -15,6 +16,7 @@ export async function GET(req: NextRequest) {
       where: { id: session.user.id },
       select: {
         plan: true,
+        stripePriceId: true,
         stripeCustomerId: true,
         stripeSubscriptionId: true,
         stripeCurrentPeriodEnd: true,
@@ -28,6 +30,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       plan: user.plan,
+      interval: intervalFromPriceId(user.stripePriceId),
       stripeCustomerId: user.stripeCustomerId,
       stripeSubscriptionId: user.stripeSubscriptionId,
       stripeCurrentPeriodEnd: user.stripeCurrentPeriodEnd,

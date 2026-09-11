@@ -4,6 +4,8 @@ import { sendEmail } from "@submitin/email";
 import { DocumentReadyEmail } from "@submitin/email/templates/document-ready";
 import { DocumentLimitEmail } from "@submitin/email/templates/document-limit";
 import { DocumentCopyEmail } from "@submitin/email/templates/document-copy";
+import { DocumentUsageWarningEmail } from "@submitin/email/templates/document-usage-warning";
+import { USAGE_WARNING_RATIO } from "@/lib/usage";
 import { brandLogoUrl } from "@/lib/branding";
 import { isValidEmail } from "@/lib/security";
 import {
@@ -222,6 +224,14 @@ export async function processDocumentGeneration(
     data: { status: "concluida", pdfKey, docxKey, pdfSha256, completedAt: new Date(), error: null },
   });
 
+  // Chegou a 80% dos documentos do mês: avisa antes que o limite trave os PDFs.
+  if (limit !== -1) {
+    const used = await monthlyDocumentUsage(user.id);
+    if (used >= Math.ceil(limit * USAGE_WARNING_RATIO) && used < limit) {
+      await notifyUsageWarning(user.id, user.email, used, limit);
+    }
+  }
+
   // Entrega (best-effort): falha de e-mail/webhook não invalida o documento gerado.
   const identifier = responseIdentifier(form.fields, response.fieldValues);
   const fileName = `${documentFileName(document.name, identifier)}.pdf`;
@@ -396,6 +406,39 @@ async function notifyLimitReached(
     subject: "Você atingiu o limite de documentos do mês",
     react: DocumentLimitEmail({ limit, billingUrl: `${appBaseUrl()}/dashboard/billing` }),
   }).catch((err) => console.error("[documents] aviso de limite falhou:", err));
+}
+
+const MONTHS = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+];
+
+/** Aviso de 80% do plano: no máximo um por mês. Nunca lança. */
+async function notifyUsageWarning(userId: string, email: string, used: number, limit: number) {
+  try {
+    const { count } = await prisma.user.updateMany({
+      where: {
+        id: userId,
+        OR: [{ documentUsageWarnedAt: null }, { documentUsageWarnedAt: { lt: startOfMonth() } }],
+      },
+      data: { documentUsageWarnedAt: new Date() },
+    });
+    if (count === 0) return;
+    const next = new Date(startOfMonth());
+    next.setMonth(next.getMonth() + 1);
+    await sendEmail({
+      to: email,
+      subject: `Você já usou ${used} de ${limit} documentos deste mês`,
+      react: DocumentUsageWarningEmail({
+        used,
+        limit,
+        resetsOn: `1º de ${MONTHS[next.getMonth()]}`,
+        billingUrl: `${appBaseUrl()}/dashboard/billing`,
+      }),
+    });
+  } catch (err) {
+    console.error("[documents] aviso de 80% falhou:", err);
+  }
 }
 
 /** Apaga previews expirados (linhas + arquivos). */

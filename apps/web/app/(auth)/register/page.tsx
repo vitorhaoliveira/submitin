@@ -85,7 +85,9 @@ export default function RegisterPage() {
       const plan = params.get("plan");
       const target =
         safeNext(params.get("next")) ??
-        (plan === "pro" || plan === "unlimited" ? `/dashboard/billing?plan=${plan}` : "/dashboard");
+        (plan === "pro" || plan === "unlimited"
+          ? `/dashboard/billing?plan=${plan}${params.get("interval") === "year" ? "&interval=year" : ""}`
+          : "/dashboard");
       const login = await signIn("credentials", { email, password, redirect: false });
       if (login?.error) {
         router.push("/login?registered=true");

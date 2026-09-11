@@ -27,7 +27,59 @@ type NavUser = { name?: string | null; email?: string | null } | null;
 
 interface DashboardShellProps {
   user: NavUser;
+  /** Documentos gerados no mês × limite do plano (-1 = ilimitado). */
+  usage?: { used: number; limit: number } | null;
   children: React.ReactNode;
+}
+
+/** Medidor sempre visível: "14 de 20 documentos este mês", amarelo aos 80%. */
+function UsageMeter({ used, limit }: { used: number; limit: number }) {
+  const t = useTranslations("nav");
+  const unlimited = limit === -1;
+  const pct = unlimited || limit === 0 ? 0 : Math.min(100, Math.round((used / limit) * 100));
+  const state = unlimited ? "ok" : pct >= 100 ? "full" : pct >= 80 ? "warn" : "ok";
+  return (
+    <Link
+      href="/dashboard/billing"
+      className={cn(
+        "block rounded-lg border px-2.5 py-2 transition-colors hover:bg-muted/60",
+        state === "warn" && "border-amber-200 bg-amber-50/70",
+        state === "full" && "border-red-200 bg-red-50/70"
+      )}
+    >
+      <div className="flex items-baseline justify-between gap-2 text-xs">
+        <span className="text-muted-foreground">{t("usage.label")}</span>
+        <span className="font-medium tabular-nums">
+          {unlimited ? used.toLocaleString("pt-BR") : `${used.toLocaleString("pt-BR")}/${limit.toLocaleString("pt-BR")}`}
+        </span>
+      </div>
+      {!unlimited && (
+        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted" aria-hidden>
+          <div
+            className={cn(
+              "h-full rounded-full",
+              state === "full" ? "bg-red-500" : state === "warn" ? "bg-amber-500" : "bg-brand"
+            )}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      )}
+      <p
+        className={cn(
+          "mt-1.5 text-[11px] leading-snug",
+          state === "full" ? "text-red-700" : state === "warn" ? "text-amber-800" : "text-muted-foreground"
+        )}
+      >
+        {unlimited
+          ? t("usage.unlimited")
+          : state === "full"
+            ? t("usage.full")
+            : state === "warn"
+              ? t("usage.warn")
+              : t("usage.renews")}
+      </p>
+    </Link>
+  );
 }
 
 const COLLAPSE_KEY = "submitin_sidebar_collapsed";
@@ -39,7 +91,7 @@ function initials(user: NavUser): string {
   return (letters || base[0] || "?").toUpperCase();
 }
 
-export function DashboardShell({ user, children }: DashboardShellProps) {
+export function DashboardShell({ user, usage = null, children }: DashboardShellProps) {
   const t = useTranslations("nav");
   const tCommon = useTranslations("common");
   const pathname = usePathname();
@@ -190,8 +242,13 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
           )}
         </nav>
 
-        {/* Rodapé: idioma + usuário */}
+        {/* Rodapé: uso do mês + idioma + usuário */}
         <div className="space-y-1 border-t pt-3">
+          {usage && !compact && (
+            <div className="pb-2">
+              <UsageMeter used={usage.used} limit={usage.limit} />
+            </div>
+          )}
           <button
             onClick={() => setLocale(locale === "pt" ? "en" : "pt")}
             title={locale === "pt" ? "English" : "Português"}
