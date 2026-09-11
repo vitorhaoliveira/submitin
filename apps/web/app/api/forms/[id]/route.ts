@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@submitin/database";
 import { updateFormSchema } from "@/lib/validations";
+import { blockDocumentForm } from "@/lib/documents/service";
 
 export async function GET(
   _request: NextRequest,
@@ -47,6 +48,8 @@ export async function PUT(
 ) {
   try {
     const { id } = await params;
+    const blocked = await blockDocumentForm(id);
+    if (blocked) return blocked;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
@@ -87,6 +90,8 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
+    const blocked = await blockDocumentForm(id);
+    if (blocked) return blocked;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });

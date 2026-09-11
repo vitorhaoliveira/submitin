@@ -13,7 +13,7 @@ import { getFormAvailability } from "@/lib/form-availability";
 import { validateMaskedField } from "@submitin/documents/input";
 import { parseCurrency } from "@submitin/documents/format";
 import { enqueueDocumentGeneration } from "@/lib/documents/generation";
-import { resolveNatures } from "@/lib/documents/natures";
+import { activeTemplateKeys, resolveNatures } from "@/lib/documents/natures";
 
 const MASKED_FIELD_ERRORS = {
   invalidCpf: "CPF inválido",
@@ -120,7 +120,17 @@ export async function prepareSubmission(
   // Só os campos perguntados vêm do respondente; fixa, automática e pré-preenchida
   // (pelo link) são definidas aqui e não podem ser sobrescritas.
   const invite = inviteToken ? await findUsableInvite(form.id, inviteToken) : null;
-  const { locked, askedIds } = resolveNatures(form.fields, invite?.values);
+  const template = await prisma.documentTemplate.findFirst({
+    where: { document: { formId: form.id } },
+    orderBy: { version: "desc" },
+    select: { variables: true },
+  });
+  const { locked, askedIds } = resolveNatures(
+    form.fields,
+    invite?.values,
+    new Date(),
+    activeTemplateKeys(template?.variables)
+  );
   const clientValues = sanitizeFormValues(valuesByFieldId);
   for (const id of Object.keys(clientValues)) if (!askedIds.has(id)) delete clientValues[id];
   const lockedValues = sanitizeFormValues(locked);

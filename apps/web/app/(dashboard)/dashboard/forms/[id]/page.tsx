@@ -39,6 +39,10 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
   if (!form) {
     notFound();
   }
+  // Formulário de documento é editado pela tela do documento.
+  if (form.document) {
+    redirect(`/dashboard/documents/${form.document.id}`);
+  }
 
   const isPro = isPaid(dbUser?.plan);
 

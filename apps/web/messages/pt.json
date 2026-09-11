@@ -1169,7 +1169,6 @@
     "detail": {
       "back": "Voltar",
       "submissions": "Envios",
-      "editFields": "Editar formulário",
       "delete": "Excluir documento",
       "deleteConfirm": "O formulário, as respostas e os PDFs gerados deste documento serão removidos. Essa ação não pode ser desfeita.",
       "deleted": "Documento excluído",
@@ -1184,15 +1183,14 @@
         "publish": "Publicar",
         "unpublish": "Despublicar",
         "publishedToast": "Formulário publicado",
-        "unpublishedToast": "Formulário despublicado",
-        "embedHint": "Código de incorporação (embed), QR code e aparência ficam no editor do formulário:"
+        "unpublishedToast": "Formulário despublicado"
       },
       "fields": {
         "title": "Variáveis do documento",
         "desc": "Classifique cada variável: quem preenche e como ela aparece no formulário.",
         "required": "Obrigatório",
         "missing": "Variáveis do documento sem campo no formulário (sairão em branco): {keys}",
-        "orphan": "Campos de variáveis que não existem mais no template atual: {labels}",
+        "orphan": "Campos de variáveis que saíram do template atual: {labels}. Eles não aparecem mais para o cliente; as respostas antigas continuam guardadas.",
         "fixedValue": "Valor fixo",
         "saveError": "Não foi possível salvar o campo",
         "nature": "Natureza",
@@ -1301,6 +1299,20 @@
         "saved": "Formulário salvo",
         "error": "Não foi possível salvar.",
         "seePlans": "Ver planos"
+      },
+      "share": {
+        "toggle": "Incorporar no site e QR code",
+        "qr": "QR code",
+        "qrDownload": "Baixar PNG",
+        "embed": "Código de incorporação",
+        "embedDesc": "Cole no HTML do seu site para mostrar o formulário dentro da página.",
+        "size": {
+          "small": "Pequeno",
+          "medium": "Médio",
+          "large": "Grande"
+        },
+        "copy": "Copiar código",
+        "copied": "Copiado"
       }
     },
     "submissions": {

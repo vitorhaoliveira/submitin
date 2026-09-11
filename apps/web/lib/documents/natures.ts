@@ -23,6 +23,17 @@ export function resolveAutomatic(key: string | null | undefined, now: Date): str
 }
 
 /**
+ * Chaves ativas do template atual (com a base de `x_extenso`). Campos de variáveis
+ * que saíram do template ficam guardados (respostas antigas), mas não são mais perguntados.
+ */
+export function activeTemplateKeys(templateKeys: string[] | null | undefined): Set<string> | null {
+  if (!templateKeys) return null;
+  const keys = new Set(templateKeys);
+  for (const key of templateKeys) if (key.endsWith("_extenso")) keys.add(key.slice(0, -"_extenso".length));
+  return keys;
+}
+
+/**
  * Separa o que o respondente responde do que já vem definido:
  * - locked: valores que não vêm do respondente (fixa, automática, pré-preenchida pelo link)
  * - askedIds: campos exibidos no formulário (pergunta + pré-preenchida sem valor no link)
@@ -30,13 +41,16 @@ export function resolveAutomatic(key: string | null | undefined, now: Date): str
 export function resolveNatures(
   fields: NatureField[],
   inviteValues: Record<string, string> = {},
-  now: Date = new Date()
+  now: Date = new Date(),
+  /** Documento: só campos de variáveis do template atual (ver activeTemplateKeys). */
+  activeKeys: Set<string> | null = null
 ): { locked: Record<string, string>; askedIds: Set<string>; fromInvite: Set<string> } {
   const locked: Record<string, string> = {};
   const askedIds = new Set<string>();
   const fromInvite = new Set<string>();
 
   for (const field of fields) {
+    if (activeKeys && field.variableKey && !activeKeys.has(field.variableKey)) continue;
     switch (field.nature) {
       case "fixa": {
         const value = field.defaultValue?.trim();

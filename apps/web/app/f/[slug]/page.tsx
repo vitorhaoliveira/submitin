@@ -6,7 +6,7 @@ import { getFormAvailability } from "@/lib/form-availability";
 import { buildMetadata } from "@/lib/seo";
 import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 import type { CustomTheme } from "@/lib/theme-utils";
-import { resolveNatures } from "@/lib/documents/natures";
+import { activeTemplateKeys, resolveNatures } from "@/lib/documents/natures";
 import { toDocumentFieldType } from "@/lib/documents/service";
 import { formatValue } from "@submitin/documents/format";
 import { brandLogoUrl } from "@/lib/branding";
@@ -62,7 +62,13 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
         orderBy: { order: "asc" },
       },
       settings: true,
-      document: { select: { id: true, emailRespondent: true } },
+      document: {
+        select: {
+          id: true,
+          emailRespondent: true,
+          templates: { orderBy: { version: "desc" }, take: 1, select: { variables: true } },
+        },
+      },
       user: { select: { id: true, brandName: true, brandLogoKey: true } },
     },
   });
@@ -97,7 +103,12 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       : null;
   const inviteValues =
     invite && !inviteProblem ? ((invite.values ?? {}) as Record<string, string>) : {};
-  const { locked, askedIds, fromInvite } = resolveNatures(form.fields, inviteValues);
+  const { locked, askedIds, fromInvite } = resolveNatures(
+    form.fields,
+    inviteValues,
+    new Date(),
+    activeTemplateKeys(form.document?.templates[0]?.variables)
+  );
   // O respondente vê, só para leitura, o que o link já trouxe preenchido para ele.
   const prefilled = form.fields
     .filter((f) => fromInvite.has(f.id))

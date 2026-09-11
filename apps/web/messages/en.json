@@ -1169,7 +1169,6 @@
     "detail": {
       "back": "Back",
       "submissions": "Submissions",
-      "editFields": "Edit form",
       "delete": "Delete document",
       "deleteConfirm": "This document's form, responses and generated PDFs will be removed. This cannot be undone.",
       "deleted": "Document deleted",
@@ -1184,15 +1183,14 @@
         "publish": "Publish",
         "unpublish": "Unpublish",
         "publishedToast": "Form published",
-        "unpublishedToast": "Form unpublished",
-        "embedHint": "Embed code, QR code and appearance are in the form editor:"
+        "unpublishedToast": "Form unpublished"
       },
       "fields": {
         "title": "Document variables",
         "desc": "Classify each variable: who fills it and how it shows up in the form.",
         "required": "Required",
         "missing": "Document variables without a form field (will be blank): {keys}",
-        "orphan": "Fields for variables no longer in the current template: {labels}",
+        "orphan": "Variable fields no longer in the current template: {labels}. They're no longer shown to the customer; past answers are kept.",
         "fixedValue": "Fixed value",
         "saveError": "Could not save the field",
         "nature": "Nature",
@@ -1301,6 +1299,20 @@
         "saved": "Form saved",
         "error": "Couldn't save.",
         "seePlans": "See plans"
+      },
+      "share": {
+        "toggle": "Embed on your site and QR code",
+        "qr": "QR code",
+        "qrDownload": "Download PNG",
+        "embed": "Embed code",
+        "embedDesc": "Paste it into your site's HTML to show the form inside the page.",
+        "size": {
+          "small": "Small",
+          "medium": "Medium",
+          "large": "Large"
+        },
+        "copy": "Copy code",
+        "copied": "Copied"
       }
     },
     "submissions": {
