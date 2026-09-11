@@ -1060,7 +1060,12 @@
     "previewBack": "Voltar e corrigir",
     "previewConfirm": "Confirmar e enviar",
     "previewUnavailable": "Não conseguimos gerar a prévia agora. Você pode enviar mesmo assim — o documento será gerado em seguida.",
-    "previewSendAnyway": "Enviar sem revisar"
+    "previewSendAnyway": "Enviar sem revisar",
+    "documentSuccess": {
+      "title": "Documento enviado!",
+      "subtitle": "Pronto! A empresa já recebeu seu documento.",
+      "copy": "Você vai receber uma cópia em PDF no seu e-mail em instantes."
+    }
   },
   "legal": {
     "terms": {
@@ -1255,6 +1260,47 @@
         "deleteError": "Não foi possível cancelar o link",
         "empty": "Nenhum link criado ainda.",
         "noCompanyFields": "Nenhuma variável está como “Pré-preenchida”. Marque abaixo o que você quer preencher por aluno antes de enviar."
+      },
+      "formSettings": {
+        "title": "Formulário do cliente",
+        "desc": "Como o formulário aparece e se comporta para quem preenche.",
+        "open": "Abrir formulário",
+        "intro": "Texto de apresentação",
+        "introDesc": "Aparece abaixo do título, antes das perguntas.",
+        "introPlaceholder": "Ex.: Preencha com os dados do responsável financeiro.",
+        "conversational": "Uma pergunta por vez",
+        "conversationalDesc": "Mostra as perguntas em sequência, como uma conversa. Ajuda no celular e em formulários longos.",
+        "thankYou": "Depois do envio",
+        "thankYouDesc": "O que o cliente vê ao confirmar o documento.",
+        "thankYouTitle": "Título",
+        "thankYouTitlePlaceholder": "Documento enviado!",
+        "thankYouMessage": "Mensagem",
+        "thankYouMessagePlaceholder": "Ex.: A secretaria vai confirmar sua matrícula em até 2 dias úteis.",
+        "redirect": "Redirecionar para (opcional)",
+        "appearance": "Aparência",
+        "hideBranding": "Remover \"Feito com Submitin\"",
+        "hideBrandingDesc": "Tira o rodapé do Submitin do formulário.",
+        "schedule": "Prazo e limite",
+        "scheduleDesc": "Abre e fecha o formulário sozinho, ou para depois de um número de envios.",
+        "opensAt": "Abre em",
+        "closesAt": "Fecha em",
+        "maxResponses": "Máximo de envios",
+        "noLimit": "Sem limite",
+        "closedMessage": "Mensagem quando fechado",
+        "closedMessagePlaceholder": "Ex.: As matrículas de 2027 estão encerradas.",
+        "captcha": "Anti-spam",
+        "captchaDesc": "Pede uma verificação antes do envio para barrar robôs.",
+        "captchaEnable": "Ativar verificação",
+        "captchaProvider": "Provedor",
+        "captchaProviderPlaceholder": "Escolha",
+        "captchaSiteKey": "Chave do site",
+        "captchaSecretKey": "Chave secreta",
+        "lockedPro": "Disponível a partir do plano Pro.",
+        "lockedTop": "Disponível no plano Ilimitado.",
+        "save": "Salvar formulário",
+        "saved": "Formulário salvo",
+        "error": "Não foi possível salvar.",
+        "seePlans": "Ver planos"
       }
     },
     "submissions": {

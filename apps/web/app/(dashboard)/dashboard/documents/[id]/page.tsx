@@ -2,6 +2,9 @@ import { notFound, redirect } from "next/navigation";
 import { prisma } from "@submitin/database";
 import { auth } from "@/lib/auth";
 import { DocumentDetailClient } from "@/components/documents/document-detail-client";
+import type { CustomTheme } from "@/lib/theme-utils";
+import { appBaseUrl } from "@/lib/documents/service";
+import { isPaid, isPremium } from "@/lib/stripe";
 
 export const metadata = {
   title: "Documento",
@@ -19,7 +22,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
       form: {
         include: {
           fields: { orderBy: { order: "asc" } },
-          settings: { select: { notifyEmail: true, notifyEmails: true, webhookUrl: true } },
+          settings: true,
         },
       },
       _count: { select: { generations: true } },
@@ -37,6 +40,8 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
 
   const template = document.templates[0];
   const { form } = document;
+  const user = await prisma.user.findUniqueOrThrow({ where: { id: session.user.id }, select: { plan: true } });
+  const st = form.settings;
   const emails = [
     ...new Set(
       [form.settings?.notifyEmail, ...(form.settings?.notifyEmails ?? [])].filter(
@@ -86,6 +91,25 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
             }
           : null
       }
+      formSettings={{
+        description: form.description ?? "",
+        conversational: st?.conversational ?? false,
+        thankYouTitle: st?.thankYouTitle ?? "",
+        thankYouMessage: st?.thankYouMessage ?? "",
+        thankYouRedirectUrl: st?.thankYouRedirectUrl ?? "",
+        hideBranding: st?.hideBranding ?? false,
+        customTheme: (st?.customTheme as CustomTheme | null) ?? null,
+        opensAt: st?.opensAt?.toISOString() ?? null,
+        closesAt: st?.closesAt?.toISOString() ?? null,
+        maxResponses: st?.maxResponses ?? null,
+        closedMessage: st?.closedMessage ?? "",
+        captchaEnabled: st?.captchaEnabled ?? false,
+        captchaProvider: (st?.captchaProvider as "turnstile" | "hcaptcha" | null) ?? null,
+        captchaSiteKey: st?.captchaSiteKey ?? "",
+        captchaSecretKey: st?.captchaSecretKey ?? "",
+      }}
+      plan={{ paid: isPaid(user.plan), top: isPremium(user.plan) }}
+      publicUrl={`${appBaseUrl()}/f/${form.slug}`}
       delivery={{
         emails,
         webhookUrl: form.settings?.webhookUrl ?? "",
