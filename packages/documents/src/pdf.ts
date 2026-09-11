@@ -3,7 +3,8 @@
  * Não reimplementamos layout: o LibreOffice renderiza o documento original.
  */
 
-const DEFAULT_TIMEOUT_MS = 25_000;
+// Folga para a partida a frio do Cloud Run (~10 s na primeira conversão).
+const DEFAULT_TIMEOUT_MS = 45_000;
 
 export class PdfConversionError extends Error {
   constructor(message: string) {

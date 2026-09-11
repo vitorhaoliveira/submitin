@@ -139,9 +139,21 @@ O formulário vira o meio; o entregável é um `.docx`/PDF preenchido com as res
 
 | Peça | Local | Produção |
 |---|---|---|
-| Conversor PDF | `docker compose up -d gotenberg` (porta 3030) | Deploy de `infra/gotenberg/Dockerfile` (Railway/Fly), `GOTENBERG_URL` + `GOTENBERG_BASIC_AUTH` |
+| Conversor PDF | `docker compose up -d gotenberg` (porta 3030) | Cloud Run (projeto `submitin-docs`, `us-east1`), `GOTENBERG_URL` + `GOTENBERG_BASIC_AUTH` — ver abaixo |
 | Storage | disco em `apps/web/.storage/` | Supabase Storage: bucket **privado** `documents`, `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` |
 | Cron | `curl -H "Authorization: Bearer $CRON_SECRET" localhost:3000/api/cron/documents` | Vercel Cron + `CRON_SECRET` |
+
+**Deploy do conversor (Cloud Run):**
+
+```bash
+cd infra/gotenberg
+gcloud run deploy gotenberg --source . --region us-east1 --allow-unauthenticated \
+  --memory 2Gi --cpu 1 --concurrency 4 --timeout 120 --min-instances 0 --max-instances 2 \
+  --args="gotenberg,--api-port-from-env=PORT,--api-enable-basic-auth,--api-timeout=90s" \
+  --set-env-vars="GOTENBERG_API_BASIC_AUTH_USERNAME=...,GOTENBERG_API_BASIC_AUTH_PASSWORD=..."
+```
+
+Escala a zero quando parado: a primeira conversão depois disso leva ~10 s (as seguintes, ~1 s). Há alerta de orçamento de R$ 5 no projeto.
 
 > Fontes: a imagem do Gotenberg inclui MS core fonts, Carlito/Caladea (métricas de Calibri/Cambria), Open Sans, Roboto, Lato e Montserrat. Fontes fora de `SUPPORTED_FONTS` (`packages/documents/src/fonts.ts`) geram aviso no upload.
 
