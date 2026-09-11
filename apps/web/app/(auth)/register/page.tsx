@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { safeNext } from "@/lib/safe-next";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
@@ -28,6 +29,9 @@ export default function RegisterPage() {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
   const router = useRouter();
+  // Destino pós-cadastro (ex.: salvar o documento montado como visitante).
+  const [next, setNext] = useState<string | null>(null);
+  useEffect(() => setNext(safeNext(new URLSearchParams(window.location.search).get("next"))), []);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -80,7 +84,8 @@ export default function RegisterPage() {
       const params = new URLSearchParams(window.location.search);
       const plan = params.get("plan");
       const target =
-        plan === "pro" || plan === "unlimited" ? `/dashboard/billing?plan=${plan}` : "/dashboard";
+        safeNext(params.get("next")) ??
+        (plan === "pro" || plan === "unlimited" ? `/dashboard/billing?plan=${plan}` : "/dashboard");
       const login = await signIn("credentials", { email, password, redirect: false });
       if (login?.error) {
         router.push("/login?registered=true");
@@ -231,7 +236,7 @@ export default function RegisterPage() {
               <p className="text-sm text-center text-muted-foreground">
                 {t("register.hasAccount")}{" "}
                 <Link
-                  href="/login"
+                  href={next ? `/login?next=${encodeURIComponent(next)}` : "/login"}
                   className="text-primary hover:underline font-medium"
                 >
                   {t("register.login")}

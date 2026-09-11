@@ -1364,6 +1364,16 @@
       "fixa": "Fixa",
       "pre_preenchida": "Pré-preenchida",
       "automatica": "Automática"
+    },
+    "guest": {
+      "back": "Início",
+      "claiming": "Salvando o documento que você montou…",
+      "noFile": "Não tem um .docx pronto?",
+      "sample": "Baixe um contrato de exemplo",
+      "readyTitle": "Seu formulário está pronto.",
+      "readyText": "Crie sua conta grátis para salvar, publicar o link e receber o primeiro PDF. Leva menos de um minuto e não pede cartão.",
+      "signup": "Criar conta grátis e salvar",
+      "haveAccount": "Já tenho conta"
     }
   }
 }

@@ -140,7 +140,7 @@ export default async function PricingPage() {
                     ))}
                   </ul>
                   <Button asChild size="lg" variant={featured ? "default" : "outline"} className="mt-8 w-full">
-                    <Link href={key === "free" ? "/register" : `/register?plan=${key}`}>
+                    <Link href={key === "free" ? "/dashboard/documents/new" : `/register?plan=${key}`}>
                       {key === "free" ? "Começar grátis" : `Assinar ${plan.name}`}
                       <ArrowRight className="ml-1 h-4 w-4" />
                     </Link>
@@ -206,7 +206,7 @@ export default async function PricingPage() {
           </div>
           <div className="mt-12 text-center">
             <Button asChild size="lg">
-              <Link href="/register">
+              <Link href="/dashboard/documents/new">
                 Começar grátis <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>

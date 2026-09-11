@@ -44,7 +44,7 @@ export async function HeroSection() {
 
             <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3">
               <Button size="lg" className="w-full sm:w-auto h-12 px-7 text-base" asChild>
-                <Link href="/register">
+                <Link href="/dashboard/documents/new">
                   {t("hero.cta")}
                   <ArrowRight />
                 </Link>

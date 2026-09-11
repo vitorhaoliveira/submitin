@@ -29,7 +29,7 @@ export async function LandingFooter() {
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("footer.tagline")}</p>
             <Button asChild>
-              <Link href="/register">
+              <Link href="/dashboard/documents/new">
                 {t("footer.ctaButton")}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Link>
