@@ -13,7 +13,7 @@ import { validateMaskedField } from "@submitin/documents/input";
 import { parseCurrency } from "@submitin/documents/format";
 import { enqueueDocumentGeneration } from "@/lib/documents/generation";
 import { activeTemplateKeys, resolveNatures } from "@/lib/documents/natures";
-import { monthlyResponseQuotaReached } from "@/lib/response-quota";
+import { notifyResponseLimitReached, responseQuota, type ResponseQuota } from "@/lib/response-quota";
 
 const MASKED_FIELD_ERRORS = {
   invalidCpf: "CPF inválido",
@@ -109,9 +109,12 @@ export async function prepareSubmission(
     where: { formId: form.id },
     select: { templates: { orderBy: { version: "desc" }, take: 1, select: { variables: true } } },
   });
+  let quota: ResponseQuota | null = null;
   if (!document) {
     const owner = await prisma.user.findUnique({ where: { id: form.userId }, select: { plan: true } });
-    if (await monthlyResponseQuotaReached(form.userId, owner?.plan)) {
+    quota = await responseQuota(form.userId, owner?.plan);
+    if (quota.reached) {
+      await notifyResponseLimitReached(form.userId, quota.limit);
       throw {
         status: 403,
         message: "Este formulário atingiu o limite de respostas do mês. Tente novamente mais tarde.",
@@ -197,7 +200,7 @@ export async function prepareSubmission(
     )
     .map(([fieldId, value]) => ({ fieldId, value: String(value) }));
 
-  return { invite, values, fieldValuesCreate };
+  return { invite, values, fieldValuesCreate, quota };
 }
 
 /**
@@ -214,7 +217,7 @@ export async function createFormResponse(
   /** Preview do documento que o respondente conferiu (reaproveitado na geração). */
   previewId?: string | null
 ) {
-  const { invite, values, fieldValuesCreate } = await prepareSubmission(
+  const { invite, values, fieldValuesCreate, quota } = await prepareSubmission(
     form,
     valuesByFieldId,
     inviteToken
@@ -278,6 +281,11 @@ export async function createFormResponse(
       where: { id: claimed.id },
       data: { responseId: response.id },
     });
+  }
+
+  // Esta resposta completou o limite do mês: avisa o dono antes que clientes esbarrem nele.
+  if (quota && quota.limit !== -1 && quota.used + 1 >= quota.limit) {
+    await notifyResponseLimitReached(form.userId, quota.limit);
   }
 
   // Formulário de documento: a entrega (e-mail com PDF + webhook) acontece após a

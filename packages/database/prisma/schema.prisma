@@ -33,6 +33,8 @@ model User {
 
   // Documentos: último aviso de limite mensal de documentos (1 e-mail por mês)
   documentLimitNotifiedAt DateTime?
+  // Aviso mensal de limite de respostas (formulários avulsos) já enviado
+  responseLimitNotifiedAt DateTime?
 
   // Marca da conta (logo + nome no topo dos formulários públicos)
   brandName    String?
