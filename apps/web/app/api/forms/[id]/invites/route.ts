@@ -16,7 +16,7 @@ const createSchema = z.object({
 async function ownedForm(formId: string, userId: string) {
   return prisma.form.findFirst({
     where: { id: formId, userId },
-    select: { id: true, fields: { select: { id: true, filledBy: true } } },
+    select: { id: true, fields: { select: { id: true, nature: true } } },
   });
 }
 
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     );
   }
 
-  // Só campos da empresa entram no link; valores vazios são descartados.
-  const companyIds = new Set(form.fields.filter((f) => f.filledBy === "company").map((f) => f.id));
+  // Só campos pré-preenchidos entram no link; valores vazios são descartados.
+  const companyIds = new Set(form.fields.filter((f) => f.nature === "pre_preenchida").map((f) => f.id));
   const values = Object.fromEntries(
     Object.entries(parsed.data.values)
       .map(([fieldId, value]) => [fieldId, value.trim()] as const)

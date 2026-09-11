@@ -36,7 +36,7 @@ import { toast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/utils";
 import { fmt, useFieldTypeLabel } from "./shared";
 import { PageHeader } from "@/components/page-header";
-import { FieldsFillList, type DocField } from "./company-fields";
+import { VariablesEditor, type DocField } from "./variables-editor";
 import { InvitesCard } from "./invites-card";
 
 type Props = {
@@ -314,7 +314,12 @@ export function DocumentDetailClient({ document, form, template, delivery, invit
               {fmt(t("detail.fields.orphan"), { labels: orphanFields.map((f) => f.label).join(", ") })}
             </p>
           )}
-          <FieldsFillList formId={form.id} fields={fields} onChange={setFields} />
+          <VariablesEditor
+            formId={form.id}
+            fields={fields}
+            templateKeys={template?.variables ?? []}
+            onChange={setFields}
+          />
         </CardContent>
       </Card>
 

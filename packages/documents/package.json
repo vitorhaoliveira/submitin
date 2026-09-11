@@ -9,7 +9,8 @@
     ".": "./src/index.ts",
     "./input": "./src/input.ts",
     "./validation": "./src/validation.ts",
-    "./format": "./src/format.ts"
+    "./format": "./src/format.ts",
+    "./variables": "./src/variables.ts"
   },
   "scripts": {
     "test": "tsx --test test/*.test.ts",

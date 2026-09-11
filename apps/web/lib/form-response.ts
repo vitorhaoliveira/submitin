@@ -13,6 +13,7 @@ import { getFormAvailability } from "@/lib/form-availability";
 import { validateMaskedField } from "@submitin/documents/input";
 import { parseCurrency } from "@submitin/documents/format";
 import { enqueueDocumentGeneration } from "@/lib/documents/generation";
+import { resolveNatures } from "@/lib/documents/natures";
 
 const MASKED_FIELD_ERRORS = {
   invalidCpf: "CPF inválido",
@@ -26,9 +27,10 @@ type FormField = {
   type: string;
   required: boolean;
   visibility?: unknown;
-  /** "company": preenchido pela empresa (valor fixo ou link personalizado). */
-  filledBy?: string;
+  /** Documentos: pergunta | fixa | pre_preenchida | automatica. */
+  nature?: string;
   defaultValue?: string | null;
+  variableKey?: string | null;
 };
 
 type ClaimedInvite = { id: string };
@@ -45,19 +47,7 @@ export async function findUsableInvite(formId: string, token: string) {
   return { id: invite.id, values: (invite.values ?? {}) as Record<string, string> };
 }
 
-/** Valor que a empresa definiu para cada campo "company": link personalizado > valor fixo. */
-export function companyValuesFor(
-  fields: FormField[],
-  inviteValues: Record<string, string> = {}
-): Record<string, string> {
-  const result: Record<string, string> = {};
-  for (const field of fields) {
-    if (field.filledBy !== "company") continue;
-    const value = (inviteValues[field.id] ?? field.defaultValue ?? "").trim();
-    if (value) result[field.id] = value.slice(0, MAX_FIELD_VALUE_LENGTH);
-  }
-  return result;
-}
+
 
 type FormWithRelations = {
   id: string;
@@ -131,15 +121,15 @@ export async function createFormResponse(
     throw { status: 403, message };
   }
 
-  // Campos da empresa nunca vêm do respondente: valem o link personalizado ou o valor fixo.
-  const companyFieldIds = new Set(
-    form.fields.filter((f) => f.filledBy === "company").map((f) => f.id)
-  );
-  const clientValues = sanitizeFormValues(valuesByFieldId);
-  for (const id of companyFieldIds) delete clientValues[id];
+  // Só os campos perguntados vêm do respondente; fixa, automática e pré-preenchida
+  // (pelo link) são definidas aqui e não podem ser sobrescritas.
   const invite = inviteToken ? await findUsableInvite(form.id, inviteToken) : null;
-  const companyValues = sanitizeFormValues(companyValuesFor(form.fields, invite?.values));
-  const values = { ...clientValues, ...companyValues };
+  const { locked, askedIds } = resolveNatures(form.fields, invite?.values);
+  const clientValues = sanitizeFormValues(valuesByFieldId);
+  for (const id of Object.keys(clientValues)) if (!askedIds.has(id)) delete clientValues[id];
+  const lockedValues = sanitizeFormValues(locked);
+  const values = { ...clientValues, ...lockedValues };
+  const lockedIds = new Set(Object.keys(lockedValues));
   const validFieldIds = new Set(form.fields.map((f) => f.id));
 
   // Lógica condicional: campos ocultos não são validados nem persistidos.
@@ -149,8 +139,8 @@ export async function createFormResponse(
   );
 
   for (const field of form.fields) {
-    // Campos da empresa não são validados aqui: quem preenche é a própria empresa.
-    if (!visibleIds.has(field.id) || companyFieldIds.has(field.id)) continue;
+    // Só valida o que o respondente preenche.
+    if (!visibleIds.has(field.id) || !askedIds.has(field.id)) continue;
 
     const value = values[field.id];
 
@@ -174,6 +164,14 @@ export async function createFormResponse(
       };
     }
 
+    if (field.type === "day" && value && !/^(0?[1-9]|[12]\d|3[01])$/.test(value.trim())) {
+      throw { status: 400, message: `Informe um dia entre 1 e 31 no campo "${field.label}"` };
+    }
+
+    if (field.type === "percent" && value && !/^\d+([.,]\d+)?%?$/.test(value.trim())) {
+      throw { status: 400, message: `Percentual inválido no campo "${field.label}"` };
+    }
+
     if (field.type === "currency" && value && parseCurrency(value) === null) {
       throw { status: 400, message: `Valor inválido no campo "${field.label}"` };
     }
@@ -184,7 +182,7 @@ export async function createFormResponse(
       ([fieldId, value]) =>
         value &&
         validFieldIds.has(fieldId) &&
-        (visibleIds.has(fieldId) || companyFieldIds.has(fieldId))
+        (visibleIds.has(fieldId) || lockedIds.has(fieldId))
     )
     .map(([fieldId, value]) => ({ fieldId, value: String(value) }));
 

@@ -6,7 +6,7 @@ import { getFormAvailability } from "@/lib/form-availability";
 import { buildMetadata } from "@/lib/seo";
 import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 import type { CustomTheme } from "@/lib/theme-utils";
-import { companyValuesFor } from "@/lib/form-response";
+import { resolveNatures } from "@/lib/documents/natures";
 import { toDocumentFieldType } from "@/lib/documents/service";
 import { formatValue } from "@submitin/documents/format";
 
@@ -94,13 +94,13 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       : null;
   const inviteValues =
     invite && !inviteProblem ? ((invite.values ?? {}) as Record<string, string>) : {};
-  const companyValues = companyValuesFor(form.fields, inviteValues);
-  // O cliente vê, só para leitura, o que foi preenchido especificamente para ele.
+  const { locked, askedIds, fromInvite } = resolveNatures(form.fields, inviteValues);
+  // O respondente vê, só para leitura, o que o link já trouxe preenchido para ele.
   const prefilled = form.fields
-    .filter((f) => f.filledBy === "company" && inviteValues[f.id] && companyValues[f.id])
+    .filter((f) => fromInvite.has(f.id))
     .map((f) => ({
       label: f.label,
-      value: formatValue(toDocumentFieldType(f.type), companyValues[f.id]!),
+      value: formatValue(toDocumentFieldType(f.type), locked[f.id]!),
     }));
 
   // Transform JsonValue options to string[] | null
@@ -108,12 +108,13 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
     id: form.id,
     name: form.name,
     description: form.description,
-    // Campos da empresa não aparecem para o respondente.
-    fields: form.fields.filter((field) => field.filledBy !== "company").map((field) => ({
+    // Só aparecem os campos que o respondente responde.
+    fields: form.fields.filter((field) => askedIds.has(field.id)).map((field) => ({
       id: field.id,
       type: field.type,
       label: field.label,
       placeholder: field.placeholder,
+      helpText: field.helpText,
       required: field.required,
       order: field.order,
       formId: field.formId,

@@ -886,7 +886,9 @@
       "cpf": "CPF (BR tax ID)",
       "cnpj": "CNPJ (BR company ID)",
       "cep": "CEP (BR zip code)",
-      "currency": "Amount (R$)"
+      "currency": "Amount (R$)",
+      "day": "Day of month",
+      "percent": "Percentage"
     },
     "status": {
       "draft": "Draft",
@@ -924,7 +926,12 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "fieldMoveError": "Could not reorder fields",
-    "companyField": "Filled by company"
+    "natures": {
+      "pergunta": "Question",
+      "fixa": "Fixed",
+      "pre_preenchida": "Prefilled",
+      "automatica": "Automatic"
+    }
   },
   "responses": {
     "title": "Responses",
@@ -1012,7 +1019,8 @@
       "limitReached": "This form has reached its response limit.",
       "invalidCpf": "Invalid CPF",
       "invalidCnpj": "Invalid CNPJ",
-      "invalidCep": "Invalid CEP"
+      "invalidCep": "Invalid CEP",
+      "invalidDay": "Enter a day between 1 and 31"
     },
     "poweredBy": "Created with",
     "closed": {
@@ -1143,17 +1151,31 @@
         "embedHint": "Embed code, QR code and appearance are in the form editor:"
       },
       "fields": {
-        "title": "Form fields",
-        "desc": "One question per document variable. Mark as “Company” what you fill in yourself.",
+        "title": "Document variables",
+        "desc": "Classify each variable: who fills it and how it shows up in the form.",
         "required": "Required",
         "missing": "Document variables without a form field (will be blank): {keys}",
         "orphan": "Fields for variables no longer in the current template: {labels}",
-        "whoFills": "Who fills",
-        "client": "Client",
-        "company": "Company",
         "fixedValue": "Fixed value",
-        "fixedValuePlaceholder": "Optional: used on every submission",
-        "saveError": "Could not save the field"
+        "saveError": "Could not save the field",
+        "nature": "Nature",
+        "natureHelp": {
+          "pergunta": "The respondent fills it in the form, on every submission.",
+          "fixa": "Constant value you set once. Not shown in the form.",
+          "pre_preenchida": "You fill it per client, in the personalized link. Anyone opening the general link answers it normally.",
+          "automatica": "Filled by the system at generation. E.g. data_assinatura = submission date."
+        },
+        "question": "Question shown",
+        "type": "Type",
+        "options": "Options",
+        "optionsPlaceholder": "One option per line",
+        "optionsHint": "The respondent picks one. The text goes into the document as is.",
+        "fixedMissing": "no value (blank in the document)",
+        "helpText": "Help text (optional)",
+        "helpTextPlaceholder": "e.g. as shown on the ID",
+        "derived": "{{{base}}} in words",
+        "moveUp": "Move up",
+        "moveDown": "Move down"
       },
       "delivery": {
         "title": "Delivery",
@@ -1181,9 +1203,9 @@
       },
       "invites": {
         "title": "Send to a client",
-        "desc": "Fill in the company details for one specific client (class, price, plan…) and send a link just for them.",
+        "desc": "Fill in the prefilled variables for one specific client (course, class…) and send a link just for them.",
         "new": "Create link for a client",
-        "dialogDesc": "Company fields go into the document already filled. The client sees them but can't change them.",
+        "dialogDesc": "Prefilled variables go into the document locked. The respondent sees them but can't change them.",
         "label": "Client name",
         "labelPlaceholder": "e.g. Pedro Almeida",
         "create": "Create link",
@@ -1197,7 +1219,7 @@
         "delete": "Cancel link",
         "deleteError": "Could not cancel the link",
         "empty": "No links created yet.",
-        "noCompanyFields": "No field is marked as “Company”. Mark below, in Form fields, what you fill in before sending."
+        "noCompanyFields": "No variable is set as “Prefilled”. Mark below what you want to fill per client before sending."
       }
     },
     "submissions": {
@@ -1231,6 +1253,12 @@
       "status": "Status",
       "submissions": "Submissions",
       "last": "Last submission"
+    },
+    "natures": {
+      "pergunta": "Question",
+      "fixa": "Fixed",
+      "pre_preenchida": "Prefilled",
+      "automatica": "Automatic"
     }
   }
 }

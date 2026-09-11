@@ -41,6 +41,7 @@ interface Field {
   required: boolean;
   options: string[] | null;
   visibility?: VisibilityRule | null;
+  helpText?: string | null;
 }
 
 interface FormSettings {
@@ -234,6 +235,10 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
     const maskedError = value ? validateMaskedField(field.type, value) : null;
     if (maskedError) return t(`errors.${maskedError}`);
 
+    if (field.type === "day" && value && !/^(0?[1-9]|[12]\d|3[01])$/.test(value.trim())) {
+      return t("errors.invalidDay");
+    }
+
     return null;
   }
 
@@ -397,7 +402,7 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
   // ── Renderização de campos (compartilhada entre página única e conversacional) ──
 
   // Tipos de texto em linha: Enter avança e mostramos a dica "pressione Enter".
-  const ENTER_ADVANCE_TYPES = new Set(["text", "email", "phone", "number", "cpf", "cnpj", "cep", "currency"]);
+  const ENTER_ADVANCE_TYPES = new Set(["text", "email", "phone", "number", "cpf", "cnpj", "cep", "currency", "day", "percent"]);
 
   // Renderiza apenas o controle do campo (sem label/erro), idêntico nos dois modos.
   // `onPick` dispara após uma escolha de toque único (usado pelo auto-advance).
@@ -490,6 +495,39 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
             onBlur={() => handleBlur(field)}
             className={inputStateClass(field)}
           />
+        );
+      case "day":
+        return (
+          <Input
+            id={field.id}
+            inputMode="numeric"
+            placeholder={field.placeholder || "10"}
+            value={values[field.id] || ""}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(field.id, e.target.value.replace(/\D/g, "").slice(0, 2))
+            }
+            onBlur={() => handleBlur(field)}
+            className={cn("max-w-[8rem]", inputStateClass(field))}
+          />
+        );
+      case "percent":
+        return (
+          <div className="relative max-w-[10rem]">
+            <Input
+              id={field.id}
+              inputMode="decimal"
+              placeholder={field.placeholder || "0"}
+              value={values[field.id] || ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange(field.id, e.target.value.replace(/[^\d,.]/g, "").slice(0, 6))
+              }
+              onBlur={() => handleBlur(field)}
+              className={cn("pr-8", inputStateClass(field))}
+            />
+            <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              %
+            </span>
+          </div>
         );
       case "currency":
         return (
@@ -623,6 +661,7 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
             </span>
           )}
         </div>
+        {field.helpText && <p className="-mt-1 text-sm text-muted-foreground">{field.helpText}</p>}
         {renderControl(field)}
         {errors[field.id] && <p className="text-sm text-destructive">{errors[field.id]}</p>}
       </div>
@@ -800,6 +839,9 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
                 </h2>
               </div>
 
+              {currentField.helpText && (
+                <p className="-mt-2 text-muted-foreground">{currentField.helpText}</p>
+              )}
               {renderControl(currentField, scheduleAutoAdvance)}
 
               {errors[currentField.id] && (

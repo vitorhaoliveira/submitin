@@ -12,7 +12,9 @@ import {
   detectMissingFonts,
   formatValue,
   inferFieldType,
-  inferFilledBy,
+  inferNature,
+  dateToWords,
+  buildTemplateData,
   isValidCnpj,
   isValidCpf,
   mergeTemplate,
@@ -65,15 +67,16 @@ describe("variáveis", () => {
     assert.equal(inferFieldType("valor_mensalidade"), "currency");
     assert.equal(inferFieldType("observacoes"), "textarea");
     assert.equal(inferFieldType("nome_candidato"), "text"); // não casa "data"
-    assert.equal(inferFieldType("dia_vencimento"), "text"); // dia do mês
+    assert.equal(inferFieldType("dia_vencimento"), "day"); // dia do mês
+    assert.equal(inferFieldType("dia"), "day");
+    assert.equal(inferFieldType("percentual_desconto"), "percent");
+    assert.equal(inferFieldType("autoriza_imagem"), "select");
   });
 
-  test("infere quem preenche", () => {
-    assert.equal(inferFilledBy("cnpj_escola"), "company");
-    assert.equal(inferFilledBy("nome_empresa"), "company");
-    assert.equal(inferFilledBy("numero_contrato"), "company");
-    assert.equal(inferFilledBy("nome_aluno"), "client");
-    assert.equal(inferFilledBy("cpf_responsavel"), "client");
+  test("natureza padrão: tudo pergunta, exceto automáticas", () => {
+    assert.equal(inferNature("nome_aluno"), "pergunta");
+    assert.equal(inferNature("nome_escola"), "pergunta");
+    assert.equal(inferNature("data_assinatura"), "automatica");
   });
 
   test("deduplica e ignora *_extenso derivado", () => {
@@ -139,6 +142,27 @@ describe("formatação", () => {
     assert.equal(currencyToWords(1_000_000), "um milhão de reais");
     assert.equal(currencyToWords(2_000_001), "dois milhões e um reais");
   });
+
+  test("data por extenso e _extenso genérico", () => {
+    assert.equal(dateToWords("2026-12-15"), "15 de dezembro de 2026");
+    assert.equal(dateToWords("18/01/2027"), "18 de janeiro de 2027");
+    assert.equal(dateToWords("2027-03-01"), "1º de março de 2027");
+    const data = buildTemplateData(
+      [
+        { key: "data_assinatura", type: "date" },
+        { key: "valor_total", type: "currency" },
+        { key: "dia_vencimento", type: "day" },
+        { key: "percentual_multa", type: "percent" },
+      ],
+      { data_assinatura: "2026-12-15", valor_total: "389,90", dia_vencimento: "10", percentual_multa: "2" }
+    );
+    assert.equal(data.data_assinatura, "15/12/2026");
+    assert.equal(data.data_assinatura_extenso, "15 de dezembro de 2026");
+    assert.equal(data.valor_total_extenso, "trezentos e oitenta e nove reais e noventa centavos");
+    assert.equal(data.dia_vencimento_extenso, "dez");
+    assert.equal(data.percentual_multa, "2%");
+    assert.equal(data.percentual_multa_extenso, "dois por cento");
+  });
 });
 
 describe("template", () => {
@@ -188,6 +212,33 @@ describe("template", () => {
 
   test("arquivo que não é .docx", () => {
     assert.throws(() => parseTemplate(Buffer.from("não sou um zip")), TemplateError);
+  });
+});
+
+describe("contrato de matrícula do cliente (spec, seção 9)", () => {
+  // Template real: 16 variáveis, cabeçalho/rodapé/tabelas, nome_aluno 5 vezes.
+  // Único ajuste: {{data_assinatura}} → {{data_assinatura_extenso}} para exercitar a data por extenso.
+  const docx = readFileSync(join(import.meta.dirname, "fixtures/contrato-matricula-16v.docx"));
+  const payload = JSON.parse(
+    readFileSync(join(import.meta.dirname, "fixtures/contrato-matricula-16v.payload.json"), "utf8")
+  ) as Record<string, string>;
+
+  test("extrai 16 variáveis únicas", () => {
+    const { variables } = parseTemplate(docx);
+    assert.equal(variables.length, 16);
+    const byKey = Object.fromEntries(variables.map((v) => [v.key, v]));
+    assert.equal(byKey.data_assinatura?.nature, "automatica");
+    assert.equal(byKey.autoriza_imagem?.type, "select");
+    assert.equal(byKey.nome_aluno?.nature, "pergunta");
+    assert.ok(!byKey.data_assinatura_extenso, "derivada não vira campo");
+  });
+
+  test("mescla: nome_aluno nas 5 posições e data por extenso", () => {
+    const { variables } = parseTemplate(docx);
+    const text = xmlText(mergeTemplate(docx, variables, payload));
+    assert.ok(!text.includes("{{"), "sobrou variável");
+    assert.equal(text.split("Beatriz Almeida Ramos").length - 1, 5);
+    assert.ok(text.includes("Indaiatuba/SP, 18 de janeiro de 2027."));
   });
 });
 

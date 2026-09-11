@@ -62,8 +62,12 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
           type: f.type,
           required: f.required,
           variableKey: f.variableKey,
-          filledBy: f.filledBy === "company" ? ("company" as const) : ("client" as const),
+          nature: (["pergunta", "fixa", "pre_preenchida", "automatica"].includes(f.nature)
+            ? f.nature
+            : "pergunta") as "pergunta" | "fixa" | "pre_preenchida" | "automatica",
           defaultValue: f.defaultValue,
+          helpText: f.helpText,
+          options: Array.isArray(f.options) ? (f.options as string[]) : null,
         })),
       }}
       invites={invites.map((i) => ({

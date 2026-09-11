@@ -68,6 +68,8 @@ import {
   Building2,
   MapPin,
   BadgeDollarSign,
+  CalendarDays,
+  Percent,
   ArrowUp,
   ArrowDown,
   FileCheck2,
@@ -95,8 +97,8 @@ interface Field {
   visibility?: VisibilityRule | null;
   /** Documentos: variável do template preenchida por este campo. */
   variableKey?: string | null;
-  /** "company": preenchido pela empresa, fora do formulário público. */
-  filledBy?: string;
+  /** Documentos: pergunta | fixa | pre_preenchida | automatica. */
+  nature?: string;
 }
 
 interface FormSettings {
@@ -156,6 +158,8 @@ const fieldTypeIcons: Record<FieldType, React.ReactNode> = {
   cnpj: <Building2 className="w-4 h-4" />,
   cep: <MapPin className="w-4 h-4" />,
   currency: <BadgeDollarSign className="w-4 h-4" />,
+  day: <CalendarDays className="w-4 h-4" />,
+  percent: <Percent className="w-4 h-4" />,
 };
 
 let guestFieldCounter = 0;
@@ -325,6 +329,8 @@ export function FormBuilder({
     cnpj: t("fieldTypes.cnpj"),
     cep: t("fieldTypes.cep"),
     currency: t("fieldTypes.currency"),
+    day: t("fieldTypes.day"),
+    percent: t("fieldTypes.percent"),
   };
 
   function getPublicUrl() {
@@ -943,9 +949,9 @@ export function FormBuilder({
                           {tCommon("required")}
                         </Badge>
                       )}
-                      {field.filledBy === "company" && (
+                      {field.nature && field.nature !== "pergunta" && (
                         <Badge variant="secondary" className="text-xs">
-                          {t("companyField")}
+                          {t(`natures.${field.nature}`)}
                         </Badge>
                       )}
                       {isCompleteRule(field.visibility) && (

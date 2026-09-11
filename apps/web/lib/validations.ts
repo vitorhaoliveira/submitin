@@ -15,6 +15,8 @@ export const fieldTypes = [
   "cnpj",
   "cep",
   "currency",
+  "day",
+  "percent",
 ] as const;
 
 export type FieldType = (typeof fieldTypes)[number];
@@ -24,6 +26,8 @@ export const fieldTypeLabels: Record<FieldType, string> = {
   cnpj: "CNPJ",
   cep: "CEP",
   currency: "Valor (R$)",
+  day: "Dia do mês",
+  percent: "Percentual",
   text: "Texto",
   textarea: "Texto Longo",
   email: "Email",

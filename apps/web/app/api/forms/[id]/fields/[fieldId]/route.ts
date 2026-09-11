@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma, Prisma } from "@submitin/database";
 import { z } from "zod";
-import { createFieldSchema } from "@/lib/validations";
+import { createFieldSchema, fieldTypes } from "@/lib/validations";
 
 export async function PUT(
   request: NextRequest,
@@ -60,12 +60,17 @@ export async function PUT(
   }
 }
 
-const fillSchema = z.object({
-  filledBy: z.enum(["client", "company"]).optional(),
+const variableSchema = z.object({
+  nature: z.enum(["pergunta", "fixa", "pre_preenchida", "automatica"]).optional(),
   defaultValue: z.string().max(2000).nullable().optional(),
+  helpText: z.string().max(300).nullable().optional(),
+  label: z.string().trim().min(1).max(200).optional(),
+  type: z.enum(fieldTypes).optional(),
+  required: z.boolean().optional(),
+  options: z.array(z.string().trim().min(1).max(200)).max(50).nullable().optional(),
 });
 
-/** PATCH — define quem preenche o campo e o valor fixo da empresa. */
+/** PATCH — ajusta uma variável do documento (natureza, tipo, opções, ajuda, valor fixo). */
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string; fieldId: string }> }
@@ -76,18 +81,25 @@ export async function PATCH(
     return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
   }
 
-  const parsed = fillSchema.safeParse(await request.json().catch(() => null));
+  const parsed = variableSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
+  }
+  const d = parsed.data;
+  if (d.type === "select" && d.options !== undefined && (!d.options || d.options.length === 0)) {
+    return NextResponse.json({ error: "Informe ao menos uma opção." }, { status: 400 });
   }
 
   const { count } = await prisma.field.updateMany({
     where: { id: fieldId, formId: id, form: { userId: session.user.id } },
     data: {
-      ...(parsed.data.filledBy && { filledBy: parsed.data.filledBy }),
-      ...(parsed.data.defaultValue !== undefined && {
-        defaultValue: parsed.data.defaultValue?.trim() || null,
-      }),
+      ...(d.nature && { nature: d.nature }),
+      ...(d.defaultValue !== undefined && { defaultValue: d.defaultValue?.trim() || null }),
+      ...(d.helpText !== undefined && { helpText: d.helpText?.trim() || null }),
+      ...(d.label && { label: d.label }),
+      ...(d.type && { type: d.type }),
+      ...(d.required !== undefined && { required: d.required }),
+      ...(d.options !== undefined && { options: d.options ?? Prisma.DbNull }),
     },
   });
   if (count === 0) {

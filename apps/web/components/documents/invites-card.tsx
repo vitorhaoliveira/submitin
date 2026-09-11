@@ -20,7 +20,7 @@ import { useLocale, useTranslations } from "@/lib/i18n-context";
 import { toast } from "@/hooks/use-toast";
 import { formatRelativeDate } from "@/lib/utils";
 import { fmt } from "./shared";
-import type { DocField } from "./company-fields";
+import type { DocField } from "./variables-editor";
 
 type Invite = { id: string; token: string; label: string; usedAt: string | null; createdAt: string };
 
@@ -54,7 +54,7 @@ export function InvitesCard({
   const [origin, setOrigin] = useState("");
 
   useEffect(() => setOrigin(window.location.origin), []);
-  const companyFields = fields.filter((f) => f.filledBy === "company");
+  const companyFields = fields.filter((f) => f.nature === "pre_preenchida");
   const linkFor = (token: string) => `${origin}/f/${slug}?c=${token}`;
 
   function openDialog() {

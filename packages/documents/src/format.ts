@@ -19,6 +19,45 @@ export function formatCurrencyBRL(amount: number): string {
     .replace(/ /g, " ");
 }
 
+/** Aceita "2027-02-01" ou "01/02/2027". Retorna [ano, mês, dia] ou null. */
+export function parseDate(value: string): [number, number, number] | null {
+  const iso = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (iso) return [Number(iso[1]), Number(iso[2]), Number(iso[3])];
+  const br = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (br) return [Number(br[3]), Number(br[2]), Number(br[1])];
+  return null;
+}
+
+const MONTHS = [
+  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
+  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
+];
+
+/** "2026-12-15" → "15 de dezembro de 2026" (dia 1 → "1º"). */
+export function dateToWords(value: string): string {
+  const parsed = parseDate(value);
+  if (!parsed) return "";
+  const [y, m, d] = parsed;
+  if (m < 1 || m > 12) return "";
+  return `${d === 1 ? "1º" : d} de ${MONTHS[m - 1]} de ${y}`;
+}
+
+/** Data de hoje (ou de `date`) no fuso de Brasília, em "aaaa-mm-dd". */
+export function isoDateInBrazil(date: Date = new Date()): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(date);
+}
+
+/** "10" / "10,5" / "10.5" → 10.5 */
+export function parsePercent(value: string): number | null {
+  const n = value.replace("%", "").replace(",", ".").trim();
+  return /^-?\d+(\.\d+)?$/.test(n) ? Number(n) : null;
+}
+
 /** "2027-02-01" → "01/02/2027". Valores já em dd/mm/aaaa passam direto. */
 export function formatDateBR(value: string): string {
   const iso = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -72,6 +111,14 @@ export function formatValue(type: DocumentFieldType, value: string): string {
       return formatCep(value);
     case "phone":
       return formatPhoneBR(value);
+    case "percent": {
+      const n = parsePercent(value);
+      return n === null ? value : `${String(n).replace(".", ",")}%`;
+    }
+    case "day": {
+      const n = Number.parseInt(value, 10);
+      return Number.isFinite(n) ? String(n) : value;
+    }
     default:
       return value;
   }
@@ -165,9 +212,32 @@ export function currencyToWords(amount: number): string {
   return parts.join(" e ");
 }
 
+/** Valor por extenso conforme o tipo da variável base (moeda, data, dia, percentual). */
+export function toWords(type: DocumentFieldType, raw: string): string {
+  if (!raw) return "";
+  switch (type) {
+    case "currency": {
+      const amount = parseCurrency(raw);
+      return amount === null ? "" : currencyToWords(amount);
+    }
+    case "date":
+      return dateToWords(raw);
+    case "day": {
+      const n = Number.parseInt(raw, 10);
+      return Number.isFinite(n) && n >= 0 ? integerToWords(n) : "";
+    }
+    case "percent": {
+      const n = parsePercent(raw);
+      return n === null || !Number.isInteger(n) || n < 0 ? "" : `${integerToWords(n)} por cento`;
+    }
+    default:
+      return "";
+  }
+}
+
 /**
  * Monta os dados para o template: respostas formatadas para exibição
- * + variáveis derivadas `*_extenso` para campos de moeda.
+ * + variáveis derivadas `*_extenso` (moeda, data, dia do mês, percentual).
  */
 export function buildTemplateData(
   variables: Pick<DocumentVariable, "key" | "type">[],
@@ -177,10 +247,8 @@ export function buildTemplateData(
   for (const variable of variables) {
     const raw = answers[variable.key] ?? "";
     data[variable.key] = formatValue(variable.type, raw);
-    if (variable.type === "currency") {
-      const amount = parseCurrency(raw);
-      data[variable.key + EXTENSO_SUFFIX] = amount === null ? "" : currencyToWords(amount);
-    }
+    const words = toWords(variable.type, raw);
+    if (words) data[variable.key + EXTENSO_SUFFIX] = words;
   }
   return data;
 }

@@ -34,6 +34,10 @@ model User {
   // Documentos: último aviso de limite mensal de documentos (1 e-mail por mês)
   documentLimitNotifiedAt DateTime?
 
+  // Marca da conta (logo + nome no topo dos formulários públicos)
+  brandName    String?
+  brandLogoKey String?
+
   accounts      Account[]
   sessions      Session[]
   forms         Form[]
@@ -121,10 +125,14 @@ model Field {
   visibility   Json?
   // Documentos: variável do template ({{variable_key}}) preenchida por este campo
   variableKey  String?
-  // Quem preenche: "client" (aparece no formulário) | "company" (a empresa
-  // preenche; fica fora do formulário e usa defaultValue ou o link personalizado)
-  filledBy     String  @default("client")
+  // Natureza do campo (Documentos):
+  //   pergunta       → o respondente preenche no formulário
+  //   fixa           → valor constante definido pela empresa (defaultValue)
+  //   pre_preenchida → valor vem do link personalizado; sem link, vira pergunta
+  //   automatica     → resolvido pelo sistema na geração (ex.: data_assinatura)
+  nature       String  @default("pergunta")
   defaultValue String? @db.Text
+  helpText     String? @db.Text
 
   formId String
   form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
@@ -308,8 +316,12 @@ model Document {
   formId String @unique
   form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
 
+  // Envia cópia do PDF ao respondente (se ele informou e-mail)
+  emailRespondent Boolean @default(true)
+
   templates   DocumentTemplate[]
   generations DocumentGeneration[]
+  previews    DocumentPreview[]
 
   @@index([userId])
   @@map("documents")
@@ -333,6 +345,7 @@ model DocumentTemplate {
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   generations DocumentGeneration[]
+  previews    DocumentPreview[]
 
   @@unique([documentId, version])
   @@map("document_templates")
@@ -347,6 +360,8 @@ model DocumentGeneration {
   docxKey     String?
   error       String?   @db.Text
   attempts    Int       @default(0)
+  // Link permanente de consulta do respondente, sem login (uso pós-MVP)
+  accessToken String    @unique @default(cuid())
   startedAt   DateTime?
   completedAt DateTime?
   createdAt   DateTime  @default(now())
@@ -364,4 +379,25 @@ model DocumentGeneration {
   @@index([documentId, createdAt])
   @@index([status, updatedAt])
   @@map("document_generations")
+}
+
+// PDF gerado para o respondente conferir antes de enviar. Se ele confirmar sem
+// alterar nada, o mesmo arquivo vira o definitivo (uma conversão por envio).
+model DocumentPreview {
+  id        String   @id @default(cuid())
+  // Hash dos dados mesclados; a geração reaproveita o arquivo se bater
+  dataHash  String
+  pdfKey    String
+  docxKey   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  templateId String
+  template   DocumentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([documentId, createdAt])
+  @@map("document_previews")
 }

@@ -886,7 +886,9 @@
       "cpf": "CPF",
       "cnpj": "CNPJ",
       "cep": "CEP",
-      "currency": "Valor (R$)"
+      "currency": "Valor (R$)",
+      "day": "Dia do mês",
+      "percent": "Percentual"
     },
     "status": {
       "draft": "Rascunho",
@@ -924,7 +926,12 @@
     "moveUp": "Mover para cima",
     "moveDown": "Mover para baixo",
     "fieldMoveError": "Não foi possível reordenar os campos",
-    "companyField": "Empresa preenche"
+    "natures": {
+      "pergunta": "Pergunta",
+      "fixa": "Fixa",
+      "pre_preenchida": "Pré-preenchida",
+      "automatica": "Automática"
+    }
   },
   "responses": {
     "title": "Respostas",
@@ -1012,7 +1019,8 @@
       "limitReached": "Este formulário atingiu o limite de respostas.",
       "invalidCpf": "CPF inválido",
       "invalidCnpj": "CNPJ inválido",
-      "invalidCep": "CEP inválido"
+      "invalidCep": "CEP inválido",
+      "invalidDay": "Informe um dia entre 1 e 31"
     },
     "poweredBy": "Criado com",
     "closed": {
@@ -1143,17 +1151,31 @@
         "embedHint": "Código de incorporação (embed), QR code e aparência ficam no editor do formulário:"
       },
       "fields": {
-        "title": "Campos do formulário",
-        "desc": "Uma pergunta por variável do documento. Marque como “Empresa” o que você mesmo preenche.",
+        "title": "Variáveis do documento",
+        "desc": "Classifique cada variável: quem preenche e como ela aparece no formulário.",
         "required": "Obrigatório",
         "missing": "Variáveis do documento sem campo no formulário (sairão em branco): {keys}",
         "orphan": "Campos de variáveis que não existem mais no template atual: {labels}",
-        "whoFills": "Quem preenche",
-        "client": "Cliente",
-        "company": "Empresa",
         "fixedValue": "Valor fixo",
-        "fixedValuePlaceholder": "Opcional: usado em todos os envios",
-        "saveError": "Não foi possível salvar o campo"
+        "saveError": "Não foi possível salvar o campo",
+        "nature": "Natureza",
+        "natureHelp": {
+          "pergunta": "O responsável preenche no formulário, a cada envio.",
+          "fixa": "Valor constante, definido uma vez por você. Não aparece no formulário.",
+          "pre_preenchida": "Você preenche por cliente, no link personalizado. Quem abrir o link geral responde normalmente.",
+          "automatica": "O sistema preenche na geração. Ex.: data_assinatura = data do envio."
+        },
+        "question": "Pergunta exibida",
+        "type": "Tipo",
+        "options": "Opções",
+        "optionsPlaceholder": "Uma opção por linha",
+        "optionsHint": "O responsável escolhe uma destas. O texto vai igualzinho para o documento.",
+        "fixedMissing": "sem valor (sai em branco)",
+        "helpText": "Texto de ajuda (opcional)",
+        "helpTextPlaceholder": "Ex.: como aparece no RG",
+        "derived": "por extenso de {{{base}}}",
+        "moveUp": "Mover para cima",
+        "moveDown": "Mover para baixo"
       },
       "delivery": {
         "title": "Entrega",
@@ -1181,9 +1203,9 @@
       },
       "invites": {
         "title": "Enviar para um cliente",
-        "desc": "Preencha os dados da empresa para um cliente específico (turma, valor, plano…) e mande um link só dele.",
+        "desc": "Preencha as variáveis pré-preenchidas para um aluno específico (curso, turma…) e mande um link só dele.",
         "new": "Criar link para um cliente",
-        "dialogDesc": "Os campos da empresa vão preenchidos no documento. O cliente vê esses dados, mas não consegue alterar.",
+        "dialogDesc": "As variáveis pré-preenchidas vão travadas no documento. O responsável vê, mas não altera.",
         "label": "Nome do cliente",
         "labelPlaceholder": "Ex.: Pedro Almeida",
         "create": "Criar link",
@@ -1197,7 +1219,7 @@
         "delete": "Cancelar link",
         "deleteError": "Não foi possível cancelar o link",
         "empty": "Nenhum link criado ainda.",
-        "noCompanyFields": "Nenhum campo está marcado como “Empresa”. Marque abaixo, em Campos do formulário, o que você preenche antes de enviar."
+        "noCompanyFields": "Nenhuma variável está como “Pré-preenchida”. Marque abaixo o que você quer preencher por aluno antes de enviar."
       }
     },
     "submissions": {
@@ -1231,6 +1253,12 @@
       "status": "Status",
       "submissions": "Envios",
       "last": "Último envio"
+    },
+    "natures": {
+      "pergunta": "Pergunta",
+      "fixa": "Fixa",
+      "pre_preenchida": "Pré-preenchida",
+      "automatica": "Automática"
     }
   }
 }

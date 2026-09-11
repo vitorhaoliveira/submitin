@@ -12,9 +12,20 @@ export type DocumentFieldType =
   | "cnpj"
   | "cep"
   | "date"
-  | "currency";
+  | "currency"
+  | "percent"
+  | "day"
+  | "select";
 
-export type FilledBy = "client" | "company";
+/**
+ * Natureza da variável:
+ * - pergunta: o respondente preenche no formulário
+ * - fixa: valor constante definido pela empresa no setup
+ * - pre_preenchida: valor vem do link personalizado (sem link, vira pergunta)
+ * - automatica: resolvida pelo sistema na geração (ex.: data_assinatura)
+ */
+export const NATURES = ["pergunta", "fixa", "pre_preenchida", "automatica"] as const;
+export type Nature = (typeof NATURES)[number];
 
 export type DocumentVariable = {
   key: string;
@@ -22,8 +33,14 @@ export type DocumentVariable = {
   type: DocumentFieldType;
   required: boolean;
   order: number;
-  /** Quem preenche: o cliente no formulário ou a empresa antes de enviar. */
-  filledBy: FilledBy;
+  nature: Nature;
+  /** Opções para tipo "select" (ex.: sim/não). */
+  options?: string[];
+};
+
+/** Variáveis que o sistema sabe resolver sozinho (natureza "automatica"). */
+export const AUTOMATIC_KEYS: Record<string, DocumentFieldType> = {
+  data_assinatura: "date",
 };
 
 /** Sufixo de variável derivada: `{{valor_extenso}}` é calculada a partir de `{{valor}}`. */
@@ -49,14 +66,19 @@ const TYPE_RULES: Array<{ type: DocumentFieldType; words: string[] }> = [
   { type: "cep", words: ["cep"] },
   { type: "date", words: ["data", "nascimento", "vencimento"] },
   { type: "currency", words: ["valor", "preco", "mensalidade", "taxa", "matricula_valor"] },
+  { type: "percent", words: ["percentual", "porcentagem"] },
   { type: "textarea", words: ["observacao", "observacoes", "descricao"] },
 ];
+
+/** `autoriza_*` vira sim/não. */
+export const YES_NO_OPTIONS = ["Sim", "Não"];
 
 /** Heurística do nome da variável → tipo de campo (usuário pode sobrescrever). */
 export function inferFieldType(key: string): DocumentFieldType {
   const parts = key.split("_");
-  // `dia_vencimento`, `dia_pagamento`: dia do mês, não uma data completa.
-  if (parts[0] === "dia") return "text";
+  // `dia`, `dia_vencimento`, `dia_pagamento`: dia do mês (1–31), não uma data.
+  if (parts[0] === "dia") return "day";
+  if (parts.includes("autoriza")) return "select";
   for (const rule of TYPE_RULES) {
     for (const word of rule.words) {
       // Casa por segmento inteiro (`data_inicio`) ou prefixo composto (`e_mail`),
@@ -67,18 +89,9 @@ export function inferFieldType(key: string): DocumentFieldType {
   return "text";
 }
 
-/** Palavras que indicam dado da própria empresa (contratada), não do cliente. */
-const COMPANY_WORDS = [
-  "empresa", "escola", "contratada", "clinica", "academia", "imobiliaria",
-  "consultorio", "estudio", "instituicao", "prestador",
-];
-
-/** Heurística: `{{cnpj_escola}}`, `{{nome_empresa}}`, `{{numero_contrato}}` → empresa preenche. */
-export function inferFilledBy(key: string): FilledBy {
-  const parts = key.split("_");
-  if (COMPANY_WORDS.some((w) => parts.includes(w))) return "company";
-  if (key.startsWith("numero_contrato")) return "company";
-  return "client";
+/** Padrão da detecção (spec): tudo é pergunta, exceto o que o sistema resolve sozinho. */
+export function inferNature(key: string): Nature {
+  return key in AUTOMATIC_KEYS ? "automatica" : "pergunta";
 }
 
 const LABEL_WORDS: Record<string, string> = {
@@ -120,15 +133,21 @@ export function buildVariables(rawTags: string[]): DocumentVariable[] {
     const key = normalizeVariableKey(tag);
     if (key && !keys.includes(key)) keys.push(key);
   }
+  // `{{data_assinatura_extenso}}` sozinho no Word: a base automática entra implícita.
+  for (const key of [...keys]) {
+    const base = key.endsWith(EXTENSO_SUFFIX) ? key.slice(0, -EXTENSO_SUFFIX.length) : null;
+    if (base && base in AUTOMATIC_KEYS && !keys.includes(base)) keys.push(base);
+  }
   return keys
     .filter((key) => !isDerivedKey(key, keys))
     .map((key, order) => ({
       key,
       label: labelFromKey(key),
-      type: inferFieldType(key),
+      type: AUTOMATIC_KEYS[key] ?? inferFieldType(key),
       required: true,
       order,
-      filledBy: inferFilledBy(key),
+      nature: inferNature(key),
+      ...(key.split("_").includes("autoriza") && { options: YES_NO_OPTIONS }),
     }));
 }
 

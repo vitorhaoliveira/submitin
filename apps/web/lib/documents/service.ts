@@ -84,12 +84,12 @@ type FieldLike = {
   label: string;
   order: number;
   variableKey: string | null;
-  filledBy?: string;
+  nature?: string;
 };
 type FieldValueLike = { fieldId: string; value: string };
 
 const DOCUMENT_FIELD_TYPES = new Set<string>([
-  "text", "textarea", "email", "phone", "cpf", "cnpj", "cep", "date", "currency",
+  "text", "textarea", "email", "phone", "cpf", "cnpj", "cep", "date", "currency", "day", "percent", "select",
 ]);
 
 export function toDocumentFieldType(fieldType: string): DocumentFieldType {
@@ -121,13 +121,53 @@ export function templateInputFromResponse(
   return { variables, answers };
 }
 
-/** Identificador da submissão: primeiro campo de texto preenchido pelo cliente. */
+/** Quem é o "sujeito" do documento: aluno, paciente, cliente… nessa ordem de preferência. */
+const SUBJECT_KEYS = [/^nome_(aluno|estudante|paciente|cliente|contratante|locatario)/, /^nome_/];
+
+/**
+ * Identificador da submissão (tela de Envios, e-mail, nome do PDF):
+ * nome do aluno/cliente se houver; senão o primeiro texto que o respondente preencheu.
+ */
 export function responseIdentifier(fields: FieldLike[], fieldValues: FieldValueLike[]): string {
   const valueByField = new Map(fieldValues.map((fv) => [fv.fieldId, fv.value]));
-  const ordered = fields.filter((f) => f.filledBy !== "company").sort((a, b) => a.order - b.order);
+  for (const pattern of SUBJECT_KEYS) {
+    const subject = fields
+      .filter((f) => f.variableKey && pattern.test(f.variableKey) && valueByField.get(f.id)?.trim())
+      .sort((a, b) => a.order - b.order)[0];
+    if (subject) return valueByField.get(subject.id)!.slice(0, 120);
+  }
+  const ordered = fields
+    .filter((f) => !f.nature || f.nature === "pergunta")
+    .sort((a, b) => a.order - b.order);
   const firstText = ordered.find((f) => f.type === "text" && valueByField.get(f.id)?.trim());
   const fallback = ordered.find((f) => valueByField.get(f.id)?.trim());
   return (valueByField.get((firstText ?? fallback)?.id ?? "") ?? "").slice(0, 120);
+}
+
+const NAME_STOPWORDS = new Set(["de", "da", "do", "das", "dos", "e", "a", "o", "para"]);
+
+function fileTokens(text: string): string[] {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\w\s-]/g, " ")
+    .split(/[\s_-]+/)
+    .filter((w) => w && !NAME_STOPWORDS.has(w.toLowerCase()));
+}
+
+/**
+ * Nome legível do PDF: "Contrato de Matrícula 2027" + "Beatriz Almeida Ramos"
+ * → "Contrato-Matricula-Beatriz-2027" (primeiro nome antes do ano, se houver).
+ */
+export function documentFileName(documentName: string, identifier: string): string {
+  const words = fileTokens(documentName);
+  const firstName = fileTokens(identifier)[0];
+  if (firstName) {
+    const yearIndex = words.findIndex((w) => /^(19|20)\d{2}$/.test(w));
+    if (yearIndex >= 0) words.splice(yearIndex, 0, firstName);
+    else words.push(firstName);
+  }
+  return (words.join("-").slice(0, 100) || "documento").replace(/-+$/, "");
 }
 
 export function safeFileName(...parts: string[]): string {

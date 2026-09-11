@@ -17,7 +17,7 @@ import {
   monthlyDocumentUsage,
   publicPdfUrl,
   responseIdentifier,
-  safeFileName,
+  documentFileName,
   startOfMonth,
   templateInputFromResponse,
 } from "./service";
@@ -158,7 +158,7 @@ export async function processDocumentGeneration(
 
   // Entrega (best-effort): falha de e-mail/webhook não invalida o documento gerado.
   const identifier = responseIdentifier(form.fields, response.fieldValues);
-  const fileName = `${safeFileName(document.name, identifier)}.pdf`;
+  const fileName = `${documentFileName(document.name, identifier)}.pdf`;
   await Promise.allSettled([
     deliverByEmail({
       to: deliveryEmails(form.settings),

@@ -15,7 +15,7 @@ import { fmt, useFieldTypeLabel } from "./shared";
 
 type Preview = {
   fileName: string;
-  variables: { key: string; label: string; type: string; filledBy: "client" | "company" }[];
+  variables: { key: string; label: string; type: string; nature: string }[];
   missingFonts: string[];
   unsupportedTags: string[];
 };
@@ -217,9 +217,9 @@ export function NewDocumentClient() {
                     <tr key={v.key} className="border-t">
                       <td className="px-3 py-2">
                         {v.label}
-                        {v.filledBy === "company" && (
+                        {v.nature !== "pergunta" && (
                           <span className="ml-2 rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-medium text-brand">
-                            {t("detail.fields.company")}
+                            {t(`natures.${v.nature}`)}
                           </span>
                         )}
                       </td>
