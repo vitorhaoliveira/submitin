@@ -63,6 +63,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
       options: Array.isArray(field.options) ? (field.options as string[]) : null,
       visibility: parseVisibility(field.visibility),
       variableKey: field.variableKey,
+      filledBy: field.filledBy,
     })),
     // Include all settings fields for Pro features
     settings: form.settings

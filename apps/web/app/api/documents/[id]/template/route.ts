@@ -87,6 +87,7 @@ export async function POST(request: Request, { params }: Params) {
           required: v.required,
           order: maxOrder + 1 + i,
           variableKey: v.key,
+          filledBy: v.filledBy,
         })),
       }),
       prisma.document.update({ where: { id: document.id }, data: { updatedAt: new Date() } }),

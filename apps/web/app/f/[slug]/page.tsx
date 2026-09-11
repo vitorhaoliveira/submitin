@@ -6,6 +6,9 @@ import { getFormAvailability } from "@/lib/form-availability";
 import { buildMetadata } from "@/lib/seo";
 import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 import type { CustomTheme } from "@/lib/theme-utils";
+import { companyValuesFor } from "@/lib/form-response";
+import { toDocumentFieldType } from "@/lib/documents/service";
+import { formatValue } from "@submitin/documents/format";
 
 // Conteúdo dinâmico: conta views e depende de estado mutável (agendamento,
 // limite de respostas). Sem isto, o Next cacheia a rota e o form mostra estado
@@ -14,6 +17,7 @@ export const dynamic = "force-dynamic";
 
 interface PublicFormPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ c?: string }>;
 }
 
 export async function generateMetadata({ params }: PublicFormPageProps) {
@@ -45,8 +49,8 @@ export async function generateMetadata({ params }: PublicFormPageProps) {
   });
 }
 
-export default async function PublicFormPage({ params }: PublicFormPageProps) {
-  const { slug } = await params;
+export default async function PublicFormPage({ params, searchParams }: PublicFormPageProps) {
+  const [{ slug }, { c: inviteToken }] = await Promise.all([params, searchParams]);
   const form = await prisma.form.findFirst({
     where: {
       slug,
@@ -75,12 +79,37 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
     /* ignore */
   }
 
+  // Link personalizado (?c=token): campos que a empresa já preencheu para este cliente.
+  const invite =
+    typeof inviteToken === "string" && inviteToken
+      ? await prisma.formInvite.findUnique({ where: { token: inviteToken } })
+      : null;
+  const inviteProblem =
+    typeof inviteToken === "string" && inviteToken
+      ? !invite || invite.formId !== form.id
+        ? "invalid"
+        : invite.usedAt
+          ? "used"
+          : null
+      : null;
+  const inviteValues =
+    invite && !inviteProblem ? ((invite.values ?? {}) as Record<string, string>) : {};
+  const companyValues = companyValuesFor(form.fields, inviteValues);
+  // O cliente vê, só para leitura, o que foi preenchido especificamente para ele.
+  const prefilled = form.fields
+    .filter((f) => f.filledBy === "company" && inviteValues[f.id] && companyValues[f.id])
+    .map((f) => ({
+      label: f.label,
+      value: formatValue(toDocumentFieldType(f.type), companyValues[f.id]!),
+    }));
+
   // Transform JsonValue options to string[] | null
   const transformedForm = {
     id: form.id,
     name: form.name,
     description: form.description,
-    fields: form.fields.map((field: (typeof form.fields)[number]) => ({
+    // Campos da empresa não aparecem para o respondente.
+    fields: form.fields.filter((field) => field.filledBy !== "company").map((field) => ({
       id: field.id,
       type: field.type,
       label: field.label,
@@ -127,5 +156,20 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
     responseCount
   );
 
-  return <PublicForm form={transformedForm} availability={availability} />;
+  if (inviteProblem) {
+    return (
+      <PublicForm
+        form={transformedForm}
+        availability={{ isOpen: false, reason: inviteProblem === "used" ? "inviteUsed" : "inviteInvalid" }}
+      />
+    );
+  }
+
+  return (
+    <PublicForm
+      form={transformedForm}
+      availability={availability}
+      invite={invite ? { token: invite.token, prefilled } : undefined}
+    />
+  );
 }

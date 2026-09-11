@@ -78,7 +78,14 @@ export function templateFileKey(userId: string, documentId: string, version: num
 // Respostas → dados do template
 // ---------------------------------------------------------------------------
 
-type FieldLike = { id: string; type: string; label: string; order: number; variableKey: string | null };
+type FieldLike = {
+  id: string;
+  type: string;
+  label: string;
+  order: number;
+  variableKey: string | null;
+  filledBy?: string;
+};
 type FieldValueLike = { fieldId: string; value: string };
 
 const DOCUMENT_FIELD_TYPES = new Set<string>([
@@ -114,10 +121,10 @@ export function templateInputFromResponse(
   return { variables, answers };
 }
 
-/** Identificador da submissão na tela de Envios: primeiro campo de texto preenchido. */
+/** Identificador da submissão: primeiro campo de texto preenchido pelo cliente. */
 export function responseIdentifier(fields: FieldLike[], fieldValues: FieldValueLike[]): string {
   const valueByField = new Map(fieldValues.map((fv) => [fv.fieldId, fv.value]));
-  const ordered = [...fields].sort((a, b) => a.order - b.order);
+  const ordered = fields.filter((f) => f.filledBy !== "company").sort((a, b) => a.order - b.order);
   const firstText = ordered.find((f) => f.type === "text" && valueByField.get(f.id)?.trim());
   const fallback = ordered.find((f) => valueByField.get(f.id)?.trim());
   return (valueByField.get((firstText ?? fallback)?.id ?? "") ?? "").slice(0, 120);

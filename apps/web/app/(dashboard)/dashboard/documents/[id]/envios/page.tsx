@@ -71,7 +71,10 @@ export default async function SubmissionsPage({
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      include: { response: { include: { fieldValues: true } }, template: { select: { version: true } } },
+      include: {
+        response: { include: { fieldValues: true, invite: { select: { label: true } } } },
+        template: { select: { version: true } },
+      },
     }),
   ]);
 
@@ -87,7 +90,11 @@ export default async function SubmissionsPage({
         createdAt: g.createdAt.toISOString(),
         status: g.status,
         error: g.error,
-        identifier: responseIdentifier(document.form.fields, g.response.fieldValues),
+        identifier:
+          responseIdentifier(document.form.fields, g.response.fieldValues) ||
+          g.response.invite?.label ||
+          "",
+        inviteLabel: g.response.invite?.label ?? null,
         templateVersion: g.template.version,
         hasFile: Boolean(g.pdfKey),
       }))}

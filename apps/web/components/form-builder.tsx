@@ -95,6 +95,8 @@ interface Field {
   visibility?: VisibilityRule | null;
   /** Documentos: variável do template preenchida por este campo. */
   variableKey?: string | null;
+  /** "company": preenchido pela empresa, fora do formulário público. */
+  filledBy?: string;
 }
 
 interface FormSettings {
@@ -939,6 +941,11 @@ export function FormBuilder({
                       {field.required && (
                         <Badge variant="outline" className="text-xs">
                           {tCommon("required")}
+                        </Badge>
+                      )}
+                      {field.filledBy === "company" && (
+                        <Badge variant="secondary" className="text-xs">
+                          {t("companyField")}
                         </Badge>
                       )}
                       {isCompleteRule(field.visibility) && (

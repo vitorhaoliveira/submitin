@@ -36,6 +36,8 @@ import { toast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/utils";
 import { fmt, useFieldTypeLabel } from "./shared";
 import { PageHeader } from "@/components/page-header";
+import { FieldsFillList, type DocField } from "./company-fields";
+import { InvitesCard } from "./invites-card";
 
 type Props = {
   document: { id: string; name: string; submissions: number };
@@ -43,7 +45,7 @@ type Props = {
     id: string;
     slug: string;
     published: boolean;
-    fields: { id: string; label: string; type: string; required: boolean; variableKey: string | null }[];
+    fields: DocField[];
   };
   template: {
     version: number;
@@ -53,6 +55,7 @@ type Props = {
     missingFonts: string[];
   } | null;
   delivery: { emails: string[]; webhookUrl: string };
+  invites: { id: string; token: string; label: string; usedAt: string | null; createdAt: string }[];
 };
 
 async function requestJson(url: string, init: RequestInit) {
@@ -62,7 +65,7 @@ async function requestJson(url: string, init: RequestInit) {
   return data;
 }
 
-export function DocumentDetailClient({ document, form, template, delivery }: Props) {
+export function DocumentDetailClient({ document, form, template, delivery, invites }: Props) {
   const t = useTranslations("documents");
   const tCommon = useTranslations("common");
   const locale = useLocale();
@@ -77,16 +80,17 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
   const [copied, setCopied] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [fields, setFields] = useState(form.fields);
 
   useEffect(() => setOrigin(window.location.origin), []);
   const publicUrl = `${origin}/f/${form.slug}`;
 
-  const fieldKeys = new Set(form.fields.map((f) => f.variableKey).filter(Boolean));
+  const fieldKeys = new Set(fields.map((f) => f.variableKey).filter(Boolean));
   const templateKeys = new Set(template?.variables ?? []);
   const keysWithoutField = (template?.variables ?? []).filter(
     (k) => !fieldKeys.has(k) && !(k.endsWith("_extenso") && fieldKeys.has(k.slice(0, -8)))
   );
-  const orphanFields = form.fields.filter((f) => f.variableKey && !templateKeys.has(f.variableKey));
+  const orphanFields = fields.filter((f) => f.variableKey && !templateKeys.has(f.variableKey));
 
   function fail(err: unknown) {
     toast({
@@ -277,6 +281,14 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
         </CardContent>
       </Card>
 
+      <InvitesCard
+        formId={form.id}
+        slug={form.slug}
+        documentName={name}
+        fields={fields}
+        initialInvites={invites}
+      />
+
       {/* Campos */}
       <Card>
         <CardHeader className="flex flex-row items-start justify-between gap-4">
@@ -302,22 +314,7 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
               {fmt(t("detail.fields.orphan"), { labels: orphanFields.map((f) => f.label).join(", ") })}
             </p>
           )}
-          <ul className="divide-y rounded-lg border">
-            {form.fields.map((field) => (
-              <li key={field.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2.5 text-sm">
-                <span className="font-medium">{field.label}</span>
-                {field.required && (
-                  <Badge variant="outline" className="text-xs">
-                    {t("detail.fields.required")}
-                  </Badge>
-                )}
-                <span className="text-muted-foreground">{fieldTypeLabel(field.type)}</span>
-                {field.variableKey && (
-                  <code className="ml-auto text-xs font-mono text-brand">{`{{${field.variableKey}}}`}</code>
-                )}
-              </li>
-            ))}
-          </ul>
+          <FieldsFillList formId={form.id} fields={fields} onChange={setFields} />
         </CardContent>
       </Card>
 

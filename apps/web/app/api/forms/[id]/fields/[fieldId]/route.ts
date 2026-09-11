@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma, Prisma } from "@submitin/database";
+import { z } from "zod";
 import { createFieldSchema } from "@/lib/validations";
 
 export async function PUT(
@@ -57,6 +58,42 @@ export async function PUT(
     }
     return NextResponse.json({ error: "Erro ao atualizar campo" }, { status: 500 });
   }
+}
+
+const fillSchema = z.object({
+  filledBy: z.enum(["client", "company"]).optional(),
+  defaultValue: z.string().max(2000).nullable().optional(),
+});
+
+/** PATCH — define quem preenche o campo e o valor fixo da empresa. */
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string; fieldId: string }> }
+) {
+  const { id, fieldId } = await params;
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  }
+
+  const parsed = fillSchema.safeParse(await request.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
+  }
+
+  const { count } = await prisma.field.updateMany({
+    where: { id: fieldId, formId: id, form: { userId: session.user.id } },
+    data: {
+      ...(parsed.data.filledBy && { filledBy: parsed.data.filledBy }),
+      ...(parsed.data.defaultValue !== undefined && {
+        defaultValue: parsed.data.defaultValue?.trim() || null,
+      }),
+    },
+  });
+  if (count === 0) {
+    return NextResponse.json({ error: "Campo não encontrado" }, { status: 404 });
+  }
+  return NextResponse.json({ success: true });
 }
 
 export async function DELETE(

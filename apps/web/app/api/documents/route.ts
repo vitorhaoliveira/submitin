@@ -63,6 +63,7 @@ export async function POST(request: Request) {
                 required: v.required,
                 order: v.order,
                 variableKey: v.key,
+                filledBy: v.filledBy,
               })),
             },
             // Entrega padrão: e-mail do dono (editável na tela do documento).

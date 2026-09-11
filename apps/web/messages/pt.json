@@ -921,7 +921,8 @@
     "documentBanner": "Gera o documento “{name}”",
     "moveUp": "Mover para cima",
     "moveDown": "Mover para baixo",
-    "fieldMoveError": "Não foi possível reordenar os campos"
+    "fieldMoveError": "Não foi possível reordenar os campos",
+    "companyField": "Empresa preenche"
   },
   "responses": {
     "title": "Respostas",
@@ -1014,8 +1015,11 @@
     "poweredBy": "Criado com",
     "closed": {
       "message": "Este formulário não está mais aceitando respostas.",
-      "scheduled": "Este formulário ainda não está aceitando respostas."
-    }
+      "scheduled": "Este formulário ainda não está aceitando respostas.",
+      "inviteUsed": "Este link já foi usado. Se precisar enviar de novo, peça um novo link a quem te enviou.",
+      "inviteInvalid": "Este link não é válido. Confira se ele foi copiado inteiro ou peça um novo."
+    },
+    "prefilledTitle": "Já preenchido para você"
   },
   "legal": {
     "terms": {
@@ -1138,10 +1142,16 @@
       },
       "fields": {
         "title": "Campos do formulário",
-        "desc": "Uma pergunta por variável do documento.",
+        "desc": "Uma pergunta por variável do documento. Marque como “Empresa” o que você mesmo preenche.",
         "required": "Obrigatório",
         "missing": "Variáveis do documento sem campo no formulário (sairão em branco): {keys}",
-        "orphan": "Campos de variáveis que não existem mais no template atual: {labels}"
+        "orphan": "Campos de variáveis que não existem mais no template atual: {labels}",
+        "whoFills": "Quem preenche",
+        "client": "Cliente",
+        "company": "Empresa",
+        "fixedValue": "Valor fixo",
+        "fixedValuePlaceholder": "Opcional: usado em todos os envios",
+        "saveError": "Não foi possível salvar o campo"
       },
       "delivery": {
         "title": "Entrega",
@@ -1166,6 +1176,26 @@
         "replaced": "Template atualizado para a versão {version}",
         "added": "Novos campos adicionados ao formulário: {labels}",
         "orphaned": "Variáveis que saíram do template (os campos foram mantidos): {labels}"
+      },
+      "invites": {
+        "title": "Enviar para um cliente",
+        "desc": "Preencha os dados da empresa para um cliente específico (turma, valor, plano…) e mande um link só dele.",
+        "new": "Criar link para um cliente",
+        "dialogDesc": "Os campos da empresa vão preenchidos no documento. O cliente vê esses dados, mas não consegue alterar.",
+        "label": "Nome do cliente",
+        "labelPlaceholder": "Ex.: Pedro Almeida",
+        "create": "Criar link",
+        "singleUse": "O link vale para um envio só. Depois de usado, ele fecha.",
+        "createdTitle": "Link criado",
+        "createdDesc": "Envie para {name}. Quando o cliente preencher, o PDF chega no seu e-mail.",
+        "sendWhatsapp": "Enviar pelo WhatsApp",
+        "whatsappText": "Olá, {name}! Segue o link para preencher: {document}.",
+        "pending": "Aguardando",
+        "used": "Preenchido {when}",
+        "delete": "Cancelar link",
+        "deleteError": "Não foi possível cancelar o link",
+        "empty": "Nenhum link criado ainda.",
+        "noCompanyFields": "Nenhum campo está marcado como “Empresa”. Marque abaixo, em Campos do formulário, o que você preenche antes de enviar."
       }
     },
     "submissions": {
@@ -1191,7 +1221,8 @@
       "previous": "Anterior",
       "next": "Próxima",
       "page": "Página {page} de {pages}",
-      "autoRefresh": "Atualizando…"
+      "autoRefresh": "Atualizando…",
+      "viaLink": "Link de"
     },
     "table": {
       "name": "Documento",

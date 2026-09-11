@@ -25,6 +25,14 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
       _count: { select: { generations: true } },
     },
   });
+  const invites = document
+    ? await prisma.formInvite.findMany({
+        where: { formId: document.formId },
+        orderBy: { createdAt: "desc" },
+        take: 50,
+        select: { id: true, token: true, label: true, usedAt: true, createdAt: true },
+      })
+    : [];
   if (!document) notFound();
 
   const template = document.templates[0];
@@ -54,8 +62,15 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
           type: f.type,
           required: f.required,
           variableKey: f.variableKey,
+          filledBy: f.filledBy === "company" ? ("company" as const) : ("client" as const),
+          defaultValue: f.defaultValue,
         })),
       }}
+      invites={invites.map((i) => ({
+        ...i,
+        usedAt: i.usedAt?.toISOString() ?? null,
+        createdAt: i.createdAt.toISOString(),
+      }))}
       template={
         template
           ? {

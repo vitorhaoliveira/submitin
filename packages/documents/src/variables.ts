@@ -14,12 +14,16 @@ export type DocumentFieldType =
   | "date"
   | "currency";
 
+export type FilledBy = "client" | "company";
+
 export type DocumentVariable = {
   key: string;
   label: string;
   type: DocumentFieldType;
   required: boolean;
   order: number;
+  /** Quem preenche: o cliente no formulário ou a empresa antes de enviar. */
+  filledBy: FilledBy;
 };
 
 /** Sufixo de variável derivada: `{{valor_extenso}}` é calculada a partir de `{{valor}}`. */
@@ -61,6 +65,20 @@ export function inferFieldType(key: string): DocumentFieldType {
     }
   }
   return "text";
+}
+
+/** Palavras que indicam dado da própria empresa (contratada), não do cliente. */
+const COMPANY_WORDS = [
+  "empresa", "escola", "contratada", "clinica", "academia", "imobiliaria",
+  "consultorio", "estudio", "instituicao", "prestador",
+];
+
+/** Heurística: `{{cnpj_escola}}`, `{{nome_empresa}}`, `{{numero_contrato}}` → empresa preenche. */
+export function inferFilledBy(key: string): FilledBy {
+  const parts = key.split("_");
+  if (COMPANY_WORDS.some((w) => parts.includes(w))) return "company";
+  if (key.startsWith("numero_contrato")) return "company";
+  return "client";
 }
 
 const LABEL_WORDS: Record<string, string> = {
@@ -110,6 +128,7 @@ export function buildVariables(rawTags: string[]): DocumentVariable[] {
       type: inferFieldType(key),
       required: true,
       order,
+      filledBy: inferFilledBy(key),
     }));
 }
 

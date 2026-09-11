@@ -921,7 +921,8 @@
     "documentBanner": "Generates the document “{name}”",
     "moveUp": "Move up",
     "moveDown": "Move down",
-    "fieldMoveError": "Could not reorder fields"
+    "fieldMoveError": "Could not reorder fields",
+    "companyField": "Filled by company"
   },
   "responses": {
     "title": "Responses",
@@ -1014,8 +1015,11 @@
     "poweredBy": "Created with",
     "closed": {
       "message": "This form is no longer accepting responses.",
-      "scheduled": "This form is not accepting responses yet."
-    }
+      "scheduled": "This form is not accepting responses yet.",
+      "inviteUsed": "This link has already been used. If you need to submit again, ask the sender for a new link.",
+      "inviteInvalid": "This link isn't valid. Check that it was copied in full or ask for a new one."
+    },
+    "prefilledTitle": "Already filled in for you"
   },
   "legal": {
     "terms": {
@@ -1138,10 +1142,16 @@
       },
       "fields": {
         "title": "Form fields",
-        "desc": "One question per document variable.",
+        "desc": "One question per document variable. Mark as “Company” what you fill in yourself.",
         "required": "Required",
         "missing": "Document variables without a form field (will be blank): {keys}",
-        "orphan": "Fields for variables no longer in the current template: {labels}"
+        "orphan": "Fields for variables no longer in the current template: {labels}",
+        "whoFills": "Who fills",
+        "client": "Client",
+        "company": "Company",
+        "fixedValue": "Fixed value",
+        "fixedValuePlaceholder": "Optional: used on every submission",
+        "saveError": "Could not save the field"
       },
       "delivery": {
         "title": "Delivery",
@@ -1166,6 +1176,26 @@
         "replaced": "Template updated to version {version}",
         "added": "New fields added to the form: {labels}",
         "orphaned": "Variables removed from the template (fields kept): {labels}"
+      },
+      "invites": {
+        "title": "Send to a client",
+        "desc": "Fill in the company details for one specific client (class, price, plan…) and send a link just for them.",
+        "new": "Create link for a client",
+        "dialogDesc": "Company fields go into the document already filled. The client sees them but can't change them.",
+        "label": "Client name",
+        "labelPlaceholder": "e.g. Pedro Almeida",
+        "create": "Create link",
+        "singleUse": "The link works for one submission. After that, it closes.",
+        "createdTitle": "Link created",
+        "createdDesc": "Send it to {name}. Once they fill it in, the PDF lands in your inbox.",
+        "sendWhatsapp": "Send on WhatsApp",
+        "whatsappText": "Hi {name}! Here's the link to fill in: {document}.",
+        "pending": "Waiting",
+        "used": "Filled {when}",
+        "delete": "Cancel link",
+        "deleteError": "Could not cancel the link",
+        "empty": "No links created yet.",
+        "noCompanyFields": "No field is marked as “Company”. Mark below, in Form fields, what you fill in before sending."
       }
     },
     "submissions": {
@@ -1191,7 +1221,8 @@
       "previous": "Previous",
       "next": "Next",
       "page": "Page {page} of {pages}",
-      "autoRefresh": "Refreshing…"
+      "autoRefresh": "Refreshing…",
+      "viaLink": "Link for"
     },
     "table": {
       "name": "Document",

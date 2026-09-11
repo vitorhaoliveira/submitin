@@ -12,6 +12,7 @@ import {
   detectMissingFonts,
   formatValue,
   inferFieldType,
+  inferFilledBy,
   isValidCnpj,
   isValidCpf,
   mergeTemplate,
@@ -65,6 +66,14 @@ describe("variáveis", () => {
     assert.equal(inferFieldType("observacoes"), "textarea");
     assert.equal(inferFieldType("nome_candidato"), "text"); // não casa "data"
     assert.equal(inferFieldType("dia_vencimento"), "text"); // dia do mês
+  });
+
+  test("infere quem preenche", () => {
+    assert.equal(inferFilledBy("cnpj_escola"), "company");
+    assert.equal(inferFilledBy("nome_empresa"), "company");
+    assert.equal(inferFilledBy("numero_contrato"), "company");
+    assert.equal(inferFilledBy("nome_aluno"), "client");
+    assert.equal(inferFilledBy("cpf_responsavel"), "client");
   });
 
   test("deduplica e ignora *_extenso derivado", () => {

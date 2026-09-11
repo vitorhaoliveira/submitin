@@ -15,7 +15,7 @@ import { fmt, useFieldTypeLabel } from "./shared";
 
 type Preview = {
   fileName: string;
-  variables: { key: string; label: string; type: string }[];
+  variables: { key: string; label: string; type: string; filledBy: "client" | "company" }[];
   missingFonts: string[];
   unsupportedTags: string[];
 };
@@ -215,7 +215,14 @@ export function NewDocumentClient() {
                 <tbody>
                   {preview.variables.map((v) => (
                     <tr key={v.key} className="border-t">
-                      <td className="px-3 py-2">{v.label}</td>
+                      <td className="px-3 py-2">
+                        {v.label}
+                        {v.filledBy === "company" && (
+                          <span className="ml-2 rounded-full bg-brand-soft px-2 py-0.5 text-[11px] font-medium text-brand">
+                            {t("detail.fields.company")}
+                          </span>
+                        )}
+                      </td>
                       <td className="px-3 py-2 whitespace-nowrap">{fieldTypeLabel(v.type)}</td>
                       <td className="px-3 py-2 font-mono text-xs text-brand whitespace-nowrap">{`{{${v.key}}}`}</td>
                     </tr>

@@ -19,6 +19,7 @@ type Row = {
   identifier: string;
   templateVersion: number;
   hasFile: boolean;
+  inviteLabel: string | null;
 };
 
 type Filters = { q: string; from: string; to: string; status: string };
@@ -202,6 +203,11 @@ export function SubmissionsClient({
                       </td>
                       <td className="px-4 py-3">
                         <span className="font-medium">{row.identifier || "—"}</span>
+                        {row.inviteLabel && row.inviteLabel !== row.identifier && (
+                          <span className="block text-xs text-muted-foreground">
+                            {t("submissions.viaLink")} {row.inviteLabel}
+                          </span>
+                        )}
                         <span className="block sm:hidden text-xs text-muted-foreground">
                           {formatDate(row.createdAt, dateLocale)}
                         </span>

@@ -138,9 +138,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const values = sanitizeFormValues(rawValues);
     const partialId = typeof body?.partialId === "string" ? body.partialId : null;
+    const inviteToken = typeof body?.inviteToken === "string" ? body.inviteToken : null;
 
     try {
-      const response = await createFormResponse(form, values, partialId);
+      const response = await createFormResponse(form, values, partialId, inviteToken);
       return NextResponse.json({ success: true, id: response.id }, { status: 201 });
     } catch (err: unknown) {
       const status =

@@ -26,7 +26,38 @@ type FormField = {
   type: string;
   required: boolean;
   visibility?: unknown;
+  /** "company": preenchido pela empresa (valor fixo ou link personalizado). */
+  filledBy?: string;
+  defaultValue?: string | null;
 };
+
+type ClaimedInvite = { id: string };
+
+/** Valores do link personalizado ({ fieldId: valor }), se o token for válido e não usado. */
+export async function findUsableInvite(formId: string, token: string) {
+  const invite = await prisma.formInvite.findUnique({ where: { token } });
+  if (!invite || invite.formId !== formId) {
+    throw { status: 404, message: "Link inválido. Peça um novo link a quem te enviou." };
+  }
+  if (invite.usedAt) {
+    throw { status: 410, message: "Este link já foi usado. Peça um novo link a quem te enviou." };
+  }
+  return { id: invite.id, values: (invite.values ?? {}) as Record<string, string> };
+}
+
+/** Valor que a empresa definiu para cada campo "company": link personalizado > valor fixo. */
+export function companyValuesFor(
+  fields: FormField[],
+  inviteValues: Record<string, string> = {}
+): Record<string, string> {
+  const result: Record<string, string> = {};
+  for (const field of fields) {
+    if (field.filledBy !== "company") continue;
+    const value = (inviteValues[field.id] ?? field.defaultValue ?? "").trim();
+    if (value) result[field.id] = value.slice(0, MAX_FIELD_VALUE_LENGTH);
+  }
+  return result;
+}
 
 type FormWithRelations = {
   id: string;
@@ -82,7 +113,9 @@ export async function createFormResponse(
   form: FormWithRelations,
   valuesByFieldId: Record<string, string>,
   /** Se enviado, converte a resposta parcial deste id em completa (sem duplicar). */
-  partialId?: string | null
+  partialId?: string | null,
+  /** Token do link personalizado (campos já preenchidos pela empresa). */
+  inviteToken?: string | null
 ) {
   if (form._count.responses >= MAX_RESPONSES_PER_FORM) {
     throw { status: 403, message: "Este formulário atingiu o limite máximo de respostas." };
@@ -98,7 +131,15 @@ export async function createFormResponse(
     throw { status: 403, message };
   }
 
-  const values = sanitizeFormValues(valuesByFieldId);
+  // Campos da empresa nunca vêm do respondente: valem o link personalizado ou o valor fixo.
+  const companyFieldIds = new Set(
+    form.fields.filter((f) => f.filledBy === "company").map((f) => f.id)
+  );
+  const clientValues = sanitizeFormValues(valuesByFieldId);
+  for (const id of companyFieldIds) delete clientValues[id];
+  const invite = inviteToken ? await findUsableInvite(form.id, inviteToken) : null;
+  const companyValues = sanitizeFormValues(companyValuesFor(form.fields, invite?.values));
+  const values = { ...clientValues, ...companyValues };
   const validFieldIds = new Set(form.fields.map((f) => f.id));
 
   // Lógica condicional: campos ocultos não são validados nem persistidos.
@@ -108,7 +149,8 @@ export async function createFormResponse(
   );
 
   for (const field of form.fields) {
-    if (!visibleIds.has(field.id)) continue;
+    // Campos da empresa não são validados aqui: quem preenche é a própria empresa.
+    if (!visibleIds.has(field.id) || companyFieldIds.has(field.id)) continue;
 
     const value = values[field.id];
 
@@ -126,7 +168,10 @@ export async function createFormResponse(
 
     const maskedError = value ? validateMaskedField(field.type, value) : null;
     if (maskedError) {
-      throw { status: 400, message: `${MASKED_FIELD_ERRORS[maskedError]} no campo "${field.label}"` };
+      throw {
+        status: 400,
+        message: `${MASKED_FIELD_ERRORS[maskedError]} no campo "${field.label}"`,
+      };
     }
 
     if (field.type === "currency" && value && parseCurrency(value) === null) {
@@ -135,8 +180,26 @@ export async function createFormResponse(
   }
 
   const fieldValuesCreate = Object.entries(values)
-    .filter(([fieldId, value]) => value && validFieldIds.has(fieldId) && visibleIds.has(fieldId))
+    .filter(
+      ([fieldId, value]) =>
+        value &&
+        validFieldIds.has(fieldId) &&
+        (visibleIds.has(fieldId) || companyFieldIds.has(fieldId))
+    )
     .map(([fieldId, value]) => ({ fieldId, value: String(value) }));
+
+  // Link de uso único: reclama antes de gravar; libera se a gravação falhar.
+  let claimed: ClaimedInvite | null = null;
+  if (invite) {
+    const { count } = await prisma.formInvite.updateMany({
+      where: { id: invite.id, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+    if (count === 0) {
+      throw { status: 410, message: "Este link já foi usado. Peça um novo link a quem te enviou." };
+    }
+    claimed = { id: invite.id };
+  }
 
   // Se há uma parcial deste lead, converte em completa (substitui os valores)
   // em vez de criar uma nova resposta — evita lead duplicado.
@@ -147,26 +210,43 @@ export async function createFormResponse(
       })
     : null;
 
-  const response = existingPartial
-    ? await prisma.$transaction(async (tx) => {
-        await tx.fieldValue.deleteMany({ where: { responseId: existingPartial.id } });
-        return tx.response.update({
-          where: { id: existingPartial.id },
+  let response;
+  try {
+    response = existingPartial
+      ? await prisma.$transaction(async (tx) => {
+          await tx.fieldValue.deleteMany({ where: { responseId: existingPartial.id } });
+          return tx.response.update({
+            where: { id: existingPartial.id },
+            data: {
+              partial: false,
+              submittedAt: new Date(),
+              fieldValues: { create: fieldValuesCreate },
+            },
+            include: { fieldValues: true },
+          });
+        })
+      : await prisma.response.create({
           data: {
-            partial: false,
-            submittedAt: new Date(),
+            formId: form.id,
             fieldValues: { create: fieldValuesCreate },
           },
           include: { fieldValues: true },
         });
-      })
-    : await prisma.response.create({
-        data: {
-          formId: form.id,
-          fieldValues: { create: fieldValuesCreate },
-        },
-        include: { fieldValues: true },
-      });
+  } catch (err) {
+    if (claimed) {
+      await prisma.formInvite
+        .update({ where: { id: claimed.id }, data: { usedAt: null } })
+        .catch(() => {});
+    }
+    throw err;
+  }
+
+  if (claimed) {
+    await prisma.formInvite.update({
+      where: { id: claimed.id },
+      data: { responseId: response.id },
+    });
+  }
 
   // Formulário de documento: a entrega (e-mail com PDF + webhook) acontece após a
   // geração assíncrona do documento, não aqui.

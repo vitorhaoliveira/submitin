@@ -100,6 +100,7 @@ model Form {
   fields    Field[]
   responses Response[]
   settings  FormSettings?
+  invites   FormInvite[]
   // Documentos: formulário gerado a partir de um template .docx
   document  Document?
 
@@ -109,17 +110,21 @@ model Form {
 }
 
 model Field {
-  id          String  @id @default(cuid())
-  type        String
-  label       String
-  placeholder String?
-  required    Boolean @default(false)
-  order       Int
-  options     Json?
+  id           String  @id @default(cuid())
+  type         String
+  label        String
+  placeholder  String?
+  required     Boolean @default(false)
+  order        Int
+  options      Json?
   // Lógica condicional (PRO): { fieldId, operator: "equals"|"not_equals", value }
-  visibility  Json?
+  visibility   Json?
   // Documentos: variável do template ({{variable_key}}) preenchida por este campo
-  variableKey String?
+  variableKey  String?
+  // Quem preenche: "client" (aparece no formulário) | "company" (a empresa
+  // preenche; fica fora do formulário e usa defaultValue ou o link personalizado)
+  filledBy     String  @default("client")
+  defaultValue String? @db.Text
 
   formId String
   form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
@@ -143,6 +148,8 @@ model Response {
   fieldValues        FieldValue[]
   // Documentos: geração do PDF a partir desta resposta
   documentGeneration DocumentGeneration?
+  // Link personalizado usado nesta resposta (dados já preenchidos pela empresa)
+  invite             FormInvite?
 
   @@index([formId])
   @@index([formId, partial])
@@ -162,6 +169,28 @@ model FieldValue {
   @@index([responseId])
   @@index([fieldId])
   @@map("field_values")
+}
+
+// Link personalizado: a empresa preenche alguns campos para um cliente
+// específico e envia um link de uso único.
+model FormInvite {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  // Nome do cliente, para a empresa identificar o link
+  label     String
+  // { fieldId: valor } dos campos preenchidos pela empresa
+  values    Json
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  formId String
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  responseId String?   @unique
+  response   Response? @relation(fields: [responseId], references: [id], onDelete: SetNull)
+
+  @@index([formId, createdAt])
+  @@map("form_invites")
 }
 
 model FormSettings {

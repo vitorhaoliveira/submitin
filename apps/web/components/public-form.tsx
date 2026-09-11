@@ -69,6 +69,8 @@ interface Form {
 interface PublicFormProps {
   form: Form;
   availability?: { isOpen: boolean; reason: string };
+  /** Link personalizado: dados já preenchidos pela empresa para este respondente. */
+  invite?: { token: string; prefilled: { label: string; value: string }[] };
 }
 
 // Tempo médio de preenchimento por tipo de campo (em segundos). Usado para o
@@ -131,7 +133,34 @@ function Confetti() {
   );
 }
 
-export function PublicForm({ form, availability }: PublicFormProps) {
+/** Resumo, só para leitura, do que a empresa já preencheu. */
+function PrefilledSummary({
+  items,
+  title,
+}: {
+  items: { label: string; value: string }[];
+  title: string;
+}) {
+  if (items.length === 0) return null;
+  return (
+    <div className="rounded-xl border bg-muted/40 p-4">
+      <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <Lock className="w-3.5 h-3.5" aria-hidden />
+        {title}
+      </p>
+      <dl className="mt-3 grid gap-x-6 gap-y-2 sm:grid-cols-2">
+        {items.map((item) => (
+          <div key={item.label} className="min-w-0">
+            <dt className="text-xs text-muted-foreground">{item.label}</dt>
+            <dd className="text-sm font-medium break-words">{item.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
+
+export function PublicForm({ form, availability, invite }: PublicFormProps) {
   const t = useTranslations("publicForm");
   const tCommon = useTranslations("common");
   const [values, setValues] = useState<Record<string, string>>({});
@@ -346,6 +375,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
           captchaToken: captchaEnabled ? captchaToken : undefined,
           // Converte a parcial deste lead em completa (sem duplicar)
           partialId: partialIdRef.current,
+          inviteToken: invite?.token,
         }),
       });
 
@@ -670,7 +700,11 @@ export function PublicForm({ form, availability }: PublicFormProps) {
             <p className="text-muted-foreground">
               {scheduled
                 ? t("closed.scheduled")
-                : settings?.closedMessage || t("closed.message")}
+                : availability.reason === "inviteUsed"
+                  ? t("closed.inviteUsed")
+                  : availability.reason === "inviteInvalid"
+                    ? t("closed.inviteInvalid")
+                    : settings?.closedMessage || t("closed.message")}
             </p>
           </CardContent>
         </Card>
@@ -751,6 +785,12 @@ export function PublicForm({ form, availability }: PublicFormProps) {
               <span className="opacity-50">·</span>
               <span>{form.name}</span>
             </div>
+
+            {clampedStep === 0 && invite && invite.prefilled.length > 0 && (
+              <div className="mb-6">
+                <PrefilledSummary items={invite.prefilled} title={t("prefilledTitle")} />
+              </div>
+            )}
 
             <div key={currentField.id} className="animate-fade-in-up space-y-5" onKeyDown={handleStepKeyDown}>
               <div className="space-y-1">
@@ -882,6 +922,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} onBlur={() => void savePartial()} className="space-y-6">
+              <PrefilledSummary items={invite?.prefilled ?? []} title={t("prefilledTitle")} />
               {visibleFields.map((field, index) => renderFieldBlock(field, index))}
 
               {/* CAPTCHA */}
