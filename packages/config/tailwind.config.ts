@@ -44,6 +44,12 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        brand: {
+          DEFAULT: "hsl(var(--brand))",
+          foreground: "hsl(var(--brand-foreground))",
+          soft: "hsl(var(--brand-soft))",
+        },
+        pop: "hsl(var(--pop))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -52,6 +58,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["var(--font-geist-sans)"],
+        display: ["var(--font-display)", "var(--font-geist-sans)"],
         mono: ["var(--font-geist-mono)"],
       },
       keyframes: {

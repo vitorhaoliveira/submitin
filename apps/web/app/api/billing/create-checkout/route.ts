@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { createCheckoutSession, priceIdForPlan, normalizePlan, isPaid } from "@/lib/stripe";
+import { createCheckoutSession, priceIdForPlan, normalizePlan, isPaid, isLegacyPlan } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
   try {
@@ -12,11 +12,11 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json().catch(() => ({}));
 
-    // Aceita { plan: "plus" | "premium" }. O price ID é resolvido no servidor
+    // Aceita { plan: "pro" | "unlimited" } (legados não são vendidos). O price ID é resolvido no servidor
     // a partir do plano — nunca confiar no price ID vindo do client.
     const requestedPlan = normalizePlan(body.plan);
 
-    if (!isPaid(requestedPlan)) {
+    if (!isPaid(requestedPlan) || isLegacyPlan(requestedPlan)) {
       return NextResponse.json({ error: "Plano inválido" }, { status: 400 });
     }
 

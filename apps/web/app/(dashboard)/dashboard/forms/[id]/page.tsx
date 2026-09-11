@@ -27,6 +27,7 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
           orderBy: { order: "asc" },
         },
         settings: true,
+        document: { select: { id: true, name: true } },
       },
     }),
     prisma.user.findUnique({
@@ -61,6 +62,8 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
       formId: field.formId,
       options: Array.isArray(field.options) ? (field.options as string[]) : null,
       visibility: parseVisibility(field.visibility),
+      variableKey: field.variableKey,
+      nature: field.nature,
     })),
     // Include all settings fields for Pro features
     settings: form.settings
@@ -91,5 +94,5 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
       : null,
   };
 
-  return <FormBuilder form={transformedForm} initialIsPro={isPro} />;
+  return <FormBuilder form={transformedForm} initialIsPro={isPro} linkedDocument={form.document} />;
 }

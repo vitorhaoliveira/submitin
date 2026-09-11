@@ -2,18 +2,11 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@submitin/database";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { getTranslations } from "@/lib/i18n";
+import { getLocaleFromCookie, getTranslations } from "@/lib/i18n";
 import { Button } from "@submitin/ui/components/button";
-import { Card, CardContent } from "@submitin/ui/components/card";
-import {
-  FileText,
-  MessageSquare,
-  TrendingUp,
-  Plus,
-  ArrowRight,
-  FileEdit,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight, ChevronRight, FileCheck2, FileText, Plus } from "lucide-react";
+import { formatRelativeDate } from "@/lib/utils";
+import { monthlyDocumentUsage } from "@/lib/documents/service";
 
 export const metadata = {
   title: "Dashboard",
@@ -26,163 +19,215 @@ export default async function DashboardPage() {
   }
 
   const t = await getTranslations("dashboard");
+  const tDocs = await getTranslations("documents");
+  const locale = await getLocaleFromCookie();
 
-  const [responseCount, forms] = await Promise.all([
-    prisma.response.count({
-      where: { form: { userId: session.user.id } },
-    }),
+  const userId: string = session.user.id;
+  // Formulários de documento aparecem só como documentos.
+  const regularForms = { userId, document: { is: null } };
+  const [responseCount, forms, documents, generatedThisMonth] = await Promise.all([
+    prisma.response.count({ where: { form: regularForms, partial: false } }),
     prisma.form.findMany({
-      where: { userId: session.user.id },
-      include: { _count: { select: { responses: true, fields: true } } },
+      where: regularForms,
+      include: { _count: { select: { responses: { where: { partial: false } } } } },
       orderBy: { updatedAt: "desc" },
     }),
+    prisma.document.findMany({
+      where: { userId },
+      include: {
+        form: { select: { published: true } },
+        _count: { select: { generations: true } },
+        generations: { orderBy: { createdAt: "desc" }, take: 1, select: { createdAt: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+    monthlyDocumentUsage(userId),
   ]);
 
-  const publishedCount = forms.filter((f) => f.published).length;
-  const draftCount = forms.length - publishedCount;
   const firstName = (session.user.name || session.user.email?.split("@")[0] || "").split(" ")[0];
-  const recentForms = forms.slice(0, 6);
+  const recentForms = forms.slice(0, 5);
+  const recentDocuments = documents.slice(0, 5);
 
   const stats = [
-    { label: t("stats.totalForms"), value: forms.length, icon: FileText, tint: "bg-primary/10 text-primary" },
-    { label: t("stats.publishedForms"), value: publishedCount, icon: TrendingUp, tint: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
-    { label: t("stats.totalResponses"), value: responseCount, icon: MessageSquare, tint: "bg-sky-500/10 text-sky-600 dark:text-sky-400" },
-    { label: t("stats.drafts"), value: draftCount, icon: FileEdit, tint: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
+    { label: t("stats.documents"), value: documents.length },
+    { label: t("stats.generatedThisMonth"), value: generatedThisMonth },
+    { label: t("stats.totalForms"), value: forms.length },
+    { label: t("stats.totalResponses"), value: responseCount },
+  ];
+
+  const shortcuts = [
+    { href: "/dashboard/forms/new", icon: FileText, title: t("quickStart"), desc: t("quickStartDesc") },
+    { href: "/dashboard/documents/new", icon: FileCheck2, title: tDocs("new"), desc: tDocs("subtitle") },
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
+    <div className="space-y-10">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+          <h1 className="font-display text-3xl font-semibold tracking-tight">
             {t("greeting")}
-            {firstName ? (
-              <>
-                , <span className="text-gradient">{firstName}</span>
-              </>
-            ) : (
-              ""
-            )}
+            {firstName ? `, ${firstName}` : ""}
           </h1>
-          <p className="text-muted-foreground mt-1">{t("overview")}</p>
+          <p className="text-sm text-muted-foreground mt-1">{t("overview")}</p>
         </div>
         <Link href="/dashboard/forms/new">
-          <Button size="lg">
-            <Plus className="w-4 h-4" />
+          <Button>
+            <Plus />
             {t("createForm")}
           </Button>
         </Link>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.label}>
-              <CardContent className="p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm text-muted-foreground truncate">{stat.label}</p>
-                    <p className="text-2xl sm:text-3xl font-bold mt-1 tabular-nums">{stat.value}</p>
-                  </div>
-                  <div className={`w-11 h-11 shrink-0 rounded-xl flex items-center justify-center ${stat.tint}`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+      {/* Números */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-xl border bg-border">
+        {stats.map((stat) => (
+          <div key={stat.label} className="bg-background p-5">
+            <p className="text-sm text-muted-foreground truncate">{stat.label}</p>
+            <p className="text-2xl font-semibold mt-1 tabular-nums">{stat.value}</p>
+          </div>
+        ))}
       </div>
 
-      {forms.length === 0 ? (
-        /* Empty state premium */
-        <Card className="overflow-hidden border-primary/20 bg-brand-soft">
-          <CardContent className="flex flex-col items-center text-center gap-4 py-14 px-6">
-            <div className="w-14 h-14 rounded-2xl bg-brand-gradient text-white flex items-center justify-center shadow-sm shadow-primary/30">
-              <Sparkles className="w-7 h-7" />
+      {/* Atalhos */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {shortcuts.map(({ href, icon: Icon, title, desc }) => (
+          <Link
+            key={href}
+            href={href}
+            className="group flex min-w-0 items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/50"
+          >
+            <div className="w-9 h-9 shrink-0 rounded-md bg-brand-soft text-brand flex items-center justify-center">
+              <Icon className="w-4 h-4" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg">{t("noForms.title")}</h3>
-              <p className="text-muted-foreground max-w-md">{t("noForms.subtitle")}</p>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium">{title}</p>
+              <p className="text-sm text-muted-foreground truncate">{desc}</p>
             </div>
-            <Link href="/dashboard/forms/new">
-              <Button size="lg">
-                <Plus className="w-4 h-4" />
-                {t("createForm")}
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          {/* Quick start banner */}
-          <Card className="overflow-hidden border-primary/20 bg-brand-soft">
-            <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6">
-              <div className="flex items-start gap-3">
-                <div className="w-11 h-11 shrink-0 rounded-xl bg-brand-gradient text-white flex items-center justify-center shadow-sm shadow-primary/30">
-                  <Sparkles className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-semibold">{t("quickStart")}</h3>
-                  <p className="text-sm text-muted-foreground">{t("quickStartDesc")}</p>
-                </div>
-              </div>
-              <Link href="/dashboard/forms/new" className="shrink-0">
-                <Button>
-                  {t("createForm")}
-                  <ArrowRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+          </Link>
+        ))}
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Documentos recentes */}
+        <RecentList
+          title={tDocs("title")}
+          seeAllHref="/dashboard/documents"
+          seeAllLabel={t("seeAll")}
+          empty={
+            <>
+              <p className="font-medium">{tDocs("empty.title")}</p>
+              <p className="text-sm text-muted-foreground mt-1">{tDocs("empty.description")}</p>
+              <Link href="/dashboard/documents/new" className="inline-block mt-5">
+                <Button variant="outline">
+                  <Plus />
+                  {tDocs("new")}
                 </Button>
               </Link>
-            </CardContent>
-          </Card>
+            </>
+          }
+          items={recentDocuments.map((doc) => ({
+            id: doc.id,
+            href: `/dashboard/documents/${doc.id}`,
+            name: doc.name,
+            published: doc.form.published,
+            meta: `${doc._count.generations} ${tDocs("card.submissions")}`,
+            date: formatRelativeDate(doc.generations[0]?.createdAt ?? doc.updatedAt, locale),
+          }))}
+          publishedLabel={t("formCard.published")}
+          draftLabel={t("formCard.draft")}
+        />
 
-          {/* Recent forms */}
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold">{t("title")}</h2>
-              <Link
-                href="/dashboard/forms"
-                className="text-sm font-medium text-primary hover:underline inline-flex items-center gap-1"
-              >
-                {t("seeAll")}
-                <ArrowRight className="w-3.5 h-3.5" />
+        {/* Formulários recentes */}
+        <RecentList
+          title={t("title")}
+          seeAllHref="/dashboard/forms"
+          seeAllLabel={t("seeAll")}
+          empty={
+            <>
+              <p className="font-medium">{t("noForms.title")}</p>
+              <p className="text-sm text-muted-foreground mt-1">{t("noForms.subtitle")}</p>
+              <Link href="/dashboard/forms/new" className="inline-block mt-5">
+                <Button variant="outline">
+                  <Plus />
+                  {t("createForm")}
+                </Button>
               </Link>
-            </div>
+            </>
+          }
+          items={recentForms.map((form) => ({
+            id: form.id,
+            href: `/dashboard/forms/${form.id}`,
+            name: form.name,
+            published: form.published,
+            meta: `${form._count.responses} ${t("formCard.responses")}`,
+            date: formatRelativeDate(form.updatedAt, locale),
+          }))}
+          publishedLabel={t("formCard.published")}
+          draftLabel={t("formCard.draft")}
+        />
+      </div>
+    </div>
+  );
+}
 
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {recentForms.map((form) => (
-                <Link key={form.id} href={`/dashboard/forms/${form.id}`}>
-                  <Card className="h-full transition-all hover:-translate-y-0.5 hover:border-primary/30">
-                    <CardContent className="p-5">
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <h3 className="font-semibold truncate group-hover:text-primary">{form.name}</h3>
-                        <span
-                          className={`shrink-0 mt-1 w-2 h-2 rounded-full ${
-                            form.published ? "bg-emerald-500" : "bg-muted-foreground/40"
-                          }`}
-                          title={form.published ? t("formCard.published") : t("formCard.draft")}
-                        />
-                      </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1.5">
-                          <MessageSquare className="w-4 h-4" />
-                          {form._count.responses} {t("formCard.responses")}
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <FileText className="w-4 h-4" />
-                          {form._count.fields} {t("formCard.fields")}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </>
+function RecentList({
+  title,
+  seeAllHref,
+  seeAllLabel,
+  empty,
+  items,
+  publishedLabel,
+  draftLabel,
+}: {
+  title: string;
+  seeAllHref: string;
+  seeAllLabel: string;
+  empty: React.ReactNode;
+  items: { id: string; href: string; name: string; published: boolean; meta: string; date: string }[];
+  publishedLabel: string;
+  draftLabel: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-medium">{title}</h2>
+        {items.length > 0 && (
+          <Link
+            href={seeAllHref}
+            className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+          >
+            {seeAllLabel}
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        )}
+      </div>
+      {items.length === 0 ? (
+        <div className="rounded-xl border border-dashed py-10 px-6 text-center">{empty}</div>
+      ) : (
+        <div className="rounded-xl border divide-y">
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/50"
+            >
+              <span
+                className={`shrink-0 w-2 h-2 rounded-full ${item.published ? "bg-emerald-500" : "bg-zinc-300"}`}
+                title={item.published ? publishedLabel : draftLabel}
+              />
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{item.name}</span>
+              <span className="hidden sm:inline text-sm text-muted-foreground tabular-nums whitespace-nowrap">
+                {item.meta}
+              </span>
+              <span className="hidden md:inline w-24 text-right text-sm text-muted-foreground whitespace-nowrap">
+                {item.date}
+              </span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );

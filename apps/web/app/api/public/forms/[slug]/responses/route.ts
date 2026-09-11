@@ -4,6 +4,9 @@ import { checkRateLimit, getClientIP } from "@/lib/security";
 import { createFormResponse, mapValuesByLabelToFieldIds } from "@/lib/form-response";
 import { verifyCaptchaToken } from "@/lib/turnstile";
 
+// Formulários de documento geram o PDF via after() nesta mesma função.
+export const maxDuration = 60;
+
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",

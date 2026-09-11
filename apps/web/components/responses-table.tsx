@@ -23,7 +23,6 @@ import {
   DialogTitle,
 } from "@submitin/ui/components/dialog";
 import {
-  ArrowLeft,
   Download,
   Search,
   Eye,
@@ -39,6 +38,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { formatDate, formatRelativeDate } from "@/lib/utils";
 import { ResponseCharts } from "./response-charts";
+import { PageHeader } from "./page-header";
 
 interface Field {
   id: string;
@@ -185,19 +185,12 @@ export function ResponsesTable({ form, responses: initialResponses, partials = [
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link href={`/dashboard/forms/${form.id}`}>
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-            <p className="text-muted-foreground">{form.name}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
+      <PageHeader
+        backHref={`/dashboard/forms/${form.id}`}
+        backLabel={form.name}
+        title={t("title")}
+        actions={
+        <>
           <Button
             variant="outline"
             size="icon"
@@ -220,15 +213,16 @@ export function ResponsesTable({ form, responses: initialResponses, partials = [
             <Download className="w-4 h-4" />
             {t("exportCSV")}
           </Button>
-        </div>
-      </div>
+        </>
+        }
+      />
 
       {/* Stats */}
       <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>{tDashboard("stats.totalResponses")}</CardDescription>
-            <CardTitle className="text-4xl tabular-nums">{responses.length}</CardTitle>
+            <CardTitle className="text-2xl font-semibold tabular-nums">{responses.length}</CardTitle>
           </CardHeader>
         </Card>
 
@@ -240,7 +234,7 @@ export function ResponsesTable({ form, responses: initialResponses, partials = [
               {t("analytics.views")}
               {!isPro && <Badge variant="secondary" className="text-[10px]">PRO</Badge>}
             </CardDescription>
-            <CardTitle className="text-4xl tabular-nums">
+            <CardTitle className="text-2xl font-semibold tabular-nums">
               {isPro ? form.views : "—"}
             </CardTitle>
           </CardHeader>
@@ -254,7 +248,7 @@ export function ResponsesTable({ form, responses: initialResponses, partials = [
               {t("analytics.conversion")}
               {!isPro && <Badge variant="secondary" className="text-[10px]">PRO</Badge>}
             </CardDescription>
-            <CardTitle className="text-4xl tabular-nums">
+            <CardTitle className="text-2xl font-semibold tabular-nums">
               {isPro
                 ? `${form.views > 0 ? Math.min(100, Math.round((responses.length / form.views) * 100)) : 0}%`
                 : "—"}
@@ -276,10 +270,10 @@ export function ResponsesTable({ form, responses: initialResponses, partials = [
 
       {/* CTA de upgrade para liberar analytics (apenas Free) */}
       {!isPro && (
-        <Card className="overflow-hidden border-primary/20 bg-brand-soft">
+        <Card className="overflow-hidden border-primary/20 bg-muted/40">
           <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 shrink-0 rounded-xl bg-brand-gradient text-white flex items-center justify-center">
+              <div className="w-10 h-10 shrink-0 rounded-xl bg-foreground text-white flex items-center justify-center">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
@@ -296,10 +290,10 @@ export function ResponsesTable({ form, responses: initialResponses, partials = [
 
       {/* Respostas parciais (leads que não concluíram) — PRO */}
       {isPro && partials.length > 0 && (
-        <Card className="border-amber-500/30">
+        <Card className="border-amber-200">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <UserPlus className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+              <UserPlus className="w-4 h-4 text-amber-600" />
               {t("partials.title")}
               <Badge variant="secondary" className="text-xs">{partials.length}</Badge>
             </CardTitle>

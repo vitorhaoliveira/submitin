@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 const { PrismaPlugin } = require("@prisma/nextjs-monorepo-workaround-plugin");
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@submitin/ui", "@submitin/database", "@submitin/email", "@submitin/config"],
+  transpilePackages: ["@submitin/ui", "@submitin/database", "@submitin/email", "@submitin/config", "@submitin/documents"],
 
   webpack: (config, { isServer }) => {
     if (isServer) {

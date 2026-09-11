@@ -5,9 +5,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTranslations, useLocale, useI18n } from "@/lib/i18n-context";
-import { Button } from "@submitin/ui/components/button";
+import { cn } from "@submitin/ui/lib/utils";
 import {
   FileText,
+  FileCheck2,
   LayoutDashboard,
   Plus,
   Menu,
@@ -16,12 +17,11 @@ import {
   LogIn,
   Settings,
   CreditCard,
-  Sun,
-  Moon,
   PanelLeftClose,
   PanelLeft,
   Globe,
 } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 type NavUser = { name?: string | null; email?: string | null } | null;
 
@@ -49,13 +49,11 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isDark, setIsDark] = useState(false);
 
-  // Restaura preferências salvas (sidebar + tema), sem next-themes
+  // Restaura preferência da sidebar
   useEffect(() => {
     setMounted(true);
     if (localStorage.getItem(COLLAPSE_KEY) === "1") setCollapsed(true);
-    setIsDark(document.documentElement.classList.contains("dark"));
   }, []);
 
   useEffect(() => {
@@ -67,45 +65,30 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
     setMobileOpen(false);
   }, [pathname]);
 
-  function toggleTheme() {
-    const next = !isDark;
-    setIsDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("theme", next ? "dark" : "light");
-    } catch {
-      /* ignore */
-    }
-  }
-
   const isActive = (href: string) =>
     pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   const mainNav = [
     { href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
     { href: "/dashboard/forms", label: t("forms"), icon: FileText },
+    { href: "/dashboard/documents", label: t("documents"), icon: FileCheck2 },
   ];
   const generalNav = [
     { href: "/dashboard/account", label: t("account"), icon: Settings },
     { href: "/dashboard/billing", label: t("billing"), icon: CreditCard },
   ];
 
-  const Brand = (
-    <Link
-      href={user ? "/dashboard" : "/"}
-      className="flex items-center gap-2.5 min-w-0"
-      aria-label={tCommon("appName")}
-    >
-      <div className="w-9 h-9 shrink-0 rounded-xl bg-brand-gradient flex items-center justify-center shadow-sm shadow-primary/30">
-        <FileText className="w-5 h-5 text-primary-foreground" />
-      </div>
-      {!collapsed && (
-        <span className="font-semibold text-lg tracking-tight truncate">
-          {tCommon("appName")}
-        </span>
-      )}
-    </Link>
-  );
+  function Brand({ compact }: { compact: boolean }) {
+    return (
+      <Link
+        href={user ? "/dashboard" : "/"}
+        className="flex items-center gap-2 min-w-0"
+        aria-label={tCommon("appName")}
+      >
+        <Logo markClassName="w-7 h-7" textClassName="text-lg" showText={!compact} />
+      </Link>
+    );
+  }
 
   function NavLink({
     href,
@@ -123,123 +106,104 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       <Link
         href={href}
         title={compact ? label : undefined}
-        className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-          compact ? "justify-center" : ""
-        } ${
+        className={cn(
+          "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm transition-colors",
+          compact && "justify-center px-0 py-2",
           active
-            ? "bg-primary/10 text-primary"
-            : "text-muted-foreground hover:text-foreground hover:bg-muted"
-        }`}
-      >
-        {active && (
-          <span className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full bg-primary" />
+            ? "bg-muted font-medium text-foreground"
+            : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
         )}
-        <Icon className="w-[1.15rem] h-[1.15rem] shrink-0" />
+      >
+        <Icon className={cn("w-4 h-4 shrink-0", active && "text-brand")} />
         {!compact && <span className="truncate">{label}</span>}
       </Link>
+    );
+  }
+
+  function SectionLabel({ label, compact }: { label: string; compact: boolean }) {
+    return compact ? (
+      <div className="mx-2 my-3 h-px bg-border" />
+    ) : (
+      <p className="px-2.5 pt-5 pb-1.5 text-xs font-medium text-muted-foreground">{label}</p>
     );
   }
 
   // Conteúdo interno da sidebar (reutilizado no desktop e no drawer mobile)
   function SidebarBody({ forceExpanded = false }: { forceExpanded?: boolean }) {
     const compact = forceExpanded ? false : collapsed;
-    const footerBtn = `flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors ${
-      compact ? "justify-center" : "w-full"
-    }`;
+    const footerBtn = cn(
+      "flex items-center gap-2.5 rounded-md px-2.5 py-1.5 text-sm text-muted-foreground hover:bg-muted/60 hover:text-foreground transition-colors",
+      compact ? "justify-center px-0 py-2" : "w-full"
+    );
     return (
-      <div className="flex h-full flex-col gap-2 p-3">
-        {/* Topo: brand + recolher */}
-        <div className={`flex items-center ${compact ? "justify-center" : "justify-between"} h-12 px-1`}>
-          {Brand}
+      <div className="flex h-full flex-col p-3">
+        {/* Topo: marca + recolher */}
+        <div className={cn("flex items-center h-10 px-1", compact ? "justify-center" : "justify-between")}>
+          <Brand compact={compact} />
           {!compact && !forceExpanded && (
             <button
               onClick={() => setCollapsed(true)}
               title={t("collapse")}
               aria-label={t("collapse")}
-              className="hidden md:flex p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="hidden md:flex p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <PanelLeftClose className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* CTA criar formulário */}
-        <Link href="/dashboard/forms/new" className="block">
-          {compact ? (
-            <Button size="icon" className="w-full" title={t("quickCreate")} aria-label={t("quickCreate")}>
-              <Plus className="w-4 h-4" />
-            </Button>
-          ) : (
-            <Button className="w-full justify-start gap-2">
-              <Plus className="w-4 h-4" />
-              {t("quickCreate")}
-            </Button>
+        {/* Criar formulário */}
+        <Link
+          href="/dashboard/forms/new"
+          title={compact ? t("quickCreate") : undefined}
+          aria-label={t("quickCreate")}
+          className={cn(
+            "mt-3 flex h-8 items-center gap-2 rounded-full border bg-background text-sm font-medium shadow-sm transition-colors hover:bg-muted",
+            compact ? "justify-center" : "px-2.5"
           )}
+        >
+          <Plus className="w-4 h-4" />
+          {!compact && t("quickCreate")}
         </Link>
 
         {/* Navegação */}
         <nav className="flex-1 overflow-y-auto">
           {user ? (
             <>
-              {compact ? (
-                <div className="mx-3 my-2 h-px bg-border" />
-              ) : (
-                <p className="px-3 pt-4 pb-1 text-[0.68rem] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                  {t("sectionMain")}
-                </p>
-              )}
-              <div className="space-y-1">
+              <SectionLabel label={t("sectionMain")} compact={compact} />
+              <div className="space-y-0.5">
                 {mainNav.map((i) => (
                   <NavLink key={i.href} {...i} compact={compact} />
                 ))}
               </div>
-              {compact ? (
-                <div className="mx-3 my-2 h-px bg-border" />
-              ) : (
-                <p className="px-3 pt-4 pb-1 text-[0.68rem] font-semibold uppercase tracking-wider text-muted-foreground/70">
-                  {t("sectionGeneral")}
-                </p>
-              )}
-              <div className="space-y-1">
+              <SectionLabel label={t("sectionGeneral")} compact={compact} />
+              <div className="space-y-0.5">
                 {generalNav.map((i) => (
                   <NavLink key={i.href} {...i} compact={compact} />
                 ))}
               </div>
             </>
           ) : (
-            <div className="space-y-1 pt-2">
+            <div className="space-y-0.5 pt-4">
               <NavLink href="/login" label={t("login")} icon={LogIn} compact={compact} />
             </div>
           )}
         </nav>
 
-        {/* Rodapé: preferências + usuário */}
-        <div className="space-y-1 border-t border-border pt-2">
-          <button onClick={toggleTheme} title={t("toggleTheme")} aria-label={t("toggleTheme")} className={footerBtn}>
-            {isDark ? (
-              <Sun className="w-[1.15rem] h-[1.15rem] shrink-0" />
-            ) : (
-              <Moon className="w-[1.15rem] h-[1.15rem] shrink-0" />
-            )}
-            {!compact && <span>{isDark ? t("lightMode") : t("darkMode")}</span>}
-          </button>
-
+        {/* Rodapé: idioma + usuário */}
+        <div className="space-y-1 border-t pt-3">
           <button
             onClick={() => setLocale(locale === "pt" ? "en" : "pt")}
             title={locale === "pt" ? "English" : "Português"}
             className={footerBtn}
           >
-            <Globe className="w-[1.15rem] h-[1.15rem] shrink-0" />
+            <Globe className="w-4 h-4 shrink-0" />
             {!compact && <span>{locale === "pt" ? "Português" : "English"}</span>}
           </button>
 
           {user ? (
-            <div
-              className={`mt-1 flex items-center gap-3 rounded-xl px-2 py-2 ${
-                compact ? "justify-center" : "bg-muted/40"
-              }`}
-            >
-              <div className="w-8 h-8 shrink-0 rounded-full bg-primary/15 text-primary flex items-center justify-center text-xs font-semibold">
+            <div className={cn("flex items-center gap-2.5 rounded-md px-1.5 py-1.5", compact && "justify-center")}>
+              <div className="w-7 h-7 shrink-0 rounded-full bg-muted text-foreground flex items-center justify-center text-xs font-medium">
                 {initials(user)}
               </div>
               {!compact && (
@@ -256,7 +220,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
                     onClick={() => signOut({ callbackUrl: "/" })}
                     title={t("logout")}
                     aria-label={t("logout")}
-                    className="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -265,10 +229,11 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             </div>
           ) : (
             !compact && (
-              <Link href="/register" className="block pt-1">
-                <Button variant="outline" className="w-full">
-                  {t("signup")}
-                </Button>
+              <Link
+                href="/register"
+                className="flex h-8 items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                {t("signup")}
               </Link>
             )
           )}
@@ -279,7 +244,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
               onClick={() => setCollapsed(false)}
               title={t("expand")}
               aria-label={t("expand")}
-              className="hidden md:flex w-full justify-center p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="hidden md:flex w-full justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <PanelLeft className="w-4 h-4" />
             </button>
@@ -290,47 +255,47 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-radial">
+    <div className="min-h-screen bg-background">
       {/* Sidebar desktop */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 hidden md:block border-r border-border bg-background transition-[width] duration-200 ease-out ${
-          collapsed ? "w-[76px]" : "w-64"
-        }`}
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 hidden md:block border-r bg-muted/30 transition-[width] duration-200 ease-out",
+          collapsed ? "w-[60px]" : "w-60"
+        )}
       >
         <SidebarBody />
       </aside>
 
       {/* Top bar mobile */}
-      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between h-14 px-4 border-b border-border bg-background/80 backdrop-blur-md">
+      <header className="md:hidden sticky top-0 z-30 flex items-center justify-between h-14 px-4 border-b bg-background">
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 -ml-2 rounded-lg hover:bg-muted"
+          className="p-2 -ml-2 rounded-md hover:bg-muted"
           aria-label={t("menu")}
         >
           <Menu className="w-5 h-5" />
         </button>
-        {Brand}
-        <Link href="/dashboard/forms/new" aria-label={t("quickCreate")}>
-          <Button size="icon" variant="ghost">
-            <Plus className="w-5 h-5" />
-          </Button>
+        <Brand compact={false} />
+        <Link
+          href="/dashboard/forms/new"
+          aria-label={t("quickCreate")}
+          className="p-2 -mr-2 rounded-md hover:bg-muted"
+        >
+          <Plus className="w-5 h-5" />
         </Link>
       </header>
 
       {/* Drawer mobile */}
       {mobileOpen && (
         <div className="md:hidden fixed inset-0 z-50">
-          <div
-            className="absolute inset-0 bg-foreground/40 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <div className="absolute inset-y-0 left-0 w-72 max-w-[85%] bg-background border-r border-border shadow-xl animate-pop-in">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setMobileOpen(false)} />
+          <div className="absolute inset-y-0 left-0 w-72 max-w-[85%] bg-background border-r shadow-lg">
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-3 right-3 z-10 p-1.5 rounded-lg text-muted-foreground hover:bg-muted"
+              className="absolute top-4 right-3 z-10 p-1.5 rounded-md text-muted-foreground hover:bg-muted"
               aria-label={tCommon("close")}
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
             <SidebarBody forceExpanded />
           </div>
@@ -338,14 +303,8 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
       )}
 
       {/* Conteúdo */}
-      <div
-        className={`transition-[padding] duration-200 ease-out ${
-          collapsed ? "md:pl-[76px]" : "md:pl-64"
-        }`}
-      >
-        <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          {children}
-        </main>
+      <div className={cn("transition-[padding] duration-200 ease-out", collapsed ? "md:pl-[60px]" : "md:pl-60")}>
+        <main className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-10 py-6 sm:py-10">{children}</main>
       </div>
     </div>
   );

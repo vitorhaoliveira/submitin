@@ -10,6 +10,16 @@ import {
 } from "@/lib/security";
 import { computeVisibleFieldIds, parseVisibility } from "@/lib/field-visibility";
 import { getFormAvailability } from "@/lib/form-availability";
+import { validateMaskedField } from "@submitin/documents/input";
+import { parseCurrency } from "@submitin/documents/format";
+import { enqueueDocumentGeneration } from "@/lib/documents/generation";
+import { resolveNatures } from "@/lib/documents/natures";
+
+const MASKED_FIELD_ERRORS = {
+  invalidCpf: "CPF inválido",
+  invalidCnpj: "CNPJ inválido",
+  invalidCep: "CEP inválido",
+} as const;
 
 type FormField = {
   id: string;
@@ -17,7 +27,25 @@ type FormField = {
   type: string;
   required: boolean;
   visibility?: unknown;
+  /** Documentos: pergunta | fixa | pre_preenchida | automatica. */
+  nature?: string;
+  defaultValue?: string | null;
+  variableKey?: string | null;
 };
+
+type ClaimedInvite = { id: string };
+
+/** Valores do link personalizado ({ fieldId: valor }), se o token for válido e não usado. */
+export async function findUsableInvite(formId: string, token: string) {
+  const invite = await prisma.formInvite.findUnique({ where: { token } });
+  if (!invite || invite.formId !== formId) {
+    throw { status: 404, message: "Link inválido. Peça um novo link a quem te enviou." };
+  }
+  if (invite.usedAt) {
+    throw { status: 410, message: "Este link já foi usado. Peça um novo link a quem te enviou." };
+  }
+  return { id: invite.id, values: (invite.values ?? {}) as Record<string, string> };
+}
 
 type FormWithRelations = {
   id: string;
@@ -66,14 +94,14 @@ export function mapValuesByLabelToFieldIds(
 }
 
 /**
- * Valida e cria uma resposta no formulário; envia emails e webhook se configurados.
- * valuesByFieldId deve ter chaves = id dos campos do form.
+ * Valida o envio e monta os valores a gravar (respostas + fixas, automáticas e
+ * pré-preenchidas). Usado pelo envio e pelo preview do documento, que precisam
+ * validar exatamente igual. Lança { status, message } em caso de erro.
  */
-export async function createFormResponse(
+export async function prepareSubmission(
   form: FormWithRelations,
   valuesByFieldId: Record<string, string>,
-  /** Se enviado, converte a resposta parcial deste id em completa (sem duplicar). */
-  partialId?: string | null
+  inviteToken?: string | null
 ) {
   if (form._count.responses >= MAX_RESPONSES_PER_FORM) {
     throw { status: 403, message: "Este formulário atingiu o limite máximo de respostas." };
@@ -89,7 +117,15 @@ export async function createFormResponse(
     throw { status: 403, message };
   }
 
-  const values = sanitizeFormValues(valuesByFieldId);
+  // Só os campos perguntados vêm do respondente; fixa, automática e pré-preenchida
+  // (pelo link) são definidas aqui e não podem ser sobrescritas.
+  const invite = inviteToken ? await findUsableInvite(form.id, inviteToken) : null;
+  const { locked, askedIds } = resolveNatures(form.fields, invite?.values);
+  const clientValues = sanitizeFormValues(valuesByFieldId);
+  for (const id of Object.keys(clientValues)) if (!askedIds.has(id)) delete clientValues[id];
+  const lockedValues = sanitizeFormValues(locked);
+  const values = { ...clientValues, ...lockedValues };
+  const lockedIds = new Set(Object.keys(lockedValues));
   const validFieldIds = new Set(form.fields.map((f) => f.id));
 
   // Lógica condicional: campos ocultos não são validados nem persistidos.
@@ -99,7 +135,8 @@ export async function createFormResponse(
   );
 
   for (const field of form.fields) {
-    if (!visibleIds.has(field.id)) continue;
+    // Só valida o que o respondente preenche.
+    if (!visibleIds.has(field.id) || !askedIds.has(field.id)) continue;
 
     const value = values[field.id];
 
@@ -114,11 +151,70 @@ export async function createFormResponse(
     if (field.type === "email" && value && !isValidEmail(value)) {
       throw { status: 400, message: `Email inválido no campo "${field.label}"` };
     }
+
+    const maskedError = value ? validateMaskedField(field.type, value) : null;
+    if (maskedError) {
+      throw {
+        status: 400,
+        message: `${MASKED_FIELD_ERRORS[maskedError]} no campo "${field.label}"`,
+      };
+    }
+
+    if (field.type === "day" && value && !/^(0?[1-9]|[12]\d|3[01])$/.test(value.trim())) {
+      throw { status: 400, message: `Informe um dia entre 1 e 31 no campo "${field.label}"` };
+    }
+
+    if (field.type === "percent" && value && !/^\d+([.,]\d+)?%?$/.test(value.trim())) {
+      throw { status: 400, message: `Percentual inválido no campo "${field.label}"` };
+    }
+
+    if (field.type === "currency" && value && parseCurrency(value) === null) {
+      throw { status: 400, message: `Valor inválido no campo "${field.label}"` };
+    }
   }
 
   const fieldValuesCreate = Object.entries(values)
-    .filter(([fieldId, value]) => value && validFieldIds.has(fieldId) && visibleIds.has(fieldId))
+    .filter(
+      ([fieldId, value]) =>
+        value && validFieldIds.has(fieldId) && (visibleIds.has(fieldId) || lockedIds.has(fieldId))
+    )
     .map(([fieldId, value]) => ({ fieldId, value: String(value) }));
+
+  return { invite, values, fieldValuesCreate };
+}
+
+/**
+ * Valida e cria uma resposta no formulário; envia emails e webhook se configurados.
+ * valuesByFieldId deve ter chaves = id dos campos do form.
+ */
+export async function createFormResponse(
+  form: FormWithRelations,
+  valuesByFieldId: Record<string, string>,
+  /** Se enviado, converte a resposta parcial deste id em completa (sem duplicar). */
+  partialId?: string | null,
+  /** Token do link personalizado (campos já preenchidos pela empresa). */
+  inviteToken?: string | null,
+  /** Preview do documento que o respondente conferiu (reaproveitado na geração). */
+  previewId?: string | null
+) {
+  const { invite, values, fieldValuesCreate } = await prepareSubmission(
+    form,
+    valuesByFieldId,
+    inviteToken
+  );
+
+  // Link de uso único: reclama antes de gravar; libera se a gravação falhar.
+  let claimed: ClaimedInvite | null = null;
+  if (invite) {
+    const { count } = await prisma.formInvite.updateMany({
+      where: { id: invite.id, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+    if (count === 0) {
+      throw { status: 410, message: "Este link já foi usado. Peça um novo link a quem te enviou." };
+    }
+    claimed = { id: invite.id };
+  }
 
   // Se há uma parcial deste lead, converte em completa (substitui os valores)
   // em vez de criar uma nova resposta — evita lead duplicado.
@@ -129,26 +225,48 @@ export async function createFormResponse(
       })
     : null;
 
-  const response = existingPartial
-    ? await prisma.$transaction(async (tx) => {
-        await tx.fieldValue.deleteMany({ where: { responseId: existingPartial.id } });
-        return tx.response.update({
-          where: { id: existingPartial.id },
+  let response;
+  try {
+    response = existingPartial
+      ? await prisma.$transaction(async (tx) => {
+          await tx.fieldValue.deleteMany({ where: { responseId: existingPartial.id } });
+          return tx.response.update({
+            where: { id: existingPartial.id },
+            data: {
+              partial: false,
+              submittedAt: new Date(),
+              fieldValues: { create: fieldValuesCreate },
+            },
+            include: { fieldValues: true },
+          });
+        })
+      : await prisma.response.create({
           data: {
-            partial: false,
-            submittedAt: new Date(),
+            formId: form.id,
             fieldValues: { create: fieldValuesCreate },
           },
           include: { fieldValues: true },
         });
-      })
-    : await prisma.response.create({
-        data: {
-          formId: form.id,
-          fieldValues: { create: fieldValuesCreate },
-        },
-        include: { fieldValues: true },
-      });
+  } catch (err) {
+    if (claimed) {
+      await prisma.formInvite
+        .update({ where: { id: claimed.id }, data: { usedAt: null } })
+        .catch(() => {});
+    }
+    throw err;
+  }
+
+  if (claimed) {
+    await prisma.formInvite.update({
+      where: { id: claimed.id },
+      data: { responseId: response.id },
+    });
+  }
+
+  // Formulário de documento: a entrega (e-mail com PDF + webhook) acontece após a
+  // geração assíncrona do documento, não aqui.
+  const generation = await enqueueDocumentGeneration(form.id, response.id, previewId);
+  if (generation) return response;
 
   const emailsToNotify: string[] = [];
   if (form.settings?.notifyEmail) {

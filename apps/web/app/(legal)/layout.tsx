@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { FileText } from "lucide-react";
 import { getTranslations } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Logo } from "@/components/logo";
 import { SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_TEL } from "@/lib/utils";
 
 export default async function LegalLayout({
@@ -22,10 +22,7 @@ export default async function LegalLayout({
         {/* Header */}
         <div className="mb-12">
           <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-              <FileText className="w-4 h-4 text-primary" />
-            </div>
-            <span className="font-semibold">{tCommon("appName")}</span>
+            <Logo />
           </Link>
         </div>
 

@@ -5,9 +5,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   // Runtime do app: pooler de transações do Supabase (porta 6543).
-  url      = env("DATABASE_URL")
+  url       = env("DATABASE_URL")
   // Migrations / db push: conexão de sessão direta (porta 5432). O transaction
   // pooler não suporta os advisory locks/DDL do Prisma e trava o db push.
   directUrl = env("DIRECT_URL")
@@ -24,17 +24,25 @@ model User {
   updatedAt     DateTime  @updatedAt
 
   // Subscription
-  plan                String   @default("free") // "free" | "pro"
-  stripeCustomerId    String?  @unique
-  stripeSubscriptionId String? @unique
-  stripePriceId       String?
+  plan                   String    @default("free") // "free" | "pro"
+  stripeCustomerId       String?   @unique
+  stripeSubscriptionId   String?   @unique
+  stripePriceId          String?
   stripeCurrentPeriodEnd DateTime?
-  cancelAtPeriodEnd   Boolean  @default(false)
+  cancelAtPeriodEnd      Boolean   @default(false)
 
-  accounts Account[]
-  sessions Session[]
-  forms    Form[]
+  // Documentos: último aviso de limite mensal de documentos (1 e-mail por mês)
+  documentLimitNotifiedAt DateTime?
+
+  // Marca da conta (logo + nome no topo dos formulários públicos)
+  brandName    String?
+  brandLogoKey String?
+
+  accounts      Account[]
+  sessions      Session[]
+  forms         Form[]
   subscriptions Subscription[]
+  documents     Document[]
 
   @@map("users")
 }
@@ -96,6 +104,9 @@ model Form {
   fields    Field[]
   responses Response[]
   settings  FormSettings?
+  invites   FormInvite[]
+  // Documentos: formulário gerado a partir de um template .docx
+  document  Document?
 
   @@index([userId])
   @@index([slug])
@@ -103,15 +114,25 @@ model Form {
 }
 
 model Field {
-  id          String  @id @default(cuid())
-  type        String
-  label       String
-  placeholder String?
-  required    Boolean @default(false)
-  order       Int
-  options     Json?
+  id           String  @id @default(cuid())
+  type         String
+  label        String
+  placeholder  String?
+  required     Boolean @default(false)
+  order        Int
+  options      Json?
   // Lógica condicional (PRO): { fieldId, operator: "equals"|"not_equals", value }
-  visibility  Json?
+  visibility   Json?
+  // Documentos: variável do template ({{variable_key}}) preenchida por este campo
+  variableKey  String?
+  // Natureza do campo (Documentos):
+  //   pergunta       → o respondente preenche no formulário
+  //   fixa           → valor constante definido pela empresa (defaultValue)
+  //   pre_preenchida → valor vem do link personalizado; sem link, vira pergunta
+  //   automatica     → resolvido pelo sistema na geração (ex.: data_assinatura)
+  nature       String  @default("pergunta")
+  defaultValue String? @db.Text
+  helpText     String? @db.Text
 
   formId String
   form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
@@ -132,7 +153,11 @@ model Response {
   formId String
   form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
 
-  fieldValues FieldValue[]
+  fieldValues        FieldValue[]
+  // Documentos: geração do PDF a partir desta resposta
+  documentGeneration DocumentGeneration?
+  // Link personalizado usado nesta resposta (dados já preenchidos pela empresa)
+  invite             FormInvite?
 
   @@index([formId])
   @@index([formId, partial])
@@ -154,8 +179,30 @@ model FieldValue {
   @@map("field_values")
 }
 
+// Link personalizado: a empresa preenche alguns campos para um cliente
+// específico e envia um link de uso único.
+model FormInvite {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  // Nome do cliente, para a empresa identificar o link
+  label     String
+  // { fieldId: valor } dos campos preenchidos pela empresa
+  values    Json
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  formId String
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  responseId String?   @unique
+  response   Response? @relation(fields: [responseId], references: [id], onDelete: SetNull)
+
+  @@index([formId, createdAt])
+  @@map("form_invites")
+}
+
 model FormSettings {
-  id          String  @id @default(cuid())
+  id String @id @default(cuid())
 
   // Notificações
   notifyEmail  String?
@@ -171,8 +218,8 @@ model FormSettings {
   // PRO: Agendamento e limites
   opensAt       DateTime? // abre para respostas a partir desta data
   closesAt      DateTime? // encerra respostas após esta data
-  maxResponses  Int?      // encerra após N respostas
-  closedMessage String?   // mensagem exibida quando encerrado
+  maxResponses  Int? // encerra após N respostas
+  closedMessage String? // mensagem exibida quando encerrado
 
   // PRO: Respostas parciais (capturar leads que não concluíram)
   capturePartials Boolean @default(false)
@@ -205,22 +252,22 @@ model FormSettings {
 }
 
 model Subscription {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Stripe data
-  stripeSubscriptionId String   @unique
-  stripeCustomerId     String
-  stripePriceId        String
+  stripeSubscriptionId     String   @unique
+  stripeCustomerId         String
+  stripePriceId            String
   stripeCurrentPeriodStart DateTime
   stripeCurrentPeriodEnd   DateTime
 
   // Subscription details
-  status    String // "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "trialing" | "unpaid"
-  plan      String // "pro"
+  status String // "active" | "canceled" | "incomplete" | "incomplete_expired" | "past_due" | "trialing" | "unpaid"
+  plan   String // "pro"
 
-  cancelAtPeriodEnd Boolean @default(false)
+  cancelAtPeriodEnd Boolean   @default(false)
   canceledAt        DateTime?
 
   createdAt DateTime @default(now())
@@ -232,21 +279,127 @@ model Subscription {
 }
 
 model PaymentHistory {
-  id        String   @id @default(cuid())
-  userId    String
+  id     String @id @default(cuid())
+  userId String
 
   // Stripe data
-  stripePaymentIntentId String   @unique
+  stripePaymentIntentId String  @unique
   stripeInvoiceId       String?
 
   // Payment details
-  amount        Int      // in cents
-  currency      String   @default("usd")
-  status        String   // "succeeded" | "pending" | "failed"
-  description   String?
+  amount      Int // in cents
+  currency    String  @default("usd")
+  status      String // "succeeded" | "pending" | "failed"
+  description String?
 
   createdAt DateTime @default(now())
 
   @@index([userId])
   @@map("payment_history")
+}
+
+// ==========================================
+// DOCUMENTOS: formulário → .docx/PDF preenchido
+// ==========================================
+
+model Document {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Reaproveita a engine de formulários: campos, link público, embed, entrega
+  // (FormSettings.notifyEmails / webhookUrl).
+  formId String @unique
+  form   Form   @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  // Envia cópia do PDF ao respondente (se ele informou e-mail)
+  emailRespondent Boolean @default(true)
+
+  templates   DocumentTemplate[]
+  generations DocumentGeneration[]
+  previews    DocumentPreview[]
+
+  @@index([userId])
+  @@map("documents")
+}
+
+// Template versionado: substituir o .docx cria nova versão; documentos já
+// emitidos continuam apontando para a versão usada.
+model DocumentTemplate {
+  id           String   @id @default(cuid())
+  version      Int
+  fileKey      String
+  fileName     String
+  fileSize     Int
+  // Chaves das variáveis encontradas no .docx (ordem do documento)
+  variables    String[]
+  // Fontes usadas no .docx que o conversor não tem (aviso de fidelidade)
+  missingFonts String[] @default([])
+  createdAt    DateTime @default(now())
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  generations DocumentGeneration[]
+  previews    DocumentPreview[]
+
+  @@unique([documentId, version])
+  @@map("document_templates")
+}
+
+// Geração de um documento por resposta (submissão + job da fila).
+model DocumentGeneration {
+  id          String    @id @default(cuid())
+  // recebida | processando | concluida | falha | limite
+  status      String    @default("recebida")
+  pdfKey      String?
+  docxKey     String?
+  error       String?   @db.Text
+  attempts    Int       @default(0)
+  // Link permanente de consulta do respondente, sem login (uso pós-MVP)
+  accessToken String    @unique @default(cuid())
+  // Preview que o respondente conferiu; reaproveitado se os dados baterem
+  previewId   String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  templateId String
+  template   DocumentTemplate @relation(fields: [templateId], references: [id], onDelete: NoAction)
+
+  responseId String   @unique
+  response   Response @relation(fields: [responseId], references: [id], onDelete: Cascade)
+
+  @@index([documentId, createdAt])
+  @@index([status, updatedAt])
+  @@map("document_generations")
+}
+
+// PDF gerado para o respondente conferir antes de enviar. Se ele confirmar sem
+// alterar nada, o mesmo arquivo vira o definitivo (uma conversão por envio).
+model DocumentPreview {
+  id        String   @id @default(cuid())
+  // Hash dos dados mesclados; a geração reaproveita o arquivo se bater
+  dataHash  String
+  pdfKey    String
+  docxKey   String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  templateId String
+  template   DocumentTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  @@index([documentId, createdAt])
+  @@map("document_previews")
 }

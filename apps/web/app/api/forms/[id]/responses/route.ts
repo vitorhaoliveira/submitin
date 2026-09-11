@@ -9,6 +9,9 @@ import {
 import { createFormResponse } from "@/lib/form-response";
 import { verifyCaptchaToken } from "@/lib/turnstile";
 
+// Formulários de documento geram o PDF via after() nesta mesma função.
+export const maxDuration = 60;
+
 // GET - Fetch responses (protected)
 export async function GET(_request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -135,9 +138,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const values = sanitizeFormValues(rawValues);
     const partialId = typeof body?.partialId === "string" ? body.partialId : null;
+    const inviteToken = typeof body?.inviteToken === "string" ? body.inviteToken : null;
+    const previewId = typeof body?.previewId === "string" ? body.previewId : null;
 
     try {
-      const response = await createFormResponse(form, values, partialId);
+      const response = await createFormResponse(form, values, partialId, inviteToken, previewId);
       return NextResponse.json({ success: true, id: response.id }, { status: 201 });
     } catch (err: unknown) {
       const status =

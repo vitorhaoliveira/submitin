@@ -32,8 +32,9 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { PLANS, isPaid, maxFormsFor, maxResponsesPerMonthFor } from "@/lib/stripe";
+import { PLANS, isPaid, maxDocumentsPerMonthFor, maxFormsFor, normalizePlan } from "@/lib/stripe";
 import { formatDate } from "@/lib/utils";
+import { BrandCard } from "@/components/brand-card";
 
 interface AccountClientProps {
   profile: {
@@ -43,7 +44,8 @@ interface AccountClientProps {
     plan: string;
     createdAt: string;
   };
-  usage: { forms: number; published: number; responses: number };
+  usage: { forms: number; documents: number; documentsThisMonth: number };
+  brand: { name: string | null; logoUrl: string | null };
 }
 
 interface PasswordRequirement {
@@ -51,7 +53,7 @@ interface PasswordRequirement {
   test: (password: string) => boolean;
 }
 
-export function AccountClient({ profile, usage }: AccountClientProps) {
+export function AccountClient({ profile, usage, brand }: AccountClientProps) {
   const t = useTranslations("account");
   const tAuth = useTranslations("auth");
   const locale = useLocale();
@@ -59,7 +61,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
 
   const isPro = isPaid(profile.plan);
   const maxForms = maxFormsFor(profile.plan);
-  const maxResponses = maxResponsesPerMonthFor(profile.plan);
+  const maxDocuments = maxDocumentsPerMonthFor(profile.plan);
 
   // ---- Perfil (editar nome) ----
   const [name, setName] = useState(profile.name ?? "");
@@ -161,42 +163,42 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
 
   const usageStats = [
     {
+      key: "documentsMonth",
+      label: t("documentsMonthUsage"),
+      value: usage.documentsThisMonth,
+      limit: maxDocuments === -1 ? null : maxDocuments,
+      icon: FileText,
+      tint: "bg-brand-soft text-brand",
+    },
+    {
+      key: "documents",
+      label: t("documentsUsage"),
+      value: usage.documents,
+      limit: null,
+      icon: TrendingUp,
+      tint: "bg-brand-soft text-brand",
+    },
+    {
       key: "forms",
       label: t("formsUsage"),
       value: usage.forms,
       limit: maxForms === -1 ? null : maxForms,
-      icon: FileText,
-      tint: "bg-primary/10 text-primary",
-    },
-    {
-      key: "responses",
-      label: t("responsesUsage"),
-      value: usage.responses,
-      limit: maxResponses === -1 ? null : maxResponses,
       icon: MessageSquare,
-      tint: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
-    },
-    {
-      key: "published",
-      label: t("publishedUsage"),
-      value: usage.published,
-      limit: null,
-      icon: TrendingUp,
-      tint: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      tint: "bg-brand-soft text-brand",
     },
   ];
 
   return (
     <div className="max-w-4xl space-y-8 animate-fade-in-up">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("title")}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground mt-1">{t("subtitle")}</p>
       </div>
 
       {/* Cabeçalho do perfil + plano */}
       <Card className="overflow-hidden">
-        <div className="bg-brand-soft p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="w-16 h-16 shrink-0 rounded-2xl bg-brand-gradient text-white flex items-center justify-center text-xl font-semibold shadow-sm shadow-primary/30">
+        <div className="bg-muted/40 p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="w-16 h-16 shrink-0 rounded-2xl bg-foreground text-white flex items-center justify-center text-xl font-semibold">
             {initials}
           </div>
           <div className="min-w-0 flex-1">
@@ -206,12 +208,12 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
           <div
             className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${
               isPro
-                ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
+                ? "bg-foreground text-background"
                 : "bg-muted text-muted-foreground"
             }`}
           >
             {isPro ? <Crown className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-            {isPro ? t("planPro") : t("planFree")}
+            {PLANS[normalizePlan(profile.plan)].name}
           </div>
         </div>
       </Card>
@@ -227,7 +229,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
             const Icon = s.icon;
             const pct =
               s.limit && s.limit > 0 ? Math.min(100, Math.round((s.value / s.limit) * 100)) : null;
-            const showUnlimited = s.limit === null && (s.key === "forms" || s.key === "responses");
+            const showUnlimited = s.limit === null && (s.key === "forms" || s.key === "documentsMonth");
             return (
               <Card key={s.key}>
                 <CardContent className="p-5">
@@ -237,7 +239,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                       <Icon className="w-4 h-4" />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold mt-2 tabular-nums">
+                  <p className="text-2xl font-semibold mt-2 tabular-nums">
                     {s.value}
                     {s.limit && s.limit > 0 ? (
                       <span className="text-sm font-normal text-muted-foreground">
@@ -251,7 +253,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                   {pct !== null && (
                     <div className="mt-3 h-1.5 w-full rounded-full bg-muted overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${pct >= 100 ? "bg-destructive" : "bg-brand-gradient"}`}
+                        className={`h-full rounded-full ${pct >= 100 ? "bg-destructive" : "bg-brand"}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -262,15 +264,15 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
           })}
         </div>
         {!isPro && (
-          <Card className="mt-4 overflow-hidden border-primary/20 bg-brand-soft">
+          <Card className="mt-4 overflow-hidden border-primary/20 bg-muted/40">
             <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 shrink-0 rounded-xl bg-brand-gradient text-white flex items-center justify-center">
+                <div className="w-10 h-10 shrink-0 rounded-xl bg-foreground text-white flex items-center justify-center">
                   <Crown className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="font-semibold">{t("upgradeCta")}</p>
-                  <p className="text-sm text-muted-foreground">{PLANS.premium.features[1]}</p>
+                  <p className="text-sm text-muted-foreground">{PLANS.pro.features[1]}</p>
                 </div>
               </div>
               <Link href="/dashboard/billing" className="shrink-0">
@@ -283,6 +285,8 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
           </Card>
         )}
       </div>
+
+      <BrandCard brand={brand} />
 
       {/* Perfil (editar nome) */}
       <Card>
@@ -299,8 +303,8 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
               <div
                 className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
                   profileMsg.type === "ok"
-                    ? "bg-green-500/10 text-green-700 dark:text-green-400"
-                    : "bg-destructive/10 text-destructive"
+                    ? "bg-green-500/10 text-green-700"
+                    : "bg-red-50 text-destructive"
                 }`}
               >
                 {profileMsg.type === "ok" ? (
@@ -368,7 +372,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
               {t("planLabel")}
             </span>
             <Link href="/dashboard/billing" className="text-sm font-medium text-primary hover:underline">
-              {isPro ? t("planPro") : t("planFree")} · {t("managePlan")}
+              {PLANS[normalizePlan(profile.plan)].name} · {t("managePlan")}
             </Link>
           </div>
           <div className="flex items-center justify-between py-3 last:pb-0">
@@ -393,13 +397,13 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="flex items-center gap-2 rounded-lg bg-destructive/10 text-destructive px-3 py-2 text-sm">
+              <div className="flex items-center gap-2 rounded-lg bg-red-50 text-destructive px-3 py-2 text-sm">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 {error}
               </div>
             )}
             {success && (
-              <div className="flex items-center gap-2 rounded-lg bg-green-500/10 text-green-700 dark:text-green-400 px-3 py-2 text-sm">
+              <div className="flex items-center gap-2 rounded-lg bg-green-500/10 text-green-700 px-3 py-2 text-sm">
                 <Check className="w-4 h-4 shrink-0" />
                 {success}
               </div>
@@ -461,7 +465,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                       <li
                         key={req.label}
                         className={`flex items-center gap-2 ${
-                          valid ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+                          valid ? "text-green-600" : "text-muted-foreground"
                         }`}
                       >
                         {valid ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}

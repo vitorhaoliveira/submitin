@@ -15,27 +15,28 @@ export function FaqSection() {
 
   return (
     <section id="faq" className="container mx-auto px-4 py-24">
-      <div className="text-center mb-16">
-        <h2 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight">{t("faq.title")}</h2>
-        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">{t("faq.subtitle")}</p>
+      <div className="text-center mb-12">
+        <h2 className="font-display text-4xl md:text-5xl font-bold mb-3 tracking-tight">
+          {t("faq.title")}
+        </h2>
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+          {t("faq.subtitle")}
+        </p>
       </div>
 
-      <div className="max-w-3xl mx-auto space-y-3">
+      <div className="max-w-3xl mx-auto divide-y rounded-2xl border">
         {items.map((item, i) => {
           const isOpen = open === i;
           return (
-            <div
-              key={i}
-              className="glass rounded-xl overflow-hidden transition-colors hover:border-primary/30"
-            >
+            <div key={i} className="overflow-hidden">
               <button
                 onClick={() => setOpen(isOpen ? null : i)}
                 className="w-full flex items-center justify-between gap-4 p-5 text-left"
                 aria-expanded={isOpen}
               >
-                <span className="font-medium">{item.q}</span>
+                <span className="font-display text-lg font-semibold">{item.q}</span>
                 <ChevronDown
-                  className={`w-5 h-5 text-muted-foreground shrink-0 transition-transform duration-300 ${
+                  className={`w-4 h-4 text-muted-foreground shrink-0 transition-transform duration-300 ${
                     isOpen ? "rotate-180" : ""
                   }`}
                 />

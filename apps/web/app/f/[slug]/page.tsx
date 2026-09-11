@@ -6,6 +6,10 @@ import { getFormAvailability } from "@/lib/form-availability";
 import { buildMetadata } from "@/lib/seo";
 import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
 import type { CustomTheme } from "@/lib/theme-utils";
+import { resolveNatures } from "@/lib/documents/natures";
+import { toDocumentFieldType } from "@/lib/documents/service";
+import { formatValue } from "@submitin/documents/format";
+import { brandLogoUrl } from "@/lib/branding";
 
 // Conteúdo dinâmico: conta views e depende de estado mutável (agendamento,
 // limite de respostas). Sem isto, o Next cacheia a rota e o form mostra estado
@@ -14,6 +18,7 @@ export const dynamic = "force-dynamic";
 
 interface PublicFormPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ c?: string }>;
 }
 
 export async function generateMetadata({ params }: PublicFormPageProps) {
@@ -45,8 +50,8 @@ export async function generateMetadata({ params }: PublicFormPageProps) {
   });
 }
 
-export default async function PublicFormPage({ params }: PublicFormPageProps) {
-  const { slug } = await params;
+export default async function PublicFormPage({ params, searchParams }: PublicFormPageProps) {
+  const [{ slug }, { c: inviteToken }] = await Promise.all([params, searchParams]);
   const form = await prisma.form.findFirst({
     where: {
       slug,
@@ -57,6 +62,8 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
         orderBy: { order: "asc" },
       },
       settings: true,
+      document: { select: { id: true } },
+      user: { select: { id: true, brandName: true, brandLogoKey: true } },
     },
   });
 
@@ -75,16 +82,42 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
     /* ignore */
   }
 
+  // Link personalizado (?c=token): campos que a empresa já preencheu para este cliente.
+  const invite =
+    typeof inviteToken === "string" && inviteToken
+      ? await prisma.formInvite.findUnique({ where: { token: inviteToken } })
+      : null;
+  const inviteProblem =
+    typeof inviteToken === "string" && inviteToken
+      ? !invite || invite.formId !== form.id
+        ? "invalid"
+        : invite.usedAt
+          ? "used"
+          : null
+      : null;
+  const inviteValues =
+    invite && !inviteProblem ? ((invite.values ?? {}) as Record<string, string>) : {};
+  const { locked, askedIds, fromInvite } = resolveNatures(form.fields, inviteValues);
+  // O respondente vê, só para leitura, o que o link já trouxe preenchido para ele.
+  const prefilled = form.fields
+    .filter((f) => fromInvite.has(f.id))
+    .map((f) => ({
+      label: f.label,
+      value: formatValue(toDocumentFieldType(f.type), locked[f.id]!),
+    }));
+
   // Transform JsonValue options to string[] | null
   const transformedForm = {
     id: form.id,
     name: form.name,
     description: form.description,
-    fields: form.fields.map((field: (typeof form.fields)[number]) => ({
+    // Só aparecem os campos que o respondente responde.
+    fields: form.fields.filter((field) => askedIds.has(field.id)).map((field) => ({
       id: field.id,
       type: field.type,
       label: field.label,
       placeholder: field.placeholder,
+      helpText: field.helpText,
       required: field.required,
       order: field.order,
       formId: field.formId,
@@ -127,5 +160,28 @@ export default async function PublicFormPage({ params }: PublicFormPageProps) {
     responseCount
   );
 
-  return <PublicForm form={transformedForm} availability={availability} />;
+  const brand =
+    form.user.brandName || form.user.brandLogoKey
+      ? { name: form.user.brandName, logoUrl: brandLogoUrl(form.user.id, form.user.brandLogoKey) }
+      : undefined;
+
+  if (inviteProblem) {
+    return (
+      <PublicForm
+        form={transformedForm}
+        availability={{ isOpen: false, reason: inviteProblem === "used" ? "inviteUsed" : "inviteInvalid" }}
+        brand={brand}
+      />
+    );
+  }
+
+  return (
+    <PublicForm
+      form={transformedForm}
+      availability={availability}
+      invite={invite ? { token: invite.token, prefilled } : undefined}
+      isDocument={Boolean(form.document)}
+      brand={brand}
+    />
+  );
 }

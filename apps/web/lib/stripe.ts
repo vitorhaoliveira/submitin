@@ -15,7 +15,17 @@ export function validateStripeConfig() {
 }
 
 // Stripe price IDs (NEXT_PUBLIC_ para acesso client-side).
-// Crie um produto/preço em BRL para cada plano pago no Stripe e cole os IDs.
+// Planos à venda (módulo Documentos): crie um produto/preço em BRL para cada um no Stripe.
+export const STRIPE_DOCS_PRO_PRICE_ID =
+  process.env.NEXT_PUBLIC_STRIPE_DOCS_PRO_PRICE_ID || process.env.STRIPE_DOCS_PRO_PRICE_ID || "";
+
+export const STRIPE_DOCS_UNLIMITED_PRICE_ID =
+  process.env.NEXT_PUBLIC_STRIPE_DOCS_UNLIMITED_PRICE_ID ||
+  process.env.STRIPE_DOCS_UNLIMITED_PRICE_ID ||
+  "";
+
+// Planos legados (Plus/Premium): não são mais vendidos, mas assinaturas ativas
+// continuam reconhecidas pelo webhook com as mesmas condições.
 export const STRIPE_PLUS_PRICE_ID =
   process.env.NEXT_PUBLIC_STRIPE_PLUS_PRICE_ID ||
   process.env.STRIPE_PLUS_PRICE_ID ||
@@ -32,24 +42,29 @@ export const STRIPE_PREMIUM_PRICE_ID =
 // Deprecado: mantido só para imports legados (= Premium).
 export const STRIPE_PRO_PRICE_ID = STRIPE_PREMIUM_PRICE_ID;
 
-// Plans configuration (moeda em Real)
+// Plans configuration (moeda em Real). Preços são só exibição — a lógica usa
+// `limits`; mudar o valor cobrado é trocar o price no Stripe e o número aqui.
 export const PLANS = {
   free: {
     name: "Grátis",
+    tagline: "Para começar e testar com clientes reais",
     price: 0,
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: "",
+    legacy: false,
     features: [
-      "Até 5 formulários",
-      "100 respostas/mês",
-      "Notificações por email",
-      "Webhook básico",
-      "Branding Submitin",
+      "20 documentos por mês",
+      "Formulário gerado do seu .docx",
+      "PDF por e-mail e webhook",
+      "Selo \"Gerado com Submitin\" no PDF",
+      "+ 5 formulários avulsos (100 respostas/mês)",
     ],
     limits: {
       maxForms: 5,
       responsesPerMonth: 100,
+      // Documentos gerados com sucesso por mês (falha não conta). -1 = ilimitado.
+      documentsPerMonth: 20,
       customTheme: false,
       hideBranding: false,
       captcha: false,
@@ -57,22 +72,79 @@ export const PLANS = {
       prioritySupport: false,
     },
   },
+  pro: {
+    name: "Pro",
+    tagline: "Para quem gera documentos toda semana",
+    price: 79,
+    currency: "BRL",
+    interval: "month" as const,
+    stripePriceId: STRIPE_DOCS_PRO_PRICE_ID,
+    legacy: false,
+    features: [
+      "Tudo do Grátis +",
+      "200 documentos por mês",
+      "PDF sem o selo Submitin",
+      "Tema personalizado",
+      "+ 20 formulários avulsos (5.000 respostas/mês)",
+    ],
+    limits: {
+      maxForms: 20,
+      responsesPerMonth: 5000,
+      documentsPerMonth: 200,
+      customTheme: true,
+      hideBranding: true,
+      captcha: false,
+      advancedAnalytics: false,
+      prioritySupport: false,
+    },
+  },
+  unlimited: {
+    name: "Ilimitado",
+    tagline: "Volume alto, sem contar documentos",
+    price: 179,
+    currency: "BRL",
+    interval: "month" as const,
+    stripePriceId: STRIPE_DOCS_UNLIMITED_PRICE_ID,
+    legacy: false,
+    features: [
+      "Tudo do Pro +",
+      "Documentos ilimitados",
+      "Anti-spam (CAPTCHA)",
+      "Suporte prioritário",
+      "+ Formulários avulsos e respostas ilimitados",
+    ],
+    limits: {
+      maxForms: -1,
+      responsesPerMonth: -1,
+      documentsPerMonth: -1,
+      customTheme: true,
+      hideBranding: true,
+      captcha: true,
+      advancedAnalytics: true,
+      prioritySupport: true,
+    },
+  },
+  // ── Legados (grandfathering) ──
   plus: {
     name: "Plus",
+    tagline: "Plano anterior (mantido para assinantes)",
     price: 19,
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: STRIPE_PLUS_PRICE_ID,
+    legacy: true,
     features: [
       "Tudo do Grátis +",
       "Até 20 formulários",
       "5.000 respostas/mês",
+      "200 documentos por mês",
       "Remover branding Submitin",
       "Tema personalizado",
     ],
     limits: {
       maxForms: 20,
       responsesPerMonth: 5000,
+      documentsPerMonth: 200,
       customTheme: true,
       hideBranding: true,
       captcha: false,
@@ -82,14 +154,17 @@ export const PLANS = {
   },
   premium: {
     name: "Premium",
+    tagline: "Plano anterior (mantido para assinantes)",
     price: 49,
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: STRIPE_PREMIUM_PRICE_ID,
+    legacy: true,
     features: [
       "Tudo do Plus +",
       "Formulários ilimitados",
       "Respostas ilimitadas",
+      "Documentos ilimitados",
       "Anti-spam (CAPTCHA)",
       "Analytics avançado",
       "Suporte prioritário",
@@ -97,6 +172,7 @@ export const PLANS = {
     limits: {
       maxForms: -1, // ilimitado
       responsesPerMonth: -1, // ilimitado
+      documentsPerMonth: -1, // ilimitado
       customTheme: true,
       hideBranding: true,
       captcha: true,
@@ -109,23 +185,32 @@ export const PLANS = {
 export type PlanType = keyof typeof PLANS;
 export type PlanFeature = keyof typeof PLANS.free.limits;
 
+/** Planos à venda, na ordem de exibição. */
+export const SOLD_PLANS = ["free", "pro", "unlimited"] as const satisfies readonly PlanType[];
+
+const PLAN_KEYS = Object.keys(PLANS) as PlanType[];
+
 // Normaliza qualquer string de plano para um PlanType válido (default: free).
 export function normalizePlan(plan: string | null | undefined): PlanType {
-  return plan === "plus" || plan === "premium" ? plan : "free";
+  return PLAN_KEYS.includes(plan as PlanType) ? (plan as PlanType) : "free";
+}
+
+export function isLegacyPlan(plan: string | null | undefined): boolean {
+  return PLANS[normalizePlan(plan)].legacy;
 }
 
 // Tem algum plano pago — libera features básicas (remover branding, tema custom).
 // Mantido como `isPro` por compat: a maioria das checagens gateia features
 // básicas pagas (não premium-only).
 export function isPaid(plan: string | null | undefined): boolean {
-  return plan === "plus" || plan === "premium";
+  return normalizePlan(plan) !== "free";
 }
 export const isPro = isPaid;
 
 // Plano topo — libera features avançadas (CAPTCHA, agendamento, parciais,
 // analytics avançado, suporte prioritário) e uso ilimitado.
 export function isPremium(plan: string | null | undefined): boolean {
-  return plan === "premium";
+  return plan === "unlimited" || plan === "premium";
 }
 
 export function planLimits(plan: string | null | undefined) {
@@ -147,19 +232,23 @@ export function maxResponsesPerMonthFor(plan: string | null | undefined): number
   return planLimits(plan).responsesPerMonth;
 }
 
-// Mapeia o price ID de uma assinatura Stripe para o plano correspondente.
-export function planFromPriceId(priceId: string | null | undefined): PlanType {
-  if (!priceId) return "free";
-  if (priceId === STRIPE_PREMIUM_PRICE_ID) return "premium";
-  if (priceId === STRIPE_PLUS_PRICE_ID) return "plus";
-  return "free";
+// Limite de documentos gerados/mês do plano (-1 = ilimitado).
+export function maxDocumentsPerMonthFor(plan: string | null | undefined): number {
+  return planLimits(plan).documentsPerMonth;
 }
 
-// Price ID do Stripe para um plano pago ("" para free/desconhecido).
+// Mapeia o price ID de uma assinatura Stripe para o plano correspondente
+// (inclui os legados, para assinaturas antigas continuarem valendo).
+export function planFromPriceId(priceId: string | null | undefined): PlanType {
+  if (!priceId) return "free";
+  const plan = PLAN_KEYS.find((key) => key !== "free" && PLANS[key].stripePriceId === priceId);
+  return plan ?? "free";
+}
+
+// Price ID do Stripe para um plano à venda ("" para free, legado ou desconhecido).
 export function priceIdForPlan(plan: string | null | undefined): string {
-  if (plan === "premium") return STRIPE_PREMIUM_PRICE_ID;
-  if (plan === "plus") return STRIPE_PLUS_PRICE_ID;
-  return "";
+  const key = normalizePlan(plan);
+  return PLANS[key].legacy ? "" : PLANS[key].stripePriceId;
 }
 
 export function getStripeCustomerPortalUrl(customerId: string): Promise<string> {

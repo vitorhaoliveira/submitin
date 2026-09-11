@@ -1,0 +1,18 @@
+{
+  "nome_aluno": "Beatriz Almeida Ramos",
+  "data_nascimento_aluno": "14/03/2012",
+  "nome_responsavel": "Carla Almeida Ramos",
+  "cpf_responsavel": "391.552.810-24",
+  "email_responsavel": "carla.ramos@exemplo.com.br",
+  "telefone_responsavel": "(19) 98812-4477",
+  "endereco_responsavel": "Av. Conceição, 1250, apto 72 - Jardim Pau Preto, Indaiatuba/SP",
+  "cep_responsavel": "13330-120",
+  "contato_emergencia": "Rogério Ramos - (19) 99741-2038",
+  "curso": "Inglês Intermediário",
+  "turno": "Tarde",
+  "forma_pagamento": "Boleto bancário",
+  "autoriza_imagem": "Sim",
+  "autoriza_saida_sozinho": "Não",
+  "observacoes": "Alergia a amendoim. Sai às quintas 15 minutos mais cedo.",
+  "data_assinatura": "18/01/2027"
+}

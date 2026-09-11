@@ -27,18 +27,18 @@
   },
   "landing": {
     "seo": {
-      "title": "Submitin – Crie formulários incríveis em minutos",
-      "keywords": "formulários online, criar formulário, pesquisa, survey, form builder, coleta de respostas, Submitin"
+      "title": "Submitin – Seu Word vira formulário, o PDF chega pronto",
+      "keywords": "gerar documento a partir de formulário, contrato automático, preencher Word online, formulário para PDF, ficha de matrícula, ficha de anamnese, contrato de locação, Submitin"
     },
     "hero": {
-      "badge": "Grátis e sem escrever uma linha de código",
-      "title": "Crie formulários",
-      "titleHighlight": "incríveis",
-      "titleEnd": "e colete respostas em minutos",
-      "subtitle": "Monte seu formulário, compartilhe um link e veja as respostas chegarem em tempo real. Simples, bonito e grátis para começar.",
-      "cta": "Criar meu formulário grátis",
-      "ctaSecondary": "Ver em ação",
-      "microProof": "Grátis para começar · Sem cartão de crédito · Sem código"
+      "badge": "Novo: documentos automáticos",
+      "title": "Seu Word vira formulário.",
+      "titleHighlight": "pronto.",
+      "titleEnd": "O PDF chega",
+      "subtitle": "Suba o contrato, a ficha ou a autorização que você já usa. Cada resposta vira um PDF preenchido, com a sua formatação, direto no seu e-mail.",
+      "cta": "Começar grátis",
+      "ctaSecondary": "Ver como funciona",
+      "microProof": "Grátis para começar · Sem cartão · Funciona com o Word que você já tem"
     },
     "trust": {
       "guarantees": {
@@ -171,31 +171,31 @@
     },
     "faq": {
       "title": "Perguntas frequentes",
-      "subtitle": "Tudo o que você precisa saber antes de começar.",
+      "subtitle": "O que costumam perguntar antes de começar.",
       "items": {
         "0": {
-          "q": "Preciso saber programar?",
-          "a": "Não. Você monta formulários visualmente, adicionando campos com poucos cliques — sem escrever código."
+          "q": "Preciso mudar o meu documento?",
+          "a": "Não. Você só escreve os campos entre chaves duplas, como {{nome_cliente}}, no Word que já usa."
         },
         "1": {
-          "q": "É realmente grátis?",
-          "a": "Sim. Você cria formulários, publica e coleta respostas gratuitamente — sem cartão de crédito para começar."
+          "q": "O PDF fica igual ao meu Word?",
+          "a": "Sim. O próprio documento é a base, então cabeçalho, rodapé, tabelas e formatação são preservados. Se alguma fonte do arquivo não estiver disponível, avisamos no upload."
         },
         "2": {
-          "q": "Quanto tempo leva para criar um formulário?",
-          "a": "Menos de 2 minutos: escolha um modelo pronto, ajuste os campos e compartilhe o link."
+          "q": "Meu cliente precisa baixar algum app?",
+          "a": "Não. Ele abre o link no celular ou no computador, preenche e envia."
         },
         "3": {
-          "q": "Meus dados ficam presos na plataforma?",
-          "a": "Não. Você pode exportar todas as respostas em CSV a qualquer momento."
+          "q": "Funciona para o meu tipo de negócio?",
+          "a": "Se o documento está no Word e hoje alguém preenche à mão ou copia dados de uma mensagem, funciona: escolas, clínicas, academias, imobiliárias, prestadores de serviço e o que mais precisar."
         },
         "4": {
-          "q": "Consigo integrar com outros sistemas?",
-          "a": "Sim. Use webhooks para enviar cada resposta automaticamente para a URL que você configurar."
+          "q": "É grátis?",
+          "a": "Você começa de graça, sem cartão de crédito, e já gera seus primeiros documentos."
         },
         "5": {
-          "q": "Como funciona a proteção contra spam?",
-          "a": "Há rate limiting por IP em todas as submissões e, no plano Pro, você pode ativar CAPTCHA (Cloudflare Turnstile)."
+          "q": "E se eu só precisar de um formulário?",
+          "a": "Também dá. O Submitin continua sendo um construtor de formulários completo, com modelos, respostas em tempo real e exportação em CSV."
         }
       }
     },
@@ -240,17 +240,20 @@
       }
     },
     "cta": {
-      "title": "Comece de graça agora",
-      "subtitle": "Crie seu primeiro formulário em menos de 2 minutos. Sem cartão, sem código.",
-      "button": "Criar meu formulário grátis",
-      "secondary": "Ver modelos"
+      "title": "Mande o link. Receba o documento.",
+      "subtitle": "Crie sua conta grátis e gere o primeiro PDF ainda hoje.",
+      "button": "Começar grátis",
+      "secondary": "Ver como funciona"
     },
     "nav": {
       "howItWorks": "Como funciona",
       "templates": "Modelos",
       "pricing": "Preços",
       "login": "Entrar",
-      "getStarted": "Começar Grátis"
+      "getStarted": "Começar grátis",
+      "documents": "Documentos",
+      "features": "Recursos",
+      "faq": "Perguntas"
     },
     "pricing": {
       "title": "Planos Simples e Transparentes",
@@ -336,7 +339,7 @@
     },
     "footer": {
       "copyright": "Feito com ❤️ por Vitor Hugo",
-      "tagline": "Formulários incríveis e respostas em minutos. Grátis para começar.",
+      "tagline": "O cliente preenche um link, você recebe o documento pronto.",
       "productTitle": "Produto",
       "legalTitle": "Legal",
       "ctaButton": "Criar grátis",
@@ -344,6 +347,194 @@
       "privacy": "Privacidade",
       "support": "Suporte",
       "supportContact": "Dúvidas? Fale conosco:"
+    },
+    "mock": {
+      "formTitle": "Matrícula 2027",
+      "student": "Nome do aluno",
+      "studentValue": "Pedro Almeida",
+      "cpf": "CPF do responsável",
+      "cpfValue": "529.982.247-25",
+      "fee": "Mensalidade",
+      "feeValue": "389,90",
+      "send": "Enviar",
+      "docTitle": "Contrato de matrícula",
+      "docLine1": "Aluno(a)",
+      "docLine2": "CPF do responsável",
+      "docLine3": "Mensalidade",
+      "feeWords": "trezentos e oitenta e nove reais e noventa centavos",
+      "ready": "PDF pronto",
+      "emailFrom": "Novo documento",
+      "emailSubject": "Contrato de matrícula — Pedro Almeida",
+      "attachment": "contrato-pedro-almeida.pdf"
+    },
+    "audience": {
+      "title": "Para quem vive de papelada",
+      "items": {
+        "0": "Escolas e cursos",
+        "1": "Clínicas e consultórios",
+        "2": "Academias e personal",
+        "3": "Imobiliárias e corretores",
+        "4": "Prestadores de serviço"
+      }
+    },
+    "story": {
+      "eyebrow": "Como funciona",
+      "title": "Do Word ao PDF, sem copiar e colar",
+      "subtitle": "Quatro passos. Os três primeiros você faz uma vez só.",
+      "cta": "Criar meu primeiro documento",
+      "steps": {
+        "0": {
+          "title": "Marque os campos no Word",
+          "description": "Escreva {{nome_cliente}}, {{cpf}}… onde cada dado deve entrar. Esse é o seu modelo."
+        },
+        "1": {
+          "title": "O formulário nasce sozinho",
+          "description": "Suba o .docx e o Submitin cria uma pergunta para cada campo, já com máscara de CPF, data e valor."
+        },
+        "2": {
+          "title": "O cliente preenche no celular",
+          "description": "Mande o link pelo WhatsApp ou coloque no site. CPF inválido não passa."
+        },
+        "3": {
+          "title": "O PDF chega pronto",
+          "description": "Em segundos, o documento preenchido chega no seu e-mail, igualzinho ao seu Word."
+        }
+      },
+      "wordFile": "contrato-matricula.docx",
+      "wordText": "Eu, {{nome_responsavel}}, CPF {{cpf_responsavel}}, matriculo {{nome_aluno}} no curso de {{curso}}, com mensalidade de {{valor_mensalidade}}.",
+      "detected": "4 campos detectados",
+      "typeText": "Texto",
+      "typeCpf": "CPF",
+      "typeCurrency": "Valor (R$)",
+      "fieldGuardian": "Nome do responsável",
+      "fieldCourse": "Curso",
+      "inbox": "Caixa de entrada",
+      "now": "agora"
+    },
+    "bento": {
+      "title": "Pensado para quem vive de papelada",
+      "subtitle": "Tudo o que um documento sério precisa, sem virar um projeto de TI.",
+      "fidelity": {
+        "title": "Fiel ao seu Word",
+        "description": "Cabeçalho, rodapé, tabelas, negrito e logo: o PDF sai igual ao documento que você já usa."
+      },
+      "cpf": {
+        "title": "CPF e CNPJ de verdade",
+        "description": "Validamos o dígito verificador. Chega de contrato com CPF errado."
+      },
+      "words": {
+        "title": "Valor por extenso",
+        "description": "R$ 389,90 vira “trezentos e oitenta e nove reais e noventa centavos” sozinho."
+      },
+      "email": {
+        "title": "PDF no seu e-mail",
+        "description": "Cada envio chega com o PDF anexado. E fica tudo guardado na tela de Envios."
+      },
+      "webhook": {
+        "title": "Conversa com seus sistemas",
+        "description": "Webhook com os dados e o link do PDF para planilhas, CRMs e automações."
+      },
+      "forms": {
+        "title": "Formulários também",
+        "description": "Precisa só de um formulário? Crie do zero ou comece de um modelo pronto."
+      }
+    },
+    "segments": {
+      "title": "Os documentos que dão mais trabalho",
+      "subtitle": "Se hoje você imprime, preenche à mão e escaneia, dá para automatizar.",
+      "yours": "Tem outro documento? Se ele está no Word, funciona.",
+      "items": {
+        "0": {
+          "name": "Escolas e cursos",
+          "intro": "Matrícula de novembro sem fila na secretaria.",
+          "docs": {
+            "0": {
+              "title": "Contrato de matrícula",
+              "description": "Dados do aluno, responsável, valores e vencimento."
+            },
+            "1": {
+              "title": "Ficha do aluno",
+              "description": "Contatos, saúde e autorizações de saída."
+            },
+            "2": {
+              "title": "Autorização de uso de imagem",
+              "description": "Assinada antes da primeira foto no Instagram."
+            }
+          }
+        },
+        "1": {
+          "name": "Clínicas e consultórios",
+          "intro": "O paciente preenche antes de chegar; a ficha já está pronta.",
+          "docs": {
+            "0": {
+              "title": "Ficha de anamnese",
+              "description": "Histórico, alergias e medicamentos em uso."
+            },
+            "1": {
+              "title": "Termo de consentimento",
+              "description": "Para procedimentos, com os dados do paciente."
+            },
+            "2": {
+              "title": "Cadastro de paciente",
+              "description": "Documento, convênio e contato de emergência."
+            }
+          }
+        },
+        "2": {
+          "name": "Academias e personal",
+          "intro": "O aluno novo resolve tudo pelo celular, na recepção ou em casa.",
+          "docs": {
+            "0": {
+              "title": "Contrato de plano",
+              "description": "Modalidade, valor, fidelidade e forma de pagamento."
+            },
+            "1": {
+              "title": "Questionário de saúde",
+              "description": "PAR-Q e liberação para atividade física."
+            },
+            "2": {
+              "title": "Termo de responsabilidade",
+              "description": "Para aulas, avaliações e treinos ao ar livre."
+            }
+          }
+        },
+        "3": {
+          "name": "Imobiliárias e corretores",
+          "intro": "Cadastro do interessado sem troca de e-mails e PDFs rabiscados.",
+          "docs": {
+            "0": {
+              "title": "Ficha cadastral",
+              "description": "Dados do locatário, renda e fiadores."
+            },
+            "1": {
+              "title": "Proposta de locação",
+              "description": "Imóvel, valor proposto e condições."
+            },
+            "2": {
+              "title": "Termo de visita",
+              "description": "Registro da visita com os dados do cliente."
+            }
+          }
+        },
+        "4": {
+          "name": "Prestadores de serviço",
+          "intro": "Do orçamento aprovado ao contrato em minutos.",
+          "docs": {
+            "0": {
+              "title": "Contrato de prestação de serviço",
+              "description": "Escopo, prazo, valor e forma de pagamento."
+            },
+            "1": {
+              "title": "Ordem de serviço",
+              "description": "O que será feito, onde e para quem."
+            },
+            "2": {
+              "title": "Procuração",
+              "description": "Com os dados do outorgante preenchidos certinho."
+            }
+          }
+        }
+      }
     }
   },
   "guest": {
@@ -463,7 +654,9 @@
       "totalForms": "Total de Formulários",
       "totalResponses": "Total de Respostas",
       "publishedForms": "Formulários Publicados",
-      "drafts": "Rascunhos"
+      "drafts": "Rascunhos",
+      "documents": "Documentos",
+      "generatedThisMonth": "PDFs gerados no mês"
     },
     "nav": {
       "forms": "Formulários",
@@ -472,7 +665,7 @@
       "logout": "Sair"
     },
     "greeting": "Bem-vindo de volta",
-    "overview": "Veja o que está acontecendo com seus formulários.",
+    "overview": "Veja o que está acontecendo com seus documentos e formulários.",
     "seeAll": "Ver todos",
     "quickStart": "Criar um novo formulário",
     "quickStartDesc": "Escolha um modelo ou comece do zero — pronto em segundos."
@@ -516,7 +709,26 @@
     "upgradeCta": "Assinar o Pro",
     "managePlan": "Gerenciar plano",
     "detailsTitle": "Detalhes da conta",
-    "securityTitle": "Segurança"
+    "securityTitle": "Segurança",
+    "brand": {
+      "title": "Sua marca",
+      "description": "Logo e nome da empresa no topo dos seus formulários e no e-mail que o cliente recebe com o documento.",
+      "logo": "Logo",
+      "upload": "Enviar logo",
+      "replace": "Trocar",
+      "remove": "Remover",
+      "logoHint": "PNG, JPG ou WebP até 1 MB. Fundo transparente fica melhor.",
+      "name": "Nome da empresa",
+      "namePlaceholder": "Ex.: Escola de Idiomas Horizonte",
+      "save": "Salvar marca",
+      "saved": "Marca salva",
+      "error": "Não foi possível salvar a marca.",
+      "tooLarge": "Logo muito grande (máximo 1 MB).",
+      "previewLabel": "Como o cliente vê",
+      "previewEmpty": "Sem marca definida: o formulário mostra o Submitin."
+    },
+    "documentsMonthUsage": "PDFs gerados no mês",
+    "documentsUsage": "Documentos"
   },
   "formsGrid": {
     "title": "Formulários",
@@ -542,7 +754,12 @@
     "deleteTitle": "Excluir formulário",
     "deleteConfirm": "Tem certeza que deseja excluir o formulário",
     "deleteWarning": "Esta ação não pode ser desfeita e todas as respostas serão perdidas.",
-    "deleting": "Excluindo..."
+    "deleting": "Excluindo...",
+    "upgrade": "Fazer upgrade",
+    "colName": "Nome",
+    "colStatus": "Status",
+    "colResponses": "Respostas",
+    "colUpdated": "Atualizado"
   },
   "formBuilder": {
     "title": "Editar Formulário",
@@ -684,7 +901,13 @@
       "date": "Data",
       "select": "Múltipla Escolha",
       "checkbox": "Checkbox",
-      "rating": "Avaliação (Estrelas)"
+      "rating": "Avaliação (Estrelas)",
+      "cpf": "CPF",
+      "cnpj": "CNPJ",
+      "cep": "CEP",
+      "currency": "Valor (R$)",
+      "day": "Dia do mês",
+      "percent": "Percentual"
     },
     "status": {
       "draft": "Rascunho",
@@ -717,6 +940,16 @@
       "label": "Capturar respostas parciais",
       "help": "Salve leads que preenchem um contato mas não enviam.",
       "proHint": "Disponível no plano Pro — capture leads que começam mas não concluem."
+    },
+    "documentBanner": "Gera o documento “{name}”",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "fieldMoveError": "Não foi possível reordenar os campos",
+    "natures": {
+      "pergunta": "Pergunta",
+      "fixa": "Fixa",
+      "pre_preenchida": "Pré-preenchida",
+      "automatica": "Automática"
     }
   },
   "responses": {
@@ -802,13 +1035,31 @@
       "invalidEmail": "Email inválido",
       "submitFailed": "Erro ao enviar resposta. Tente novamente.",
       "notFound": "Formulário não encontrado",
-      "limitReached": "Este formulário atingiu o limite de respostas."
+      "limitReached": "Este formulário atingiu o limite de respostas.",
+      "invalidCpf": "CPF inválido",
+      "invalidCnpj": "CNPJ inválido",
+      "invalidCep": "CEP inválido",
+      "invalidDay": "Informe um dia entre 1 e 31"
     },
     "poweredBy": "Criado com",
     "closed": {
       "message": "Este formulário não está mais aceitando respostas.",
-      "scheduled": "Este formulário ainda não está aceitando respostas."
-    }
+      "scheduled": "Este formulário ainda não está aceitando respostas.",
+      "inviteUsed": "Este link já foi usado. Se precisar enviar de novo, peça um novo link a quem te enviou.",
+      "inviteInvalid": "Este link não é válido. Confira se ele foi copiado inteiro ou peça um novo."
+    },
+    "prefilledTitle": "Já preenchido para você",
+    "review": "Revisar documento",
+    "reviewing": "Preparando documento...",
+    "previewTitle": "Confira seu documento",
+    "previewSubtitle": "É exatamente assim que ele será gerado. Se algo estiver errado, volte e corrija antes de enviar.",
+    "previewLoading": "Carregando páginas...",
+    "previewOpen": "Abrir PDF",
+    "previewFallback": "Não foi possível mostrar o documento aqui.",
+    "previewBack": "Voltar e corrigir",
+    "previewConfirm": "Confirmar e enviar",
+    "previewUnavailable": "Não conseguimos gerar a prévia agora. Você pode enviar mesmo assim — o documento será gerado em seguida.",
+    "previewSendAnyway": "Enviar sem revisar"
   },
   "legal": {
     "terms": {
@@ -850,6 +1101,197 @@
     "lightMode": "Claro",
     "darkMode": "Escuro",
     "sectionMain": "Geral",
-    "sectionGeneral": "Conta"
+    "sectionGeneral": "Conta",
+    "documents": "Documentos"
+  },
+  "documents": {
+    "title": "Documentos",
+    "subtitle": "O cliente preenche um link, você recebe o documento pronto em PDF.",
+    "new": "Novo documento",
+    "usage": "{used} de {limit} documentos gerados este mês",
+    "usageUnlimited": "{used} documentos gerados este mês",
+    "empty": {
+      "title": "Transforme seu Word em formulário",
+      "description": "Suba o contrato, ficha ou autorização que você já usa. Cada resposta vira um PDF preenchido, direto no seu e-mail.",
+      "step1": "No Word, marque os campos com {{nome_da_variavel}}",
+      "step2": "Suba o .docx — o formulário é criado automaticamente",
+      "step3": "Compartilhe o link e receba cada documento em PDF"
+    },
+    "card": {
+      "submissions": "envios",
+      "failed": "com problema",
+      "lastSubmission": "Último envio {date}",
+      "noSubmissions": "Nenhum envio ainda",
+      "published": "Publicado",
+      "draft": "Rascunho",
+      "viewSubmissions": "Envios",
+      "manage": "Gerenciar"
+    },
+    "status": {
+      "recebida": "Na fila",
+      "processando": "Gerando",
+      "concluida": "Pronto",
+      "falha": "Falha",
+      "limite": "Limite do plano"
+    },
+    "newPage": {
+      "title": "Novo documento",
+      "subtitle": "Suba o .docx com as variáveis marcadas. Nós criamos o formulário.",
+      "dropTitle": "Arraste o .docx aqui ou clique para escolher",
+      "dropHint": "Documento do Word (.docx), até 10 MB",
+      "howTo": "Como marcar as variáveis",
+      "howToText": "No Word, escreva o nome de cada campo entre chaves duplas, no lugar onde o valor deve aparecer:",
+      "example": "Eu, {{nome_responsavel}}, CPF {{cpf_responsavel}}, matriculo o aluno {{nome_aluno}} no curso de {{curso}}, com mensalidade de {{valor_mensalidade}} ({{valor_mensalidade_extenso}}).",
+      "howToTips": "Use letras minúsculas e _ no lugar de espaços. A mesma variável pode aparecer várias vezes, inclusive no cabeçalho, rodapé e tabelas. O tipo do campo é deduzido pelo nome (cpf, email, telefone, data, valor…) e valores terminados em _extenso saem por extenso automaticamente.",
+      "analyzing": "Analisando documento…",
+      "detected": "{count} campos detectados",
+      "detectedDesc": "Revise abaixo. Depois você poderá ajustar perguntas, tipos, obrigatoriedade e ordem.",
+      "name": "Nome do documento",
+      "namePlaceholder": "Contrato de Matrícula 2027",
+      "variable": "Variável",
+      "label": "Pergunta",
+      "type": "Tipo",
+      "missingFonts": "Fontes não disponíveis no gerador de PDF: {fonts}. Elas serão trocadas por fontes parecidas, o que pode mudar quebras de linha. Para fidelidade total, use Arial, Calibri, Times New Roman, Verdana ou Georgia.",
+      "unsupported": "Blocos condicionais ou de repetição ainda não são suportados e serão ignorados: {tags}",
+      "otherFile": "Escolher outro arquivo",
+      "create": "Criar documento",
+      "creating": "Criando…",
+      "error": "Não foi possível ler o documento",
+      "browse": "Escolher arquivo"
+    },
+    "detail": {
+      "back": "Voltar",
+      "submissions": "Envios",
+      "editFields": "Editar formulário",
+      "delete": "Excluir documento",
+      "deleteConfirm": "O formulário, as respostas e os PDFs gerados deste documento serão removidos. Essa ação não pode ser desfeita.",
+      "deleted": "Documento excluído",
+      "rename": "Renomear",
+      "link": {
+        "title": "Link público",
+        "desc": "Envie este link para quem vai preencher. Funciona no celular.",
+        "copy": "Copiar",
+        "copied": "Copiado!",
+        "open": "Abrir formulário",
+        "unpublished": "O formulário ainda não está publicado — o link não aceita respostas.",
+        "publish": "Publicar",
+        "unpublish": "Despublicar",
+        "publishedToast": "Formulário publicado",
+        "unpublishedToast": "Formulário despublicado",
+        "embedHint": "Código de incorporação (embed), QR code e aparência ficam no editor do formulário:"
+      },
+      "fields": {
+        "title": "Variáveis do documento",
+        "desc": "Classifique cada variável: quem preenche e como ela aparece no formulário.",
+        "required": "Obrigatório",
+        "missing": "Variáveis do documento sem campo no formulário (sairão em branco): {keys}",
+        "orphan": "Campos de variáveis que não existem mais no template atual: {labels}",
+        "fixedValue": "Valor fixo",
+        "saveError": "Não foi possível salvar o campo",
+        "nature": "Natureza",
+        "natureHelp": {
+          "pergunta": "O responsável preenche no formulário, a cada envio.",
+          "fixa": "Valor constante, definido uma vez por você. Não aparece no formulário.",
+          "pre_preenchida": "Você preenche por cliente, no link personalizado. Quem abrir o link geral responde normalmente.",
+          "automatica": "O sistema preenche na geração. Ex.: data_assinatura = data do envio."
+        },
+        "question": "Pergunta exibida",
+        "type": "Tipo",
+        "options": "Opções",
+        "optionsPlaceholder": "Uma opção por linha",
+        "optionsHint": "O responsável escolhe uma destas. O texto vai igualzinho para o documento.",
+        "fixedMissing": "sem valor (sai em branco)",
+        "helpText": "Texto de ajuda (opcional)",
+        "helpTextPlaceholder": "Ex.: como aparece no RG",
+        "derived": "por extenso de {{{base}}}",
+        "moveUp": "Mover para cima",
+        "moveDown": "Mover para baixo"
+      },
+      "delivery": {
+        "title": "Entrega",
+        "desc": "A cada envio, o PDF gerado vai em anexo para estes e-mails e para o webhook.",
+        "emails": "E-mails",
+        "addEmail": "Adicionar",
+        "emailPlaceholder": "secretaria@escola.com.br",
+        "noEmails": "Nenhum e-mail — os documentos ficarão só na tela de Envios.",
+        "webhook": "Webhook (opcional)",
+        "webhookDesc": "Recebe um POST com as respostas e a URL do PDF gerado.",
+        "save": "Salvar entrega",
+        "saved": "Entrega salva",
+        "respondent": "Enviar cópia ao cliente",
+        "respondentDesc": "O PDF vai para o e-mail que o cliente informou no formulário. Se ele responder, a mensagem chega para você.",
+        "respondentNoField": "Adicione uma variável de e-mail no template (ex.: {{email_responsavel}}) para enviar a cópia."
+      },
+      "template": {
+        "title": "Template",
+        "version": "Versão {version}",
+        "uploadedAt": "enviado em {date}",
+        "download": "Baixar .docx",
+        "replace": "Substituir template",
+        "replaceDesc": "Substituir cria uma nova versão; documentos já emitidos não mudam.",
+        "replacing": "Enviando…",
+        "replaced": "Template atualizado para a versão {version}",
+        "added": "Novos campos adicionados ao formulário: {labels}",
+        "orphaned": "Variáveis que saíram do template (os campos foram mantidos): {labels}"
+      },
+      "invites": {
+        "title": "Enviar para um cliente",
+        "desc": "Preencha as variáveis pré-preenchidas para um aluno específico (curso, turma…) e mande um link só dele.",
+        "new": "Criar link para um cliente",
+        "dialogDesc": "As variáveis pré-preenchidas vão travadas no documento. O responsável vê, mas não altera.",
+        "label": "Nome do cliente",
+        "labelPlaceholder": "Ex.: Pedro Almeida",
+        "create": "Criar link",
+        "singleUse": "O link vale para um envio só. Depois de usado, ele fecha.",
+        "createdTitle": "Link criado",
+        "createdDesc": "Envie para {name}. Quando o cliente preencher, o PDF chega no seu e-mail.",
+        "sendWhatsapp": "Enviar pelo WhatsApp",
+        "whatsappText": "Olá, {name}! Segue o link para preencher: {document}.",
+        "pending": "Aguardando",
+        "used": "Preenchido {when}",
+        "delete": "Cancelar link",
+        "deleteError": "Não foi possível cancelar o link",
+        "empty": "Nenhum link criado ainda.",
+        "noCompanyFields": "Nenhuma variável está como “Pré-preenchida”. Marque abaixo o que você quer preencher por aluno antes de enviar."
+      }
+    },
+    "submissions": {
+      "title": "Envios",
+      "subtitle": "Documentos gerados a partir das respostas de {name}.",
+      "search": "Buscar por nome, CPF, e-mail…",
+      "from": "De",
+      "to": "Até",
+      "allStatuses": "Todos os status",
+      "filter": "Filtrar",
+      "clear": "Limpar",
+      "date": "Data",
+      "identifier": "Identificação",
+      "status": "Status",
+      "actions": "Documento",
+      "download": "PDF",
+      "downloadDocx": "Word",
+      "retry": "Reprocessar",
+      "retried": "Documento enviado para a fila novamente",
+      "empty": "Nenhum envio ainda. Compartilhe o link do formulário para começar.",
+      "noResults": "Nenhum envio encontrado com esses filtros.",
+      "total": "{count} envios",
+      "previous": "Anterior",
+      "next": "Próxima",
+      "page": "Página {page} de {pages}",
+      "autoRefresh": "Atualizando…",
+      "viaLink": "Link de"
+    },
+    "table": {
+      "name": "Documento",
+      "status": "Status",
+      "submissions": "Envios",
+      "last": "Último envio"
+    },
+    "natures": {
+      "pergunta": "Pergunta",
+      "fixa": "Fixa",
+      "pre_preenchida": "Pré-preenchida",
+      "automatica": "Automática"
+    }
   }
 }

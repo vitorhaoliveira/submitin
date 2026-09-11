@@ -19,7 +19,8 @@ export default async function FormsPage() {
   });
 
   const forms = await prisma.form.findMany({
-    where: { userId: session.user.id },
+    // Formulários gerados por documentos aparecem só em Documentos.
+    where: { userId: session.user.id, document: { is: null } },
     include: {
       _count: {
         select: { responses: true, fields: true },

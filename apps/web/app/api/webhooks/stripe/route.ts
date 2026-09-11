@@ -6,6 +6,20 @@ import { prisma } from "@submitin/database";
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
+/**
+ * Período atual da assinatura. Desde a API 2025-03-31 ("basil") as datas ficam
+ * nos itens da assinatura; versões antigas ainda as trazem na raiz.
+ */
+function subscriptionPeriod(subscription: any): { start: Date | null; end: Date | null } {
+  const item = subscription.items?.data?.[0];
+  const start = subscription.current_period_start ?? item?.current_period_start;
+  const end = subscription.current_period_end ?? item?.current_period_end;
+  return {
+    start: typeof start === "number" ? new Date(start * 1000) : null,
+    end: typeof end === "number" ? new Date(end * 1000) : null,
+  };
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.text();
@@ -51,6 +65,7 @@ export async function POST(req: NextRequest) {
           // Plano derivado do price ID da assinatura (plus/premium)
           const priceId = subscription.items.data[0]?.price.id || "";
           const plan = planFromPriceId(priceId);
+          const period = subscriptionPeriod(subscription);
 
           // Update user with subscription info
           await prisma.user.update({
@@ -60,9 +75,7 @@ export async function POST(req: NextRequest) {
               stripeCustomerId: customerId,
               stripeSubscriptionId: subscriptionId,
               stripePriceId: priceId,
-              stripeCurrentPeriodEnd: subscription.current_period_end
-                ? new Date(subscription.current_period_end * 1000)
-                : null,
+              stripeCurrentPeriodEnd: period.end,
               cancelAtPeriodEnd: false,
             },
           });
@@ -77,19 +90,15 @@ export async function POST(req: NextRequest) {
             plan,
           };
 
-          if (typeof subscription.current_period_start === "number") {
-            subscriptionCreateData.stripeCurrentPeriodStart = new Date(
-              subscription.current_period_start * 1000
-            );
-          }
-          if (typeof subscription.current_period_end === "number") {
-            subscriptionCreateData.stripeCurrentPeriodEnd = new Date(
-              subscription.current_period_end * 1000
-            );
-          }
+          if (period.start) subscriptionCreateData.stripeCurrentPeriodStart = period.start;
+          if (period.end) subscriptionCreateData.stripeCurrentPeriodEnd = period.end;
 
-          await prisma.subscription.create({
-            data: subscriptionCreateData,
+          // upsert: o Stripe reenvia eventos; o registro não pode duplicar.
+          const { user: _user, ...subscriptionUpdate } = subscriptionCreateData;
+          await prisma.subscription.upsert({
+            where: { stripeSubscriptionId: subscriptionId },
+            create: subscriptionCreateData,
+            update: subscriptionUpdate,
           });
 
         } else {
@@ -123,9 +132,8 @@ export async function POST(req: NextRequest) {
           stripePriceId: updatedPriceId,
           cancelAtPeriodEnd: subscription.cancel_at_period_end || false,
         };
-        if (typeof subscription.current_period_end === "number") {
-          userUpdateData.stripeCurrentPeriodEnd = new Date(subscription.current_period_end * 1000);
-        }
+        const period = subscriptionPeriod(subscription);
+        if (period.end) userUpdateData.stripeCurrentPeriodEnd = period.end;
         await prisma.user.update({
           where: { id: user.id },
           data: userUpdateData,
@@ -140,16 +148,8 @@ export async function POST(req: NextRequest) {
               ? new Date(subscription.canceled_at * 1000)
               : null,
         };
-        if (typeof subscription.current_period_start === "number") {
-          subscriptionUpdateData.stripeCurrentPeriodStart = new Date(
-            subscription.current_period_start * 1000
-          );
-        }
-        if (typeof subscription.current_period_end === "number") {
-          subscriptionUpdateData.stripeCurrentPeriodEnd = new Date(
-            subscription.current_period_end * 1000
-          );
-        }
+        if (period.start) subscriptionUpdateData.stripeCurrentPeriodStart = period.start;
+        if (period.end) subscriptionUpdateData.stripeCurrentPeriodEnd = period.end;
         await prisma.subscription.updateMany({
           where: { stripeSubscriptionId: subscription.id },
           data: subscriptionUpdateData,

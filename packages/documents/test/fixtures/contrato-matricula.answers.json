@@ -1,0 +1,19 @@
+{
+  "numero_contrato": "2027-0142",
+  "nome_responsavel": "Mariana Souza de Almeida",
+  "cpf_responsavel": "52998224725",
+  "endereco": "Av. Brasil, 1500, apto 32 — Jardim Guanabara, Campinas/SP",
+  "cep": "13073001",
+  "telefone_responsavel": "19991234567",
+  "email_responsavel": "mariana.almeida@email.com",
+  "nome_aluno": "Pedro Almeida Souza",
+  "data_nascimento_aluno": "2014-03-22",
+  "curso": "Inglês Teens — Nível 2",
+  "turma": "T2-B · terças e quintas, 18h às 19h30",
+  "data_inicio": "2027-02-01",
+  "valor_mensalidade": "389,90",
+  "dia_vencimento": "10",
+  "valor_matricula": "150",
+  "observacoes": "Aluno com bolsa de 10% por irmão matriculado. Material didático incluso no primeiro semestre.",
+  "data_assinatura": "2026-12-15"
+}

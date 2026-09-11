@@ -19,7 +19,7 @@ export default function Error({
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="text-center space-y-8 max-w-md animate-fade-in-up">
-        <div className="w-24 h-24 rounded-full bg-destructive/10 flex items-center justify-center mx-auto">
+        <div className="w-24 h-24 rounded-full bg-red-50 flex items-center justify-center mx-auto">
           <AlertTriangle className="w-12 h-12 text-destructive" />
         </div>
         <div className="space-y-2">

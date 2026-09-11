@@ -6,7 +6,7 @@ import { Button } from "@submitin/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
 import { Loader2, Check, X, Crown, Sparkles, Phone } from "lucide-react";
-import { PLANS, type PlanType, isPaid as isPaidPlan } from "@/lib/stripe";
+import { PLANS, SOLD_PLANS, type PlanType, isLegacyPlan, isPaid as isPaidPlan } from "@/lib/stripe";
 import { SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_TEL } from "@/lib/utils";
 import { useTranslations } from "@/lib/i18n-context";
 
@@ -17,36 +17,76 @@ interface UserSubscription {
   cancelAtPeriodEnd: boolean;
 }
 
-const PLAN_ORDER: PlanType[] = ["free", "plus", "premium"];
+type SoldPlan = (typeof SOLD_PLANS)[number];
 
-const PLAN_DESC: Record<PlanType, string> = {
-  free: "Perfeito para começar",
-  plus: "Para quem está crescendo",
-  premium: "Tudo ilimitado, sem limites",
-};
+function limitLabel(n: number, unlimited = "Ilimitados"): string {
+  return n === -1 ? unlimited : n.toLocaleString("pt-BR");
+}
+
+function docsLabel(plan: SoldPlan): string {
+  return limitLabel(PLANS[plan].limits.documentsPerMonth);
+}
 
 // Matriz de comparação detalhada (booleano = ✓/✗, string = valor exibido).
 type CellValue = boolean | string;
-const COMPARISON: { label: string; free: CellValue; plus: CellValue; premium: CellValue }[] = [
-  { label: "Formulários", free: "5", plus: "20", premium: "Ilimitados" },
-  { label: "Respostas por mês", free: "100", plus: "5.000", premium: "Ilimitadas" },
-  { label: "Notificações por email", free: true, plus: true, premium: true },
-  { label: "Webhooks", free: true, plus: true, premium: true },
-  { label: "Incorporar em site (embed)", free: true, plus: true, premium: true },
-  { label: "Lógica condicional (campos)", free: false, plus: true, premium: true },
-  { label: "Remover branding Submitin", free: false, plus: true, premium: true },
-  { label: "Tema personalizado", free: false, plus: true, premium: true },
-  { label: "Anti-spam (CAPTCHA)", free: false, plus: false, premium: true },
-  { label: "Respostas parciais (leads)", free: false, plus: false, premium: true },
-  { label: "Agendamento do formulário", free: false, plus: false, premium: true },
-  { label: "Analytics avançado", free: false, plus: false, premium: true },
-  { label: "Suporte", free: "Comunidade", plus: "Email", premium: "Prioritário" },
+const COMPARISON: { label: string; values: Record<SoldPlan, CellValue> }[] = [
+  {
+    label: "Documentos por mês",
+    values: { free: docsLabel("free"), pro: docsLabel("pro"), unlimited: docsLabel("unlimited") },
+  },
+  {
+    label: "PDF sem o selo Submitin",
+    values: {
+      free: PLANS.free.limits.hideBranding,
+      pro: PLANS.pro.limits.hideBranding,
+      unlimited: PLANS.unlimited.limits.hideBranding,
+    },
+  },
+  { label: "Formulário gerado do seu .docx", values: { free: true, pro: true, unlimited: true } },
+  { label: "Cliente revisa o PDF antes de enviar", values: { free: true, pro: true, unlimited: true } },
+  { label: "Cópia do PDF por e-mail ao cliente", values: { free: true, pro: true, unlimited: true } },
+  { label: "Links com dados já preenchidos", values: { free: true, pro: true, unlimited: true } },
+  { label: "Sua marca no formulário", values: { free: true, pro: true, unlimited: true } },
+  { label: "Entrega por e-mail e webhook", values: { free: true, pro: true, unlimited: true } },
+  {
+    label: "Tema personalizado",
+    values: {
+      free: PLANS.free.limits.customTheme,
+      pro: PLANS.pro.limits.customTheme,
+      unlimited: PLANS.unlimited.limits.customTheme,
+    },
+  },
+  {
+    label: "Anti-spam (CAPTCHA)",
+    values: {
+      free: PLANS.free.limits.captcha,
+      pro: PLANS.pro.limits.captcha,
+      unlimited: PLANS.unlimited.limits.captcha,
+    },
+  },
+  {
+    label: "Formulários avulsos",
+    values: {
+      free: limitLabel(PLANS.free.limits.maxForms),
+      pro: limitLabel(PLANS.pro.limits.maxForms),
+      unlimited: limitLabel(PLANS.unlimited.limits.maxForms),
+    },
+  },
+  {
+    label: "Respostas por mês (formulários avulsos)",
+    values: {
+      free: limitLabel(PLANS.free.limits.responsesPerMonth, "Ilimitadas"),
+      pro: limitLabel(PLANS.pro.limits.responsesPerMonth, "Ilimitadas"),
+      unlimited: limitLabel(PLANS.unlimited.limits.responsesPerMonth, "Ilimitadas"),
+    },
+  },
+  { label: "Suporte", values: { free: "Comunidade", pro: "E-mail", unlimited: "Prioritário" } },
 ];
 
 function ComparisonCell({ value }: { value: CellValue }) {
   if (typeof value === "boolean") {
     return value ? (
-      <Check className="h-4 w-4 text-emerald-600 mx-auto" />
+      <Check className="h-4 w-4 text-foreground mx-auto" />
     ) : (
       <X className="h-4 w-4 text-muted-foreground/40 mx-auto" />
     );
@@ -147,7 +187,7 @@ export function BillingClient() {
     );
   }
 
-  function renderCta(planKey: PlanType) {
+  function renderCta(planKey: SoldPlan) {
     if (planKey === "free") {
       return (
         <Button variant="outline" className="w-full" disabled>
@@ -179,11 +219,7 @@ export function BillingClient() {
       <Button
         onClick={() => handleUpgrade(planKey)}
         disabled={loadingPlan !== null || !priceConfigured}
-        className={
-          planKey === "premium"
-            ? "w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
-            : "w-full"
-        }
+        className="w-full"
       >
         {loadingPlan === planKey && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         Assinar {PLANS[planKey].name}
@@ -194,7 +230,7 @@ export function BillingClient() {
   return (
     <div className="container max-w-6xl py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Planos e Preços</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-1">Planos e Preços</h1>
         <p className="text-muted-foreground">Escolha o plano ideal para suas necessidades</p>
       </div>
 
@@ -203,16 +239,16 @@ export function BillingClient() {
         <div
           className={`mb-6 p-4 border rounded-lg ${
             userPlan.cancelAtPeriodEnd
-              ? "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 border-orange-200 dark:border-orange-800"
-              : "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border-yellow-200 dark:border-yellow-800"
+              ? "bg-red-50 border-red-200"
+              : "bg-muted/40"
           }`}
         >
           <div className="flex items-center gap-2 mb-1">
             <Crown
               className={`h-5 w-5 ${
                 userPlan.cancelAtPeriodEnd
-                  ? "text-orange-600 dark:text-orange-500"
-                  : "text-yellow-600 dark:text-yellow-500"
+                  ? "text-orange-600"
+                  : "text-yellow-600"
               }`}
             />
             <span className="font-semibold">
@@ -229,35 +265,42 @@ export function BillingClient() {
         </div>
       )}
 
+      {/* Plano legado: continua valendo, sem migração forçada */}
+      {isLegacyPlan(currentPlan) && (
+        <div className="mb-6 rounded-lg border bg-brand-soft/60 p-4 text-sm">
+          <p className="font-medium">Você está no plano {PLANS[currentPlan].name}.</p>
+          <p className="text-muted-foreground mt-1">
+            Ele não é mais vendido, mas continua ativo com as mesmas condições enquanto sua assinatura
+            estiver em dia. Se quiser, pode trocar para um dos planos abaixo pelo portal de cobrança.
+          </p>
+        </div>
+      )}
+
       <div className="grid md:grid-cols-3 gap-6 mb-8">
-        {PLAN_ORDER.map((planKey) => {
+        {SOLD_PLANS.map((planKey) => {
           const plan = PLANS[planKey];
           const isCurrent = currentPlan === planKey;
-          const highlight = planKey === "premium";
+          const highlight = planKey === "pro";
           return (
             <Card
               key={planKey}
               className={
-                isCurrent
-                  ? "border-primary shadow-lg"
-                  : highlight
-                    ? "border-yellow-500/60"
-                    : ""
+                isCurrent ? "border-foreground" : highlight ? "border-foreground/30" : ""
               }
             >
               <CardHeader>
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <CardTitle className="text-2xl flex items-center gap-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
                       {plan.name}
-                      {highlight && <Sparkles className="h-5 w-5 text-yellow-500" />}
+                      {highlight && <Sparkles className="h-4 w-4 text-muted-foreground" />}
                     </CardTitle>
-                    <CardDescription>{PLAN_DESC[planKey]}</CardDescription>
+                    <CardDescription>{plan.tagline}</CardDescription>
                   </div>
-                  {isCurrent && <Badge variant="default">Plano atual</Badge>}
+                  {isCurrent && <Badge variant="default" className="shrink-0 whitespace-nowrap">Plano atual</Badge>}
                 </div>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">{formatBRL(plan.price)}</span>
+                  <span className="text-3xl font-semibold tracking-tight">{formatBRL(plan.price)}</span>
                   {plan.price > 0 && <span className="text-muted-foreground ml-2">/ mês</span>}
                 </div>
               </CardHeader>
@@ -266,7 +309,7 @@ export function BillingClient() {
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-2">
                       <Check
-                        className={`h-5 w-5 shrink-0 mt-0.5 ${highlight ? "text-yellow-600" : "text-emerald-600"}`}
+                        className={`h-5 w-5 shrink-0 mt-0.5 text-foreground`}
                       />
                       <span className="text-sm">{feature}</span>
                     </li>
@@ -291,7 +334,7 @@ export function BillingClient() {
               <thead>
                 <tr className="border-b">
                   <th className="text-left p-4 font-semibold">Recurso</th>
-                  {PLAN_ORDER.map((planKey) => (
+                  {SOLD_PLANS.map((planKey) => (
                     <th
                       key={planKey}
                       className={`p-4 text-center font-semibold ${
@@ -312,20 +355,19 @@ export function BillingClient() {
                 {COMPARISON.map((row) => (
                   <tr key={row.label} className="border-b last:border-b-0 hover:bg-muted/40">
                     <td className="p-4 font-medium">{row.label}</td>
-                    <td className={`p-4 text-center ${currentPlan === "free" ? "bg-primary/5" : ""}`}>
-                      <ComparisonCell value={row.free} />
-                    </td>
-                    <td className={`p-4 text-center ${currentPlan === "plus" ? "bg-primary/5" : ""}`}>
-                      <ComparisonCell value={row.plus} />
-                    </td>
-                    <td className={`p-4 text-center ${currentPlan === "premium" ? "bg-primary/5" : ""}`}>
-                      <ComparisonCell value={row.premium} />
-                    </td>
+                    {SOLD_PLANS.map((planKey) => (
+                      <td
+                        key={planKey}
+                        className={`p-4 text-center ${currentPlan === planKey ? "bg-primary/5" : ""}`}
+                      >
+                        <ComparisonCell value={row.values[planKey]} />
+                      </td>
+                    ))}
                   </tr>
                 ))}
                 <tr>
                   <td className="p-4" />
-                  {PLAN_ORDER.map((planKey) => (
+                  {SOLD_PLANS.map((planKey) => (
                     <td key={planKey} className="p-4 text-center font-semibold">
                       {formatBRL(PLANS[planKey].price)}
                       {PLANS[planKey].price > 0 && (

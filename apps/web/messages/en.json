@@ -27,18 +27,18 @@
   },
   "landing": {
     "seo": {
-      "title": "Submitin – Create amazing forms in minutes",
-      "keywords": "online forms, form builder, survey, create form, collect responses, Submitin"
+      "title": "Submitin – Your Word file becomes a form, the PDF arrives ready",
+      "keywords": "generate document from form, automatic contract, fill Word online, form to PDF, enrollment form, intake form, lease application, Submitin"
     },
     "hero": {
-      "badge": "Free and without writing a single line of code",
-      "title": "Create",
-      "titleHighlight": "amazing",
-      "titleEnd": "forms and collect responses in minutes",
-      "subtitle": "Build your form, share a link and watch responses arrive in real time. Simple, beautiful and free to start.",
-      "cta": "Create my form for free",
-      "ctaSecondary": "See it in action",
-      "microProof": "Free to start · No credit card · No code"
+      "badge": "New: automatic documents",
+      "title": "Your Word file becomes a form.",
+      "titleHighlight": "ready.",
+      "titleEnd": "The PDF arrives",
+      "subtitle": "Upload the contract, record or consent form you already use. Every response becomes a filled PDF, with your formatting, straight to your inbox.",
+      "cta": "Start free",
+      "ctaSecondary": "See how it works",
+      "microProof": "Free to start · No card · Works with the Word file you already have"
     },
     "trust": {
       "guarantees": {
@@ -171,31 +171,31 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "subtitle": "Everything you need to know before getting started.",
+      "subtitle": "What people usually ask before getting started.",
       "items": {
         "0": {
-          "q": "Do I need to know how to code?",
-          "a": "No. You build forms visually, adding fields with a few clicks — no code required."
+          "q": "Do I need to change my document?",
+          "a": "No. You just type the fields between double curly braces, like {{client_name}}, in the Word file you already use."
         },
         "1": {
-          "q": "Is it really free?",
-          "a": "Yes. You create forms, publish them and collect responses for free — no credit card to get started."
+          "q": "Will the PDF look like my Word file?",
+          "a": "Yes. Your own document is the base, so header, footer, tables and formatting are preserved. If a font in the file isn't available, we warn you on upload."
         },
         "2": {
-          "q": "How long does it take to build a form?",
-          "a": "Less than 2 minutes: pick a ready-made template, tweak the fields and share the link."
+          "q": "Does my client need to install an app?",
+          "a": "No. They open the link on their phone or computer, fill it in and submit."
         },
         "3": {
-          "q": "Is my data locked into the platform?",
-          "a": "No. You can export all your responses to CSV at any time."
+          "q": "Does it work for my kind of business?",
+          "a": "If the document is in Word and someone fills it by hand or copies data from a message today, it works: schools, clinics, gyms, real estate, service providers and more."
         },
         "4": {
-          "q": "Can I integrate with other systems?",
-          "a": "Yes. Use webhooks to automatically send every response to the URL you configure."
+          "q": "Is it free?",
+          "a": "You start free, no credit card needed, and can generate your first documents right away."
         },
         "5": {
-          "q": "How does spam protection work?",
-          "a": "There's per-IP rate limiting on every submission and, on the Pro plan, you can enable CAPTCHA (Cloudflare Turnstile)."
+          "q": "What if I just need a form?",
+          "a": "That works too. Submitin is still a complete form builder, with templates, real-time responses and CSV export."
         }
       }
     },
@@ -240,17 +240,20 @@
       }
     },
     "cta": {
-      "title": "Start for free now",
-      "subtitle": "Build your first form in under 2 minutes. No card, no code.",
-      "button": "Create my form for free",
-      "secondary": "Browse templates"
+      "title": "Send the link. Get the document.",
+      "subtitle": "Create your free account and generate your first PDF today.",
+      "button": "Start free",
+      "secondary": "See how it works"
     },
     "nav": {
       "howItWorks": "How it works",
       "templates": "Templates",
       "pricing": "Pricing",
-      "login": "Sign In",
-      "getStarted": "Get Started"
+      "login": "Log in",
+      "getStarted": "Start free",
+      "documents": "Documents",
+      "features": "Features",
+      "faq": "FAQ"
     },
     "pricing": {
       "title": "Simple and Transparent Pricing",
@@ -336,7 +339,7 @@
     },
     "footer": {
       "copyright": "Made with ❤️ by Vitor Hugo",
-      "tagline": "Amazing forms and responses in minutes. Free to start.",
+      "tagline": "Your client fills a link, you get the finished document.",
       "productTitle": "Product",
       "legalTitle": "Legal",
       "ctaButton": "Start free",
@@ -344,6 +347,194 @@
       "privacy": "Privacy",
       "support": "Support",
       "supportContact": "Questions? Contact us:"
+    },
+    "mock": {
+      "formTitle": "Enrollment 2027",
+      "student": "Student name",
+      "studentValue": "Pedro Almeida",
+      "cpf": "Guardian CPF",
+      "cpfValue": "529.982.247-25",
+      "fee": "Monthly fee",
+      "feeValue": "389.90",
+      "send": "Submit",
+      "docTitle": "Enrollment contract",
+      "docLine1": "Student",
+      "docLine2": "Guardian CPF",
+      "docLine3": "Monthly fee",
+      "feeWords": "three hundred eighty-nine reais and ninety cents",
+      "ready": "PDF ready",
+      "emailFrom": "New document",
+      "emailSubject": "Enrollment contract — Pedro Almeida",
+      "attachment": "contract-pedro-almeida.pdf"
+    },
+    "audience": {
+      "title": "For anyone buried in paperwork",
+      "items": {
+        "0": "Schools and courses",
+        "1": "Clinics and practices",
+        "2": "Gyms and trainers",
+        "3": "Real estate agents",
+        "4": "Service providers"
+      }
+    },
+    "story": {
+      "eyebrow": "How it works",
+      "title": "From Word to PDF, no copy and paste",
+      "subtitle": "Four steps. You do the first three only once.",
+      "cta": "Create my first document",
+      "steps": {
+        "0": {
+          "title": "Mark the fields in Word",
+          "description": "Type {{client_name}}, {{cpf}}… wherever each value goes. That's your template."
+        },
+        "1": {
+          "title": "The form builds itself",
+          "description": "Upload the .docx and Submitin creates one question per field, with CPF, date and money masks."
+        },
+        "2": {
+          "title": "Your client fills it on mobile",
+          "description": "Send the link on WhatsApp or embed it on your site. Invalid CPFs don't get through."
+        },
+        "3": {
+          "title": "The PDF arrives ready",
+          "description": "Seconds later, the filled document lands in your inbox, just like your Word file."
+        }
+      },
+      "wordFile": "enrollment-contract.docx",
+      "wordText": "I, {{guardian_name}}, CPF {{guardian_cpf}}, enroll {{student_name}} in {{course}}, with a monthly fee of {{monthly_fee}}.",
+      "detected": "4 fields detected",
+      "typeText": "Text",
+      "typeCpf": "CPF",
+      "typeCurrency": "Amount (R$)",
+      "fieldGuardian": "Guardian name",
+      "fieldCourse": "Course",
+      "inbox": "Inbox",
+      "now": "now"
+    },
+    "bento": {
+      "title": "Built for anyone buried in paperwork",
+      "subtitle": "Everything a serious document needs, without an IT project.",
+      "fidelity": {
+        "title": "True to your Word file",
+        "description": "Header, footer, tables, bold and logo: the PDF looks exactly like the document you already use."
+      },
+      "cpf": {
+        "title": "Real CPF and CNPJ checks",
+        "description": "We validate the check digits. No more contracts with a wrong CPF."
+      },
+      "words": {
+        "title": "Amounts in words",
+        "description": "R$ 389.90 becomes “three hundred eighty-nine reais and ninety cents” automatically."
+      },
+      "email": {
+        "title": "PDF in your inbox",
+        "description": "Every submission arrives with the PDF attached, and it's all kept in Submissions."
+      },
+      "webhook": {
+        "title": "Talks to your tools",
+        "description": "Webhook with the data and the PDF link for sheets, CRMs and automations."
+      },
+      "forms": {
+        "title": "Forms too",
+        "description": "Just need a form? Start from scratch or from a ready-made template."
+      }
+    },
+    "segments": {
+      "title": "The documents that take the most work",
+      "subtitle": "If you print, fill by hand and scan today, you can automate it.",
+      "yours": "Got a different document? If it's in Word, it works.",
+      "items": {
+        "0": {
+          "name": "Schools and courses",
+          "intro": "Enrollment season without a line at the front desk.",
+          "docs": {
+            "0": {
+              "title": "Enrollment contract",
+              "description": "Student, guardian, fees and due dates."
+            },
+            "1": {
+              "title": "Student record",
+              "description": "Contacts, health info and pickup authorizations."
+            },
+            "2": {
+              "title": "Image use consent",
+              "description": "Signed before the first Instagram photo."
+            }
+          }
+        },
+        "1": {
+          "name": "Clinics and practices",
+          "intro": "Patients fill it in before they arrive; the record is ready.",
+          "docs": {
+            "0": {
+              "title": "Intake form",
+              "description": "History, allergies and current medication."
+            },
+            "1": {
+              "title": "Consent form",
+              "description": "For procedures, with the patient's details."
+            },
+            "2": {
+              "title": "Patient registration",
+              "description": "ID, insurance and emergency contact."
+            }
+          }
+        },
+        "2": {
+          "name": "Gyms and trainers",
+          "intro": "New members sort it all out on their phone.",
+          "docs": {
+            "0": {
+              "title": "Membership contract",
+              "description": "Plan, price, commitment and payment method."
+            },
+            "1": {
+              "title": "Health questionnaire",
+              "description": "PAR-Q and clearance for physical activity."
+            },
+            "2": {
+              "title": "Liability waiver",
+              "description": "For classes, assessments and outdoor training."
+            }
+          }
+        },
+        "3": {
+          "name": "Real estate agents",
+          "intro": "Applicant details without email ping-pong and scribbled PDFs.",
+          "docs": {
+            "0": {
+              "title": "Rental application",
+              "description": "Tenant details, income and guarantors."
+            },
+            "1": {
+              "title": "Lease proposal",
+              "description": "Property, offered price and terms."
+            },
+            "2": {
+              "title": "Viewing record",
+              "description": "Visit log with the client's details."
+            }
+          }
+        },
+        "4": {
+          "name": "Service providers",
+          "intro": "From approved quote to contract in minutes.",
+          "docs": {
+            "0": {
+              "title": "Service agreement",
+              "description": "Scope, timeline, price and payment terms."
+            },
+            "1": {
+              "title": "Work order",
+              "description": "What will be done, where and for whom."
+            },
+            "2": {
+              "title": "Power of attorney",
+              "description": "With the grantor's details filled in correctly."
+            }
+          }
+        }
+      }
     }
   },
   "guest": {
@@ -463,7 +654,9 @@
       "totalForms": "Total Forms",
       "totalResponses": "Total Responses",
       "publishedForms": "Published Forms",
-      "drafts": "Drafts"
+      "drafts": "Drafts",
+      "documents": "Documents",
+      "generatedThisMonth": "PDFs this month"
     },
     "nav": {
       "forms": "Forms",
@@ -472,7 +665,7 @@
       "logout": "Sign Out"
     },
     "greeting": "Welcome back",
-    "overview": "Here is what is happening with your forms.",
+    "overview": "See what's happening with your documents and forms.",
     "seeAll": "See all",
     "quickStart": "Create a new form",
     "quickStartDesc": "Pick a template or start from scratch — ready in seconds."
@@ -516,7 +709,26 @@
     "upgradeCta": "Upgrade to Pro",
     "managePlan": "Manage plan",
     "detailsTitle": "Account details",
-    "securityTitle": "Security"
+    "securityTitle": "Security",
+    "brand": {
+      "title": "Your brand",
+      "description": "Your company logo and name at the top of your forms and in the email your customer receives with the document.",
+      "logo": "Logo",
+      "upload": "Upload logo",
+      "replace": "Replace",
+      "remove": "Remove",
+      "logoHint": "PNG, JPG or WebP up to 1 MB. Transparent backgrounds look best.",
+      "name": "Company name",
+      "namePlaceholder": "e.g. Horizonte Language School",
+      "save": "Save brand",
+      "saved": "Brand saved",
+      "error": "Couldn't save your brand.",
+      "tooLarge": "Logo too large (max 1 MB).",
+      "previewLabel": "What your customer sees",
+      "previewEmpty": "No brand set: the form shows Submitin."
+    },
+    "documentsMonthUsage": "PDFs generated this month",
+    "documentsUsage": "Documents"
   },
   "formsGrid": {
     "title": "Forms",
@@ -542,7 +754,12 @@
     "deleteTitle": "Delete form",
     "deleteConfirm": "Are you sure you want to delete the form",
     "deleteWarning": "This action cannot be undone and all responses will be lost.",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "upgrade": "Upgrade",
+    "colName": "Name",
+    "colStatus": "Status",
+    "colResponses": "Responses",
+    "colUpdated": "Updated"
   },
   "formBuilder": {
     "title": "Edit Form",
@@ -684,7 +901,13 @@
       "date": "Date",
       "select": "Multiple Choice",
       "checkbox": "Checkbox",
-      "rating": "Rating (Stars)"
+      "rating": "Rating (Stars)",
+      "cpf": "CPF (BR tax ID)",
+      "cnpj": "CNPJ (BR company ID)",
+      "cep": "CEP (BR zip code)",
+      "currency": "Amount (R$)",
+      "day": "Day of month",
+      "percent": "Percentage"
     },
     "status": {
       "draft": "Draft",
@@ -717,6 +940,16 @@
       "label": "Capture partial responses",
       "help": "Save leads who fill in a contact but do not submit.",
       "proHint": "Available on the Pro plan — capture leads who start but do not finish."
+    },
+    "documentBanner": "Generates the document “{name}”",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "fieldMoveError": "Could not reorder fields",
+    "natures": {
+      "pergunta": "Question",
+      "fixa": "Fixed",
+      "pre_preenchida": "Prefilled",
+      "automatica": "Automatic"
     }
   },
   "responses": {
@@ -802,13 +1035,31 @@
       "invalidEmail": "Invalid email",
       "submitFailed": "Failed to submit response. Please try again.",
       "notFound": "Form not found",
-      "limitReached": "This form has reached its response limit."
+      "limitReached": "This form has reached its response limit.",
+      "invalidCpf": "Invalid CPF",
+      "invalidCnpj": "Invalid CNPJ",
+      "invalidCep": "Invalid CEP",
+      "invalidDay": "Enter a day between 1 and 31"
     },
     "poweredBy": "Created with",
     "closed": {
       "message": "This form is no longer accepting responses.",
-      "scheduled": "This form is not accepting responses yet."
-    }
+      "scheduled": "This form is not accepting responses yet.",
+      "inviteUsed": "This link has already been used. If you need to submit again, ask the sender for a new link.",
+      "inviteInvalid": "This link isn't valid. Check that it was copied in full or ask for a new one."
+    },
+    "prefilledTitle": "Already filled in for you",
+    "review": "Review document",
+    "reviewing": "Preparing document...",
+    "previewTitle": "Check your document",
+    "previewSubtitle": "This is exactly how it will be generated. If something is wrong, go back and fix it before sending.",
+    "previewLoading": "Loading pages...",
+    "previewOpen": "Open PDF",
+    "previewFallback": "We couldn't display the document here.",
+    "previewBack": "Go back and fix",
+    "previewConfirm": "Confirm and send",
+    "previewUnavailable": "We couldn't generate the preview right now. You can send anyway — the document will be generated right after.",
+    "previewSendAnyway": "Send without reviewing"
   },
   "legal": {
     "terms": {
@@ -850,6 +1101,197 @@
     "lightMode": "Light",
     "darkMode": "Dark",
     "sectionMain": "Main",
-    "sectionGeneral": "Account"
+    "sectionGeneral": "Account",
+    "documents": "Documents"
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Your client fills a link, you get the finished PDF document.",
+    "new": "New document",
+    "usage": "{used} of {limit} documents generated this month",
+    "usageUnlimited": "{used} documents generated this month",
+    "empty": {
+      "title": "Turn your Word file into a form",
+      "description": "Upload the contract, record or consent form you already use. Each response becomes a filled PDF, straight to your inbox.",
+      "step1": "In Word, mark fields as {{variable_name}}",
+      "step2": "Upload the .docx — the form is created automatically",
+      "step3": "Share the link and get every document as a PDF"
+    },
+    "card": {
+      "submissions": "submissions",
+      "failed": "with issues",
+      "lastSubmission": "Last submission {date}",
+      "noSubmissions": "No submissions yet",
+      "published": "Published",
+      "draft": "Draft",
+      "viewSubmissions": "Submissions",
+      "manage": "Manage"
+    },
+    "status": {
+      "recebida": "Queued",
+      "processando": "Generating",
+      "concluida": "Ready",
+      "falha": "Failed",
+      "limite": "Plan limit"
+    },
+    "newPage": {
+      "title": "New document",
+      "subtitle": "Upload the .docx with variables marked. We build the form.",
+      "dropTitle": "Drop the .docx here or click to choose",
+      "dropHint": "Word document (.docx), up to 10 MB",
+      "howTo": "How to mark variables",
+      "howToText": "In Word, write each field name between double curly braces where the value should appear:",
+      "example": "I, {{guardian_name}}, CPF {{cpf_guardian}}, enroll {{student_name}} in {{course}}, with a monthly fee of {{valor_mensalidade}} ({{valor_mensalidade_extenso}}).",
+      "howToTips": "Use lowercase letters and _ instead of spaces. The same variable can appear many times, including headers, footers and tables. The field type is inferred from the name (cpf, email, telefone, data, valor…) and names ending in _extenso are written out in words automatically.",
+      "analyzing": "Analyzing document…",
+      "detected": "{count} fields detected",
+      "detectedDesc": "Review below. You can adjust questions, types, required flags and order later.",
+      "name": "Document name",
+      "namePlaceholder": "Enrollment Contract 2027",
+      "variable": "Variable",
+      "label": "Question",
+      "type": "Type",
+      "missingFonts": "Fonts not available in the PDF generator: {fonts}. They will be replaced with similar fonts, which may change line breaks. For full fidelity use Arial, Calibri, Times New Roman, Verdana or Georgia.",
+      "unsupported": "Conditional or repeating blocks are not supported yet and will be ignored: {tags}",
+      "otherFile": "Choose another file",
+      "create": "Create document",
+      "creating": "Creating…",
+      "error": "Could not read the document",
+      "browse": "Browse files"
+    },
+    "detail": {
+      "back": "Back",
+      "submissions": "Submissions",
+      "editFields": "Edit form",
+      "delete": "Delete document",
+      "deleteConfirm": "This document's form, responses and generated PDFs will be removed. This cannot be undone.",
+      "deleted": "Document deleted",
+      "rename": "Rename",
+      "link": {
+        "title": "Public link",
+        "desc": "Send this link to whoever will fill it in. Works on mobile.",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "open": "Open form",
+        "unpublished": "The form is not published yet — the link does not accept responses.",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "publishedToast": "Form published",
+        "unpublishedToast": "Form unpublished",
+        "embedHint": "Embed code, QR code and appearance are in the form editor:"
+      },
+      "fields": {
+        "title": "Document variables",
+        "desc": "Classify each variable: who fills it and how it shows up in the form.",
+        "required": "Required",
+        "missing": "Document variables without a form field (will be blank): {keys}",
+        "orphan": "Fields for variables no longer in the current template: {labels}",
+        "fixedValue": "Fixed value",
+        "saveError": "Could not save the field",
+        "nature": "Nature",
+        "natureHelp": {
+          "pergunta": "The respondent fills it in the form, on every submission.",
+          "fixa": "Constant value you set once. Not shown in the form.",
+          "pre_preenchida": "You fill it per client, in the personalized link. Anyone opening the general link answers it normally.",
+          "automatica": "Filled by the system at generation. E.g. data_assinatura = submission date."
+        },
+        "question": "Question shown",
+        "type": "Type",
+        "options": "Options",
+        "optionsPlaceholder": "One option per line",
+        "optionsHint": "The respondent picks one. The text goes into the document as is.",
+        "fixedMissing": "no value (blank in the document)",
+        "helpText": "Help text (optional)",
+        "helpTextPlaceholder": "e.g. as shown on the ID",
+        "derived": "{{{base}}} in words",
+        "moveUp": "Move up",
+        "moveDown": "Move down"
+      },
+      "delivery": {
+        "title": "Delivery",
+        "desc": "On every submission, the generated PDF is attached to these emails and sent to the webhook.",
+        "emails": "Emails",
+        "addEmail": "Add",
+        "emailPlaceholder": "office@school.com",
+        "noEmails": "No emails — documents will only be in the Submissions screen.",
+        "webhook": "Webhook (optional)",
+        "webhookDesc": "Receives a POST with the answers and the generated PDF URL.",
+        "save": "Save delivery",
+        "saved": "Delivery saved",
+        "respondent": "Send a copy to the customer",
+        "respondentDesc": "The PDF goes to the email the customer entered in the form. If they reply, it reaches you.",
+        "respondentNoField": "Add an email variable to the template (e.g. {{email_responsavel}}) to send the copy."
+      },
+      "template": {
+        "title": "Template",
+        "version": "Version {version}",
+        "uploadedAt": "uploaded {date}",
+        "download": "Download .docx",
+        "replace": "Replace template",
+        "replaceDesc": "Replacing creates a new version; documents already issued do not change.",
+        "replacing": "Uploading…",
+        "replaced": "Template updated to version {version}",
+        "added": "New fields added to the form: {labels}",
+        "orphaned": "Variables removed from the template (fields kept): {labels}"
+      },
+      "invites": {
+        "title": "Send to a client",
+        "desc": "Fill in the prefilled variables for one specific client (course, class…) and send a link just for them.",
+        "new": "Create link for a client",
+        "dialogDesc": "Prefilled variables go into the document locked. The respondent sees them but can't change them.",
+        "label": "Client name",
+        "labelPlaceholder": "e.g. Pedro Almeida",
+        "create": "Create link",
+        "singleUse": "The link works for one submission. After that, it closes.",
+        "createdTitle": "Link created",
+        "createdDesc": "Send it to {name}. Once they fill it in, the PDF lands in your inbox.",
+        "sendWhatsapp": "Send on WhatsApp",
+        "whatsappText": "Hi {name}! Here's the link to fill in: {document}.",
+        "pending": "Waiting",
+        "used": "Filled {when}",
+        "delete": "Cancel link",
+        "deleteError": "Could not cancel the link",
+        "empty": "No links created yet.",
+        "noCompanyFields": "No variable is set as “Prefilled”. Mark below what you want to fill per client before sending."
+      }
+    },
+    "submissions": {
+      "title": "Submissions",
+      "subtitle": "Documents generated from responses to {name}.",
+      "search": "Search by name, CPF, email…",
+      "from": "From",
+      "to": "To",
+      "allStatuses": "All statuses",
+      "filter": "Filter",
+      "clear": "Clear",
+      "date": "Date",
+      "identifier": "Identification",
+      "status": "Status",
+      "actions": "Document",
+      "download": "PDF",
+      "downloadDocx": "Word",
+      "retry": "Retry",
+      "retried": "Document queued again",
+      "empty": "No submissions yet. Share the form link to get started.",
+      "noResults": "No submissions match these filters.",
+      "total": "{count} submissions",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {pages}",
+      "autoRefresh": "Refreshing…",
+      "viaLink": "Link for"
+    },
+    "table": {
+      "name": "Document",
+      "status": "Status",
+      "submissions": "Submissions",
+      "last": "Last submission"
+    },
+    "natures": {
+      "pergunta": "Question",
+      "fixa": "Fixed",
+      "pre_preenchida": "Prefilled",
+      "automatica": "Automatic"
+    }
   }
 }

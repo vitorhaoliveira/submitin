@@ -14,8 +14,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@submitin/ui/components/card";
-import { FileText, Mail, Lock, User, Loader2, ArrowLeft, AlertCircle, Eye, EyeOff, Check, X } from "lucide-react";
+import { Mail, Lock, User, Loader2, ArrowLeft, AlertCircle, Eye, EyeOff, Check, X } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Logo } from "@/components/logo";
 
 interface PasswordRequirement {
   label: string;
@@ -92,10 +93,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center animate-fade-in-up">
           <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-primary" />
-            </div>
-            <span className="font-semibold text-xl">{tCommon("appName")}</span>
+            <Logo />
           </Link>
         </div>
 
@@ -181,7 +179,7 @@ export default function RegisterPage() {
                         <div
                           key={index}
                           className={`flex items-center gap-2 text-xs transition-colors ${
-                            isValid ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+                            isValid ? "text-green-600" : "text-muted-foreground"
                           }`}
                         >
                           {isValid ? (
@@ -198,7 +196,7 @@ export default function RegisterPage() {
               </div>
 
               {error && (
-                <div className="flex items-start gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20">
+                <div className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200">
                   <AlertCircle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
                   <p className="text-sm text-destructive text-left flex-1">{error}</p>
                 </div>
