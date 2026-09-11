@@ -204,9 +204,9 @@ export function DashboardShell({ user, usage = null, children }: DashboardShellP
           )}
         </div>
 
-        {/* Criar formulário */}
+        {/* Criar documento (produto principal) */}
         <Link
-          href="/dashboard/forms/new"
+          href="/dashboard/documents/new"
           title={compact ? t("quickCreate") : undefined}
           aria-label={t("quickCreate")}
           className={cn(
@@ -334,7 +334,7 @@ export function DashboardShell({ user, usage = null, children }: DashboardShellP
         </button>
         <Brand compact={false} />
         <Link
-          href="/dashboard/forms/new"
+          href="/dashboard/documents/new"
           aria-label={t("quickCreate")}
           className="p-2 -mr-2 rounded-md hover:bg-muted"
         >

@@ -59,3 +59,6 @@ docs
 
 # worker do pdf.js (copiado no dev/build)
 apps/web/public/vendor
+
+# Cache do TypeScript (gerado a cada checagem)
+*.tsbuildinfo
