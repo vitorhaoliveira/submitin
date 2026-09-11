@@ -6,6 +6,7 @@ import { getLocaleFromCookie, getTranslations } from "@/lib/i18n";
 import { Button } from "@submitin/ui/components/button";
 import { ArrowRight, ChevronRight, FileCheck2, FileText, Plus } from "lucide-react";
 import { formatRelativeDate } from "@/lib/utils";
+import { monthlyDocumentUsage } from "@/lib/documents/service";
 
 export const metadata = {
   title: "Dashboard",
@@ -21,27 +22,37 @@ export default async function DashboardPage() {
   const tDocs = await getTranslations("documents");
   const locale = await getLocaleFromCookie();
 
-  const [responseCount, forms] = await Promise.all([
-    prisma.response.count({
-      where: { form: { userId: session.user.id } },
-    }),
+  const userId: string = session.user.id;
+  // Formulários de documento aparecem só como documentos.
+  const regularForms = { userId, document: { is: null } };
+  const [responseCount, forms, documents, generatedThisMonth] = await Promise.all([
+    prisma.response.count({ where: { form: regularForms, partial: false } }),
     prisma.form.findMany({
-      where: { userId: session.user.id },
-      include: { _count: { select: { responses: true, fields: true } } },
+      where: regularForms,
+      include: { _count: { select: { responses: { where: { partial: false } } } } },
       orderBy: { updatedAt: "desc" },
     }),
+    prisma.document.findMany({
+      where: { userId },
+      include: {
+        form: { select: { published: true } },
+        _count: { select: { generations: true } },
+        generations: { orderBy: { createdAt: "desc" }, take: 1, select: { createdAt: true } },
+      },
+      orderBy: { updatedAt: "desc" },
+    }),
+    monthlyDocumentUsage(userId),
   ]);
 
-  const publishedCount = forms.filter((f) => f.published).length;
-  const draftCount = forms.length - publishedCount;
   const firstName = (session.user.name || session.user.email?.split("@")[0] || "").split(" ")[0];
-  const recentForms = forms.slice(0, 6);
+  const recentForms = forms.slice(0, 5);
+  const recentDocuments = documents.slice(0, 5);
 
   const stats = [
+    { label: t("stats.documents"), value: documents.length },
+    { label: t("stats.generatedThisMonth"), value: generatedThisMonth },
     { label: t("stats.totalForms"), value: forms.length },
-    { label: t("stats.publishedForms"), value: publishedCount },
     { label: t("stats.totalResponses"), value: responseCount },
-    { label: t("stats.drafts"), value: draftCount },
   ];
 
   const shortcuts = [
@@ -98,57 +109,126 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      {/* Formulários recentes */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-medium">{t("title")}</h2>
-          {forms.length > 0 && (
-            <Link
-              href="/dashboard/forms"
-              className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
-            >
-              {t("seeAll")}
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          )}
-        </div>
-
-        {forms.length === 0 ? (
-          <div className="rounded-xl border border-dashed py-14 px-6 text-center">
-            <p className="font-medium">{t("noForms.title")}</p>
-            <p className="text-sm text-muted-foreground mt-1 max-w-md mx-auto">{t("noForms.subtitle")}</p>
-            <Link href="/dashboard/forms/new" className="inline-block mt-5">
-              <Button variant="outline">
-                <Plus />
-                {t("createForm")}
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <div className="rounded-xl border divide-y">
-            {recentForms.map((form) => (
-              <Link
-                key={form.id}
-                href={`/dashboard/forms/${form.id}`}
-                className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/50"
-              >
-                <span
-                  className={`shrink-0 w-2 h-2 rounded-full ${form.published ? "bg-emerald-500" : "bg-zinc-300"}`}
-                  title={form.published ? t("formCard.published") : t("formCard.draft")}
-                />
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">{form.name}</span>
-                <span className="hidden sm:inline text-sm text-muted-foreground tabular-nums">
-                  {form._count.responses} {t("formCard.responses")}
-                </span>
-                <span className="hidden md:inline w-28 text-right text-sm text-muted-foreground">
-                  {formatRelativeDate(form.updatedAt, locale)}
-                </span>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+      <div className="grid gap-8 lg:grid-cols-2">
+        {/* Documentos recentes */}
+        <RecentList
+          title={tDocs("title")}
+          seeAllHref="/dashboard/documents"
+          seeAllLabel={t("seeAll")}
+          empty={
+            <>
+              <p className="font-medium">{tDocs("empty.title")}</p>
+              <p className="text-sm text-muted-foreground mt-1">{tDocs("empty.description")}</p>
+              <Link href="/dashboard/documents/new" className="inline-block mt-5">
+                <Button variant="outline">
+                  <Plus />
+                  {tDocs("new")}
+                </Button>
               </Link>
-            ))}
-          </div>
+            </>
+          }
+          items={recentDocuments.map((doc) => ({
+            id: doc.id,
+            href: `/dashboard/documents/${doc.id}`,
+            name: doc.name,
+            published: doc.form.published,
+            meta: `${doc._count.generations} ${tDocs("card.submissions")}`,
+            date: formatRelativeDate(doc.generations[0]?.createdAt ?? doc.updatedAt, locale),
+          }))}
+          publishedLabel={t("formCard.published")}
+          draftLabel={t("formCard.draft")}
+        />
+
+        {/* Formulários recentes */}
+        <RecentList
+          title={t("title")}
+          seeAllHref="/dashboard/forms"
+          seeAllLabel={t("seeAll")}
+          empty={
+            <>
+              <p className="font-medium">{t("noForms.title")}</p>
+              <p className="text-sm text-muted-foreground mt-1">{t("noForms.subtitle")}</p>
+              <Link href="/dashboard/forms/new" className="inline-block mt-5">
+                <Button variant="outline">
+                  <Plus />
+                  {t("createForm")}
+                </Button>
+              </Link>
+            </>
+          }
+          items={recentForms.map((form) => ({
+            id: form.id,
+            href: `/dashboard/forms/${form.id}`,
+            name: form.name,
+            published: form.published,
+            meta: `${form._count.responses} ${t("formCard.responses")}`,
+            date: formatRelativeDate(form.updatedAt, locale),
+          }))}
+          publishedLabel={t("formCard.published")}
+          draftLabel={t("formCard.draft")}
+        />
+      </div>
+    </div>
+  );
+}
+
+function RecentList({
+  title,
+  seeAllHref,
+  seeAllLabel,
+  empty,
+  items,
+  publishedLabel,
+  draftLabel,
+}: {
+  title: string;
+  seeAllHref: string;
+  seeAllLabel: string;
+  empty: React.ReactNode;
+  items: { id: string; href: string; name: string; published: boolean; meta: string; date: string }[];
+  publishedLabel: string;
+  draftLabel: string;
+}) {
+  return (
+    <div className="min-w-0">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-medium">{title}</h2>
+        {items.length > 0 && (
+          <Link
+            href={seeAllHref}
+            className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1"
+          >
+            {seeAllLabel}
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
         )}
       </div>
+      {items.length === 0 ? (
+        <div className="rounded-xl border border-dashed py-10 px-6 text-center">{empty}</div>
+      ) : (
+        <div className="rounded-xl border divide-y">
+          {items.map((item) => (
+            <Link
+              key={item.id}
+              href={item.href}
+              className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/50"
+            >
+              <span
+                className={`shrink-0 w-2 h-2 rounded-full ${item.published ? "bg-emerald-500" : "bg-zinc-300"}`}
+                title={item.published ? publishedLabel : draftLabel}
+              />
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">{item.name}</span>
+              <span className="hidden sm:inline text-sm text-muted-foreground tabular-nums whitespace-nowrap">
+                {item.meta}
+              </span>
+              <span className="hidden md:inline w-24 text-right text-sm text-muted-foreground whitespace-nowrap">
+                {item.date}
+              </span>
+              <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

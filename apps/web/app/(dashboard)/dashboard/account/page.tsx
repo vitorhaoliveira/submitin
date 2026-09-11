@@ -14,8 +14,8 @@ export default async function AccountPage() {
       where: { id: session.user.id },
       select: { id: true, name: true, email: true, plan: true, createdAt: true },
     }),
-    prisma.form.count({ where: { userId: session.user.id } }),
-    prisma.form.count({ where: { userId: session.user.id, published: true } }),
+    prisma.form.count({ where: { userId: session.user.id, document: { is: null } } }),
+    prisma.form.count({ where: { userId: session.user.id, published: true, document: { is: null } } }),
     prisma.response.count({ where: { form: { userId: session.user.id } } }),
   ]);
 

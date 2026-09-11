@@ -654,7 +654,9 @@
       "totalForms": "Total de Formulários",
       "totalResponses": "Total de Respostas",
       "publishedForms": "Formulários Publicados",
-      "drafts": "Rascunhos"
+      "drafts": "Rascunhos",
+      "documents": "Documentos",
+      "generatedThisMonth": "PDFs gerados no mês"
     },
     "nav": {
       "forms": "Formulários",
@@ -663,7 +665,7 @@
       "logout": "Sair"
     },
     "greeting": "Bem-vindo de volta",
-    "overview": "Veja o que está acontecendo com seus formulários.",
+    "overview": "Veja o que está acontecendo com seus documentos e formulários.",
     "seeAll": "Ver todos",
     "quickStart": "Criar um novo formulário",
     "quickStartDesc": "Escolha um modelo ou comece do zero — pronto em segundos."

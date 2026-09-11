@@ -13,7 +13,8 @@ export async function GET() {
     }
 
     const forms = await prisma.form.findMany({
-      where: { userId: session.user.id },
+      // Formulários de documento ficam em /dashboard/documents
+      where: { userId: session.user.id, document: { is: null } },
       include: {
         _count: {
           select: { responses: true, fields: true },
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
     const maxForms = maxFormsFor(user?.plan);
     if (maxForms !== -1) {
       const formCount = await prisma.form.count({
-        where: { userId: session.user.id },
+        where: { userId: session.user.id, document: { is: null } },
       });
 
       if (formCount >= maxForms) {

@@ -1,7 +1,6 @@
 import { prisma } from "@submitin/database";
 import { auth } from "@/lib/auth";
 import { generateSlug } from "@/lib/utils";
-import { maxFormsFor } from "@/lib/stripe";
 import { MAX_FIELDS_PER_FORM } from "@/lib/security";
 import { putObject, DOCX_MIME } from "@/lib/storage";
 import {
@@ -21,19 +20,11 @@ export async function POST(request: Request) {
     if (!session?.user?.id) return Response.json({ error: "Não autorizado" }, { status: 401 });
     const userId: string = session.user.id;
 
+    // Documentos não contam no limite de formulários: o limite é de PDFs gerados/mês.
     const user = await prisma.user.findUniqueOrThrow({
       where: { id: userId },
-      select: { plan: true, email: true },
+      select: { email: true },
     });
-
-    // Documento usa um formulário: respeita o limite de formulários do plano.
-    const maxForms = maxFormsFor(user.plan);
-    if (maxForms !== -1 && (await prisma.form.count({ where: { userId } })) >= maxForms) {
-      throw new HttpError(
-        403,
-        `Limite de ${maxForms} formulários atingido. Faça upgrade do seu plano para criar mais.`
-      );
-    }
 
     const formData = await request.formData();
     const upload = await readTemplateUpload(formData);

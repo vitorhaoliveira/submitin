@@ -20,7 +20,7 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
     });
     const maxForms = maxFormsFor(user?.plan);
     if (maxForms !== -1) {
-      const formCount = await prisma.form.count({ where: { userId: session.user.id } });
+      const formCount = await prisma.form.count({ where: { userId: session.user.id, document: { is: null } } });
       if (formCount >= maxForms) {
         return NextResponse.json(
           {

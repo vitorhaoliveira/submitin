@@ -654,7 +654,9 @@
       "totalForms": "Total Forms",
       "totalResponses": "Total Responses",
       "publishedForms": "Published Forms",
-      "drafts": "Drafts"
+      "drafts": "Drafts",
+      "documents": "Documents",
+      "generatedThisMonth": "PDFs this month"
     },
     "nav": {
       "forms": "Forms",
@@ -663,7 +665,7 @@
       "logout": "Sign Out"
     },
     "greeting": "Welcome back",
-    "overview": "Here is what is happening with your forms.",
+    "overview": "See what's happening with your documents and forms.",
     "seeAll": "See all",
     "quickStart": "Create a new form",
     "quickStartDesc": "Pick a template or start from scratch — ready in seconds."
