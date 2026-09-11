@@ -40,6 +40,7 @@ import { PageHeader } from "@/components/page-header";
 import { VariablesEditor, type DocField } from "./variables-editor";
 import { InvitesCard } from "./invites-card";
 import { ShareExtras } from "./share-extras";
+import { UnsavedBar } from "./unsaved-bar";
 import { FormSettingsCard, type DocumentFormSettings } from "./form-settings-card";
 
 type Props = {
@@ -363,6 +364,16 @@ function DeliveryCard({
   const [emailRespondent, setEmailRespondent] = useState(initial.emailRespondent);
   const [newEmail, setNewEmail] = useState("");
   const [webhookUrl, setWebhookUrl] = useState(initial.webhookUrl);
+  const [saved, setSaved] = useState({
+    emails: initial.emails,
+    webhookUrl: initial.webhookUrl,
+    emailRespondent: initial.emailRespondent,
+  });
+  // E-mail digitado e não adicionado também conta como alteração (e entra ao salvar).
+  const pendingEmail = newEmail.trim().toLowerCase();
+  const dirty =
+    Boolean(pendingEmail) ||
+    JSON.stringify({ emails, webhookUrl, emailRespondent }) !== JSON.stringify(saved);
   const [saving, setSaving] = useState(false);
 
   function addEmail() {
@@ -373,13 +384,20 @@ function DeliveryCard({
   }
 
   async function save() {
+    const nextEmails =
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(pendingEmail) && !emails.includes(pendingEmail)
+        ? [...emails, pendingEmail]
+        : emails;
     setSaving(true);
     try {
       await requestJson(`/api/documents/${documentId}/delivery`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emails, webhookUrl, emailRespondent }),
+        body: JSON.stringify({ emails: nextEmails, webhookUrl, emailRespondent }),
       });
+      setEmails(nextEmails);
+      setNewEmail("");
+      setSaved({ emails: nextEmails, webhookUrl, emailRespondent });
       toast({ title: t("detail.delivery.saved") });
     } catch (err) {
       onError(err);
@@ -462,10 +480,18 @@ function DeliveryCard({
           />
           <p className="text-xs text-muted-foreground">{t("detail.delivery.webhookDesc")}</p>
         </div>
-        <Button onClick={save} disabled={saving} className="gap-2">
-          {saving && <Loader2 className="w-4 h-4 animate-spin" />}
-          {t("detail.delivery.save")}
-        </Button>
+        <UnsavedBar
+          dirty={dirty}
+          saving={saving}
+          onSave={save}
+          onDiscard={() => {
+            setEmails(saved.emails);
+            setWebhookUrl(saved.webhookUrl);
+            setEmailRespondent(saved.emailRespondent);
+            setNewEmail("");
+          }}
+          saveLabel={t("detail.delivery.save")}
+        />
       </CardContent>
     </Card>
   );

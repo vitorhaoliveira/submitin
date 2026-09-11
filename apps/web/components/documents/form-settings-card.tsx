@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Loader2, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { Badge } from "@submitin/ui/components/badge";
 import { Button } from "@submitin/ui/components/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@submitin/ui/components/card";
@@ -19,12 +19,14 @@ import { Separator } from "@submitin/ui/components/separator";
 import { Switch } from "@submitin/ui/components/switch";
 import { Textarea } from "@submitin/ui/components/textarea";
 import { ThemeEditor } from "@/components/theme-editor";
+import { UnsavedBar } from "./unsaved-bar";
 import { toast } from "@/hooks/use-toast";
 import { useTranslations } from "@/lib/i18n-context";
 import type { CustomTheme } from "@/lib/theme-utils";
 
 export type DocumentFormSettings = {
   description: string;
+  requireAcceptance: boolean;
   conversational: boolean;
   thankYouTitle: string;
   thankYouMessage: string;
@@ -114,7 +116,9 @@ export function FormSettingsCard({
   const tDocs = useTranslations("documents");
   const t = (key: string) => tDocs(`detail.formSettings.${key}`);
   const [s, setS] = useState(initial);
+  const [saved, setSaved] = useState(initial);
   const [saving, setSaving] = useState(false);
+  const dirty = JSON.stringify(s) !== JSON.stringify(saved);
   const set = <K extends keyof DocumentFormSettings>(key: K, value: DocumentFormSettings[K]) =>
     setS((prev) => ({ ...prev, [key]: value }));
 
@@ -123,6 +127,7 @@ export function FormSettingsCard({
     try {
       const body: Record<string, unknown> = {
         description: s.description,
+        requireAcceptance: s.requireAcceptance,
         conversational: s.conversational,
         thankYouTitle: s.thankYouTitle,
         thankYouMessage: s.thankYouMessage,
@@ -148,6 +153,7 @@ export function FormSettingsCard({
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error);
+      setSaved(s);
       toast({ title: t("saved") });
     } catch (err) {
       toast({
@@ -195,6 +201,20 @@ export function FormSettingsCard({
             id="doc-form-conversational"
             checked={s.conversational}
             onCheckedChange={(v: boolean) => set("conversational", v)}
+          />
+        </div>
+
+        <div className="flex items-start justify-between gap-4">
+          <div className="space-y-1">
+            <Label htmlFor="doc-form-acceptance" className="text-sm font-semibold">
+              {t("acceptance")}
+            </Label>
+            <p className="text-sm text-muted-foreground">{t("acceptanceDesc")}</p>
+          </div>
+          <Switch
+            id="doc-form-acceptance"
+            checked={s.requireAcceptance}
+            onCheckedChange={(v: boolean) => set("requireAcceptance", v)}
           />
         </div>
 
@@ -356,10 +376,13 @@ export function FormSettingsCard({
           )}
         </Section>
 
-        <Button onClick={save} disabled={saving} className="gap-2">
-          {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-          {t("save")}
-        </Button>
+        <UnsavedBar
+          dirty={dirty}
+          saving={saving}
+          onSave={save}
+          onDiscard={() => setS(saved)}
+          saveLabel={t("save")}
+        />
       </CardContent>
     </Card>
   );

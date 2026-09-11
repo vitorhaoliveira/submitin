@@ -90,6 +90,8 @@ interface PublicFormProps {
   invite?: { token: string; prefilled: { label: string; value: string }[] };
   /** Formulário de documento: o respondente revisa o PDF antes de enviar. */
   isDocument?: boolean;
+  /** Documento com aceite eletrônico: declaração que o cliente marca na revisão. */
+  acceptanceStatement?: string | null;
   /** Documento: o cliente recebe cópia do PDF por e-mail (muda a tela de sucesso). */
   respondentCopy?: boolean;
   /** Marca da conta (logo + nome); substitui o logo do Submitin no topo. */
@@ -212,6 +214,7 @@ export function PublicForm({
   invite,
   isDocument = false,
   respondentCopy = false,
+  acceptanceStatement = null,
   brand,
 }: PublicFormProps) {
   const t = useTranslations("publicForm");
@@ -227,6 +230,8 @@ export function PublicForm({
   const [preview, setPreview] = useState<Preview | null>(null);
   const [previewRenderFailed, setPreviewRenderFailed] = useState(false);
   const [previewUnavailable, setPreviewUnavailable] = useState(false);
+  // Aceite eletrônico marcado na revisão (zera ao voltar e corrigir).
+  const [accepted, setAccepted] = useState(false);
   const handlePreviewRenderError = useCallback(() => setPreviewRenderFailed(true), []);
   // Modo conversacional: índice da pergunta atual.
   const [step, setStep] = useState(0);
@@ -438,6 +443,7 @@ export function PublicForm({
           partialId: partialIdRef.current,
           inviteToken: invite?.token,
           previewId,
+          accepted: Boolean(previewId && acceptanceStatement && accepted),
         }),
       });
 
@@ -940,6 +946,21 @@ export function PublicForm({
             </div>
           )}
 
+          {acceptanceStatement && (
+            <label
+              htmlFor="document-acceptance"
+              className="flex cursor-pointer items-start gap-3 rounded-xl border bg-background p-4 text-sm leading-relaxed"
+            >
+              <Checkbox
+                id="document-acceptance"
+                checked={accepted}
+                onCheckedChange={(v) => setAccepted(v === true)}
+                className="mt-0.5"
+              />
+              <span>{acceptanceStatement}</span>
+            </label>
+          )}
+
           {/* Ações fixas no rodapé: no celular o documento é longo */}
           <div className="sticky bottom-0 -mx-4 border-t bg-background/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:rounded-xl sm:border">
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
@@ -949,6 +970,7 @@ export function PublicForm({
                 disabled={isSubmitting}
                 onClick={() => {
                   setPreview(null);
+                  setAccepted(false);
                   setErrors({});
                 }}
               >
@@ -958,7 +980,8 @@ export function PublicForm({
               <Button
                 type="button"
                 size="lg"
-                disabled={isSubmitting}
+                disabled={isSubmitting || (Boolean(acceptanceStatement) && !accepted)}
+                title={acceptanceStatement && !accepted ? t("acceptanceRequired") : undefined}
                 onClick={() => void submitResponse(preview.previewId)}
               >
                 {isSubmitting ? (
@@ -1074,10 +1097,10 @@ export function PublicForm({
             {showLastStepExtras && previewUnavailable && (
               <div className="mt-6">
                 <PreviewUnavailable
-                  message={t("previewUnavailable")}
-                  action={t("previewSendAnyway")}
+                  message={acceptanceStatement ? t("previewUnavailableRetry") : t("previewUnavailable")}
+                  action={acceptanceStatement ? t("previewRetry") : t("previewSendAnyway")}
                   busy={isSubmitting}
-                  onSend={() => void submitResponse()}
+                  onSend={() => void (acceptanceStatement ? requestPreview() : submitResponse())}
                 />
               </div>
             )}
@@ -1210,10 +1233,10 @@ export function PublicForm({
 
               {previewUnavailable && (
                 <PreviewUnavailable
-                  message={t("previewUnavailable")}
-                  action={t("previewSendAnyway")}
+                  message={acceptanceStatement ? t("previewUnavailableRetry") : t("previewUnavailable")}
+                  action={acceptanceStatement ? t("previewRetry") : t("previewSendAnyway")}
                   busy={isSubmitting}
-                  onSend={() => void submitResponse()}
+                  onSend={() => void (acceptanceStatement ? requestPreview() : submitResponse())}
                 />
               )}
 

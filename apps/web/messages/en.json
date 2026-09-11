@@ -1065,7 +1065,10 @@
       "title": "Document sent!",
       "subtitle": "Done! The company has received your document.",
       "copy": "You'll get a PDF copy in your email shortly."
-    }
+    },
+    "acceptanceRequired": "Check the statement to confirm the document.",
+    "previewRetry": "Try again",
+    "previewUnavailableRetry": "We couldn't generate the document preview right now. Please try again in a moment."
   },
   "legal": {
     "terms": {
@@ -1298,7 +1301,9 @@
         "save": "Save form",
         "saved": "Form saved",
         "error": "Couldn't save.",
-        "seePlans": "See plans"
+        "seePlans": "See plans",
+        "acceptance": "Require electronic acceptance",
+        "acceptanceDesc": "On review, the customer confirms they read and accept the document. The PDF gets a page recording the date, time, IP and browser of that acceptance, plus a code to verify the file."
       },
       "share": {
         "toggle": "Embed on your site and QR code",
@@ -1313,6 +1318,11 @@
         },
         "copy": "Copy code",
         "copied": "Copied"
+      },
+      "unsaved": {
+        "message": "You have unsaved changes",
+        "discard": "Discard",
+        "allSaved": "All changes saved"
       }
     },
     "submissions": {
@@ -1339,7 +1349,9 @@
       "next": "Next",
       "page": "Page {page} of {pages}",
       "autoRefresh": "Refreshing…",
-      "viaLink": "Link for"
+      "viaLink": "Link for",
+      "accepted": "Electronic acceptance",
+      "verify": "verify"
     },
     "table": {
       "name": "Document",

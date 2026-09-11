@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
-import { Download, FileText, Inbox, Loader2, RotateCw, Search } from "lucide-react";
+import { Download, FileText, Inbox, Loader2, RotateCw, Search, ShieldCheck } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
 import { useLocale, useTranslations } from "@/lib/i18n-context";
 import { toast } from "@/hooks/use-toast";
@@ -20,6 +20,8 @@ type Row = {
   templateVersion: number;
   hasFile: boolean;
   inviteLabel: string | null;
+  acceptedAt: string | null;
+  verifyPath: string | null;
 };
 
 type Filters = { q: string; from: string; to: string; status: string };
@@ -211,6 +213,22 @@ export function SubmissionsClient({
                         <span className="block sm:hidden text-xs text-muted-foreground">
                           {formatDate(row.createdAt, dateLocale)}
                         </span>
+                        {row.acceptedAt && (
+                          <span className="mt-1 flex items-center gap-1 text-xs text-emerald-700">
+                            <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                            {t("submissions.accepted")}
+                            {row.verifyPath && (
+                              <a
+                                href={row.verifyPath}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-1 underline underline-offset-2 hover:text-emerald-900"
+                              >
+                                {t("submissions.verify")}
+                              </a>
+                            )}
+                          </span>
+                        )}
                         {row.error && row.status !== "concluida" && (
                           <p className="mt-1 text-xs text-destructive/90 max-w-md">{row.error}</p>
                         )}

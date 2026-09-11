@@ -9,6 +9,7 @@ import type { CustomTheme } from "@/lib/theme-utils";
 import { activeTemplateKeys, resolveNatures } from "@/lib/documents/natures";
 import { toDocumentFieldType } from "@/lib/documents/service";
 import { formatValue } from "@submitin/documents/format";
+import { ACCEPTANCE_STATEMENT } from "@submitin/documents";
 import { brandLogoUrl } from "@/lib/branding";
 import { monthlyResponseQuotaReached } from "@/lib/response-quota";
 
@@ -67,6 +68,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
         select: {
           id: true,
           emailRespondent: true,
+          requireAcceptance: true,
           templates: { orderBy: { version: "desc" }, take: 1, select: { variables: true } },
         },
       },
@@ -201,6 +203,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       availability={availability}
       invite={invite ? { token: invite.token, prefilled } : undefined}
       isDocument={Boolean(form.document)}
+      acceptanceStatement={form.document?.requireAcceptance ? ACCEPTANCE_STATEMENT : null}
       respondentCopy={
         Boolean(form.document?.emailRespondent) &&
         form.fields.some((f) => f.type === "email" && askedIds.has(f.id))

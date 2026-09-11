@@ -140,9 +140,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     const partialId = typeof body?.partialId === "string" ? body.partialId : null;
     const inviteToken = typeof body?.inviteToken === "string" ? body.inviteToken : null;
     const previewId = typeof body?.previewId === "string" ? body.previewId : null;
+    // Aceite eletrônico: só vale junto com a revisão (previewId) do documento.
+    const acceptance =
+      body?.accepted === true && previewId
+        ? { ip: clientIP, userAgent: request.headers.get("user-agent") }
+        : null;
 
     try {
-      const response = await createFormResponse(form, values, partialId, inviteToken, previewId);
+      const response = await createFormResponse(form, values, partialId, inviteToken, previewId, acceptance);
       return NextResponse.json({ success: true, id: response.id }, { status: 201 });
     } catch (err: unknown) {
       const status =

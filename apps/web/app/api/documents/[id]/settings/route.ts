@@ -10,6 +10,7 @@ const optionalText = (max: number) => z.string().trim().max(max).nullable().opti
 // Tudo opcional: grava só o que veio (não mexe na entrega — e-mails/webhook).
 const settingsSchema = z.object({
   description: optionalText(500),
+  requireAcceptance: z.boolean().optional(),
   conversational: z.boolean().optional(),
   thankYouTitle: optionalText(100),
   thankYouMessage: optionalText(500),
@@ -99,6 +100,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       }),
       ...(input.description !== undefined
         ? [prisma.form.update({ where: { id: document.formId }, data: { description: input.description || null } })]
+        : []),
+      ...(input.requireAcceptance !== undefined
+        ? [prisma.document.update({ where: { id }, data: { requireAcceptance: input.requireAcceptance } })]
         : []),
     ]);
     return Response.json({ success: true });

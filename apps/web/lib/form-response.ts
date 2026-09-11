@@ -11,7 +11,7 @@ import { computeVisibleFieldIds, parseVisibility } from "@/lib/field-visibility"
 import { getFormAvailability } from "@/lib/form-availability";
 import { validateMaskedField } from "@submitin/documents/input";
 import { parseCurrency } from "@submitin/documents/format";
-import { enqueueDocumentGeneration } from "@/lib/documents/generation";
+import { enqueueDocumentGeneration, type AcceptanceInput } from "@/lib/documents/generation";
 import { activeTemplateKeys, resolveNatures } from "@/lib/documents/natures";
 import { notifyResponseLimitReached, responseQuota, type ResponseQuota } from "@/lib/response-quota";
 
@@ -215,7 +215,9 @@ export async function createFormResponse(
   /** Token do link personalizado (campos já preenchidos pela empresa). */
   inviteToken?: string | null,
   /** Preview do documento que o respondente conferiu (reaproveitado na geração). */
-  previewId?: string | null
+  previewId?: string | null,
+  /** Aceite eletrônico marcado na revisão do documento. */
+  acceptance?: AcceptanceInput | null
 ) {
   const { invite, values, fieldValuesCreate, quota } = await prepareSubmission(
     form,
@@ -290,7 +292,7 @@ export async function createFormResponse(
 
   // Formulário de documento: a entrega (e-mail com PDF + webhook) acontece após a
   // geração assíncrona do documento, não aqui.
-  const generation = await enqueueDocumentGeneration(form.id, response.id, previewId);
+  const generation = await enqueueDocumentGeneration(form.id, response.id, previewId, acceptance);
   if (generation) return response;
 
   const emailsToNotify: string[] = [];

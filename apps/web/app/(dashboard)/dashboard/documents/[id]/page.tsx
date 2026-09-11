@@ -93,6 +93,7 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
       }
       formSettings={{
         description: form.description ?? "",
+        requireAcceptance: document.requireAcceptance,
         conversational: st?.conversational ?? false,
         thankYouTitle: st?.thankYouTitle ?? "",
         thankYouMessage: st?.thankYouMessage ?? "",

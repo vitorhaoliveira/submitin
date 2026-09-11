@@ -6,12 +6,19 @@ import { DocumentLimitEmail } from "@submitin/email/templates/document-limit";
 import { DocumentCopyEmail } from "@submitin/email/templates/document-copy";
 import { brandLogoUrl } from "@/lib/branding";
 import { isValidEmail } from "@/lib/security";
-import { PdfConversionError, TemplateError } from "@submitin/documents";
+import {
+  ACCEPTANCE_STATEMENT,
+  appendAcceptancePage,
+  PdfConversionError,
+  TemplateError,
+} from "@submitin/documents";
+import { createHash } from "node:crypto";
 import { documentDataHash, renderDocument } from "./render";
 import { deleteObjects, getObject, putObject, DOCX_MIME, PDF_MIME } from "@/lib/storage";
 import { hasFeature, maxDocumentsPerMonthFor } from "@/lib/stripe";
 import {
   appBaseUrl,
+  verifyDocumentUrl,
   monthlyDocumentUsage,
   publicPdfUrl,
   responseIdentifier,
@@ -36,10 +43,14 @@ export const MAX_AUTO_ATTEMPTS = 3;
 const STALE_PROCESSING_MS = 2 * 60_000;
 
 /** Cria a geração para uma resposta de formulário-documento e agenda o processamento. */
+/** Aceite eletrônico feito na revisão (IP e navegador de quem confirmou). */
+export type AcceptanceInput = { ip: string | null; userAgent: string | null };
+
 export async function enqueueDocumentGeneration(
   formId: string,
   responseId: string,
-  previewId?: string | null
+  previewId?: string | null,
+  acceptance?: AcceptanceInput | null
 ) {
   const document = await prisma.document.findUnique({
     where: { formId },
@@ -53,7 +64,18 @@ export async function enqueueDocumentGeneration(
 
   const generation = await prisma.documentGeneration.upsert({
     where: { responseId },
-    create: { documentId: document.id, templateId: template.id, responseId, previewId: previewId ?? null },
+    create: {
+      documentId: document.id,
+      templateId: template.id,
+      responseId,
+      previewId: previewId ?? null,
+      ...(acceptance && {
+        acceptedAt: new Date(),
+        acceptanceIp: acceptance.ip?.slice(0, 64) ?? null,
+        acceptanceUserAgent: acceptance.userAgent?.slice(0, 400) ?? null,
+        acceptanceStatement: ACCEPTANCE_STATEMENT,
+      }),
+    },
     update: {},
   });
   scheduleGeneration(generation.id);
@@ -142,6 +164,7 @@ export async function processDocumentGeneration(
   let pdf: Buffer;
   let pdfKey: string;
   let docxKey: string;
+  let pdfSha256: string;
   try {
     // O respondente conferiu este mesmo documento no preview? Reaproveita o arquivo
     // (uma conversão por envio). Qualquer diferença nos dados gera de novo.
@@ -158,6 +181,26 @@ export async function processDocumentGeneration(
     } else {
       ({ pdf, docx } = await renderDocument({ template, variables, answers, branded }));
     }
+
+    // Aceite eletrônico: página de registro no fim do PDF (fora do preview,
+    // que continua sendo a mesma conversão).
+    if (generation.acceptedAt) {
+      pdf = await appendAcceptancePage(pdf, {
+        documentName: document.name,
+        companyName: user.brandName,
+        verificationCode: generation.accessToken,
+        verifyUrl: verifyDocumentUrl(generation.accessToken),
+        acceptedAt: generation.acceptedAt,
+        statement: generation.acceptanceStatement ?? ACCEPTANCE_STATEMENT,
+        ip: generation.acceptanceIp,
+        userAgent: generation.acceptanceUserAgent,
+        email: respondentEmailFrom(form.fields, response.fieldValues),
+        cpf: firstValueOfType(form.fields, response.fieldValues, "cpf"),
+        identifier: responseIdentifier(form.fields, response.fieldValues),
+        contentHash: hash,
+      });
+    }
+    pdfSha256 = createHash("sha256").update(pdf).digest("hex");
 
     // Chave inclui a tentativa: arquivos gerados nunca são sobrescritos.
     // (O preview é temporário; o definitivo ganha cópia própria.)
@@ -176,7 +219,7 @@ export async function processDocumentGeneration(
 
   await prisma.documentGeneration.update({
     where: { id: generationId },
-    data: { status: "concluida", pdfKey, docxKey, completedAt: new Date(), error: null },
+    data: { status: "concluida", pdfKey, docxKey, pdfSha256, completedAt: new Date(), error: null },
   });
 
   // Entrega (best-effort): falha de e-mail/webhook não invalida o documento gerado.
@@ -216,10 +259,31 @@ export async function processDocumentGeneration(
       responseId: response.id,
       submittedAt: response.submittedAt,
       pdfUrl: publicPdfUrl(generation.id),
+      pdfSha256,
+      verifyUrl: verifyDocumentUrl(generation.accessToken),
+      acceptance: generation.acceptedAt
+        ? {
+            acceptedAt: generation.acceptedAt,
+            ip: generation.acceptanceIp,
+            userAgent: generation.acceptanceUserAgent,
+            statement: generation.acceptanceStatement,
+          }
+        : null,
       fileName,
       values: answers,
     }),
   ]);
+}
+
+/** Primeiro valor respondido de um tipo de campo (ex.: CPF para o registro de aceite). */
+function firstValueOfType(
+  fields: { id: string; type: string; order: number }[],
+  fieldValues: { fieldId: string; value: string }[],
+  type: string
+): string | null {
+  const valueByField = new Map(fieldValues.map((fv) => [fv.fieldId, fv.value.trim()]));
+  const field = [...fields].sort((a, b) => a.order - b.order).find((f) => f.type === type && valueByField.get(f.id));
+  return field ? valueByField.get(field.id)! : null;
 }
 
 /** E-mail de quem preencheu: primeiro campo de e-mail respondido no formulário. */

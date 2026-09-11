@@ -97,6 +97,8 @@ export default async function SubmissionsPage({
         inviteLabel: g.response.invite?.label ?? null,
         templateVersion: g.template.version,
         hasFile: Boolean(g.pdfKey),
+        acceptedAt: g.acceptedAt?.toISOString() ?? null,
+        verifyPath: g.status === "concluida" && g.pdfSha256 ? `/v/${g.accessToken}` : null,
       }))}
     />
   );

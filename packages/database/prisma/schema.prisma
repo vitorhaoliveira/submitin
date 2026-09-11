@@ -320,6 +320,8 @@ model Document {
 
   // Envia cópia do PDF ao respondente (se ele informou e-mail)
   emailRespondent Boolean @default(true)
+  // Cliente precisa marcar o aceite na revisão; o PDF ganha a página de registro
+  requireAcceptance Boolean @default(false)
 
   templates   DocumentTemplate[]
   generations DocumentGeneration[]
@@ -366,6 +368,13 @@ model DocumentGeneration {
   accessToken String    @unique @default(cuid())
   // Preview que o respondente conferiu; reaproveitado se os dados baterem
   previewId   String?
+  // Aceite eletrônico (assinatura eletrônica simples) registrado no envio
+  acceptedAt          DateTime?
+  acceptanceIp        String?
+  acceptanceUserAgent String?
+  acceptanceStatement String?   @db.Text
+  // SHA-256 do PDF final entregue (verificação pública em /v/[accessToken])
+  pdfSha256   String?
   startedAt   DateTime?
   completedAt DateTime?
   createdAt   DateTime  @default(now())
