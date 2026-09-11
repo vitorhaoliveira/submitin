@@ -86,7 +86,7 @@ export default async function DashboardPage() {
             href={href}
             className="group flex min-w-0 items-center gap-4 rounded-xl border p-4 transition-colors hover:bg-muted/50"
           >
-            <div className="w-9 h-9 shrink-0 rounded-md border bg-background flex items-center justify-center">
+            <div className="w-9 h-9 shrink-0 rounded-md bg-brand-soft text-brand flex items-center justify-center">
               <Icon className="w-4 h-4" />
             </div>
             <div className="min-w-0 flex-1">

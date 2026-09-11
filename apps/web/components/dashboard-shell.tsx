@@ -84,7 +84,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         className="flex items-center gap-2 min-w-0"
         aria-label={tCommon("appName")}
       >
-        <div className="w-7 h-7 shrink-0 rounded-md bg-foreground flex items-center justify-center">
+        <div className="w-7 h-7 shrink-0 rounded-md bg-brand flex items-center justify-center">
           <FileText className="w-4 h-4 text-background" />
         </div>
         {!compact && (
@@ -118,7 +118,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
             : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
         )}
       >
-        <Icon className="w-4 h-4 shrink-0" />
+        <Icon className={cn("w-4 h-4 shrink-0", active && "text-brand")} />
         {!compact && <span className="truncate">{label}</span>}
       </Link>
     );

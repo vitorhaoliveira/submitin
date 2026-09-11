@@ -52,7 +52,7 @@ export function ProductPreview() {
         <div className="p-5 sm:p-6">
           {/* Branding header */}
           <div className="flex items-center justify-center gap-2 mb-5">
-            <div className="w-7 h-7 rounded-md bg-foreground flex items-center justify-center">
+            <div className="w-7 h-7 rounded-md bg-brand flex items-center justify-center">
               <FileText className="w-4 h-4 text-background" />
             </div>
             <span className="font-semibold text-sm">Submitin</span>

@@ -951,7 +951,7 @@ export function FormBuilder({
                     <span className="text-xs text-muted-foreground">
                       {fieldTypeLabels[field.type as FieldType]}
                       {field.variableKey && (
-                        <code className="ml-2 text-xs font-mono text-muted-foreground">{`{{${field.variableKey}}}`}</code>
+                        <code className="ml-2 text-xs font-mono text-brand">{`{{${field.variableKey}}}`}</code>
                       )}
                     </span>
                   </div>

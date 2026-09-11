@@ -81,7 +81,7 @@ function BuilderPanel({ t }: { t: T }) {
   return (
     <div className="space-y-3 animate-fade-in-up">
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+        <div className="w-8 h-8 rounded-md bg-brand flex items-center justify-center">
           <FileText className="w-4 h-4 text-background" />
         </div>
         <span className="font-semibold">{t("demo.builder.formName")}</span>

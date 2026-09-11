@@ -22,7 +22,7 @@ export function LandingHeader() {
     <header className="border-b bg-background/90 backdrop-blur sticky top-0 z-50">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+          <div className="w-8 h-8 rounded-md bg-brand flex items-center justify-center">
               <FileText className="w-4 h-4 text-background" />
           </div>
           <span className="font-semibold tracking-tight">Submitin</span>

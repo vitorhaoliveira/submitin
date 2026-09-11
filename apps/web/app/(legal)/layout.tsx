@@ -22,7 +22,7 @@ export default async function LegalLayout({
         {/* Header */}
         <div className="mb-12">
           <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+            <div className="w-8 h-8 rounded-md bg-brand flex items-center justify-center">
                 <FileText className="w-4 h-4 text-background" />
             </div>
             <span className="font-semibold">{tCommon("appName")}</span>

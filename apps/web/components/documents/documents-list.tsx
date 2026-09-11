@@ -52,7 +52,7 @@ export function DocumentsList({
         {!unlimited && (
           <div className="h-1.5 w-32 shrink-0 rounded-full bg-muted overflow-hidden">
             <div
-              className={`h-full rounded-full ${usagePct >= 100 ? "bg-amber-500" : "bg-foreground"}`}
+              className={`h-full rounded-full ${usagePct >= 100 ? "bg-amber-500" : "bg-brand"}`}
               style={{ width: `${usagePct}%` }}
             />
           </div>
@@ -75,7 +75,7 @@ export function DocumentsList({
               ].map(({ icon: Icon, text }, i) => (
                 <li key={i} className="rounded-lg border bg-background p-4 space-y-3">
                   <div className="flex items-center justify-between text-muted-foreground">
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 text-brand" />
                     <span className="text-xs tabular-nums">0{i + 1}</span>
                   </div>
                   <p className="text-sm">{text}</p>

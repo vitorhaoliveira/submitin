@@ -166,7 +166,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       value: usage.forms,
       limit: maxForms === -1 ? null : maxForms,
       icon: FileText,
-      tint: "border bg-background text-muted-foreground",
+      tint: "bg-brand-soft text-brand",
     },
     {
       key: "responses",
@@ -174,7 +174,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       value: usage.responses,
       limit: maxResponses === -1 ? null : maxResponses,
       icon: MessageSquare,
-      tint: "border bg-background text-muted-foreground",
+      tint: "bg-brand-soft text-brand",
     },
     {
       key: "published",
@@ -182,7 +182,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       value: usage.published,
       limit: null,
       icon: TrendingUp,
-      tint: "border bg-background text-muted-foreground",
+      tint: "bg-brand-soft text-brand",
     },
   ];
 
@@ -251,7 +251,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                   {pct !== null && (
                     <div className="mt-3 h-1.5 w-full rounded-full bg-muted overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${pct >= 100 ? "bg-destructive" : "bg-foreground"}`}
+                        className={`h-full rounded-full ${pct >= 100 ? "bg-destructive" : "bg-brand"}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>

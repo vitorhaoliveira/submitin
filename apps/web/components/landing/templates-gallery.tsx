@@ -30,7 +30,7 @@ export async function TemplatesGallery() {
     <section id="templates" className="container mx-auto px-4 py-24">
       <div className="text-center mb-14">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border text-muted-foreground text-sm mb-4">
-          <FileText className="w-4 h-4" />
+          <FileText className="w-4 h-4 text-brand" />
           {t("templates.badge")}
         </div>
         <h2 className="text-3xl md:text-4xl font-semibold mb-3 tracking-tight">{t("templates.title")}</h2>
@@ -51,7 +51,7 @@ export async function TemplatesGallery() {
               className="group flex flex-col rounded-xl border bg-card p-5 transition-colors hover:bg-muted/40"
             >
               <div className="flex items-center justify-between mb-3">
-                <div className="w-10 h-10 rounded-md border bg-background text-foreground flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md bg-brand-soft text-brand flex items-center justify-center">
                   <Icon className="w-5 h-5" />
                 </div>
                 <span className="text-xs text-muted-foreground">
@@ -80,7 +80,7 @@ export async function TemplatesGallery() {
                 )}
               </div>
 
-              <span className="inline-flex items-center gap-1 text-sm font-medium text-foreground">
+              <span className="inline-flex items-center gap-1 text-sm font-medium text-brand">
                 {t("templates.useTemplate")}
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
               </span>
@@ -94,7 +94,7 @@ export async function TemplatesGallery() {
           className="group flex flex-col items-center justify-center text-center rounded-xl border border-dashed border-border bg-muted/30 p-5 transition-all hover:border-foreground/20 hover:bg-muted/50"
         >
           <div className="w-11 h-11 rounded-lg bg-background border border-border flex items-center justify-center mb-3 transition-transform">
-            <Plus className="w-5 h-5 text-foreground" />
+            <Plus className="w-5 h-5 text-brand" />
           </div>
           <h3 className="font-semibold mb-1">{t("templates.blankTitle")}</h3>
           <p className="text-sm text-muted-foreground">{t("templates.blankDescription")}</p>

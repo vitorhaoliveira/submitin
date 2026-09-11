@@ -24,7 +24,7 @@ export async function LandingFooter() {
           {/* Marca */}
           <div className="space-y-4 max-w-sm">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-md bg-foreground flex items-center justify-center">
+              <div className="w-9 h-9 rounded-md bg-brand flex items-center justify-center">
               <FileText className="w-5 h-5 text-background" />
               </div>
               <span className="font-semibold text-lg tracking-tight">Submitin</span>

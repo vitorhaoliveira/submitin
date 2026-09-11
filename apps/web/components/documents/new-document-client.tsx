@@ -114,7 +114,7 @@ export function NewDocumentClient() {
             className={cn(
               "flex min-h-64 cursor-pointer flex-col items-center justify-center gap-5 rounded-xl border border-dashed px-6 py-10 text-center transition-colors",
               dragging
-                ? "border-foreground/40 bg-muted/60"
+                ? "border-brand/50 bg-brand-soft"
                 : "border-foreground/20 hover:border-foreground/35 hover:bg-muted/30"
             )}
           >
@@ -217,7 +217,7 @@ export function NewDocumentClient() {
                     <tr key={v.key} className="border-t">
                       <td className="px-3 py-2">{v.label}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{fieldTypeLabel(v.type)}</td>
-                      <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">{`{{${v.key}}}`}</td>
+                      <td className="px-3 py-2 font-mono text-xs text-brand whitespace-nowrap">{`{{${v.key}}}`}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -256,7 +256,8 @@ function UploadIconCluster({ dragging }: { dragging: boolean }) {
           className={cn(
             "absolute top-1/2 left-1/2 grid size-12 place-items-center rounded-xl border bg-background text-muted-foreground shadow-sm transition-[transform,color,box-shadow] duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
             index === 1 && "z-10",
-            dragging && "text-foreground shadow-md"
+            dragging && "text-brand shadow-md",
+            index === 1 && !dragging && "text-brand"
           )}
           style={{ transform: dragging ? ICON_TRANSFORMS[index]?.active : ICON_TRANSFORMS[index]?.idle }}
         >

@@ -11,7 +11,7 @@ export async function TrustBar() {
         <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {guarantees.map((g) => (
             <span key={g} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Check className="w-4 h-4 text-foreground shrink-0" />
+              <Check className="w-4 h-4 text-brand shrink-0" />
               {g}
             </span>
           ))}

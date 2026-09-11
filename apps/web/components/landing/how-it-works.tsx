@@ -26,10 +26,10 @@ export async function HowItWorks() {
           return (
             <div key={i} className="bg-background p-6 md:p-8">
               <div className="flex items-center justify-between mb-8">
-                <div className="w-10 h-10 rounded-md border flex items-center justify-center">
+                <div className="w-10 h-10 rounded-md bg-brand-soft text-brand flex items-center justify-center">
                   <Icon className="w-5 h-5" />
                 </div>
-                <span className="text-sm text-muted-foreground tabular-nums">0{i + 1}</span>
+                <span className="text-sm font-medium text-brand tabular-nums">0{i + 1}</span>
               </div>
               <h3 className="font-semibold mb-2">{step.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">{step.description}</p>

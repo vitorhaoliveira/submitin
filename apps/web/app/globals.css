@@ -23,8 +23,13 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 6% 90%;
     --input: 240 6% 90%;
-    --ring: 240 6% 10%;
+    --ring: 243 75% 59%;
     --radius: 0.625rem;
+    /* Cor de destaque (índigo da marca), usada com parcimônia: logo, ícones,
+       item ativo, destaques de texto e barras de progresso. */
+    --brand: 243 75% 59%;
+    --brand-foreground: 0 0% 100%;
+    --brand-soft: 238 100% 97%;
   }
 
   html {
@@ -74,7 +79,7 @@ html {
 
 /* Selection */
 ::selection {
-  background: hsl(var(--foreground) / 0.12);
+  background: hsl(var(--brand) / 0.18);
   color: hsl(var(--foreground));
 }
 

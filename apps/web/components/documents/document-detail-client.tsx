@@ -313,7 +313,7 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
                 )}
                 <span className="text-muted-foreground">{fieldTypeLabel(field.type)}</span>
                 {field.variableKey && (
-                  <code className="ml-auto text-xs font-mono text-muted-foreground">{`{{${field.variableKey}}}`}</code>
+                  <code className="ml-auto text-xs font-mono text-brand">{`{{${field.variableKey}}}`}</code>
                 )}
               </li>
             ))}

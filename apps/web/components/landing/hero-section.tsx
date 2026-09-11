@@ -16,13 +16,13 @@ export async function HeroSection() {
           {/* Copy */}
           <div className="text-center lg:text-left space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-background text-muted-foreground text-sm animate-fade-in-up">
-              <Zap className="w-4 h-4" />
+              <Zap className="w-4 h-4 text-brand" />
               {t("hero.badge")}
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight leading-[1.05] animate-fade-in-up animation-delay-100">
               {t("hero.title")}{" "}
-              <span className="text-muted-foreground">{t("hero.titleHighlight")}</span>{" "}
+              <span className="text-brand">{t("hero.titleHighlight")}</span>{" "}
               {t("hero.titleEnd")}
             </h1>
 
@@ -48,7 +48,7 @@ export async function HeroSection() {
             </div>
 
             <p className="flex items-center justify-center lg:justify-start gap-2 text-sm text-muted-foreground animate-fade-in-up animation-delay-400">
-              <Check className="w-4 h-4 text-foreground shrink-0" />
+              <Check className="w-4 h-4 text-brand shrink-0" />
               {microProof}
             </p>
           </div>

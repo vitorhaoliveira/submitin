@@ -15,7 +15,7 @@ export function FeatureCard({
 }) {
   return (
     <div className="bg-background p-6 text-left">
-      <div className="w-10 h-10 rounded-md border flex items-center justify-center mb-5 [&_svg]:w-5 [&_svg]:h-5">
+      <div className="w-10 h-10 rounded-md bg-brand-soft text-brand flex items-center justify-center mb-5 [&_svg]:w-5 [&_svg]:h-5">
         {icon}
       </div>
       <div className="flex items-center gap-2 mb-1.5">
