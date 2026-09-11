@@ -7,6 +7,7 @@ import { PLANS, SOLD_PLANS } from "@/lib/stripe";
 import { LandingHeader } from "@/components/landing/landing-header";
 import { LandingFooter } from "@/components/landing/landing-footer";
 import { PlanComparisonTable } from "@/components/plan-comparison";
+import { PricingCards } from "@/components/pricing-cards";
 
 export async function generateMetadata() {
   const locale = await getLocaleFromCookie();
@@ -62,6 +63,10 @@ const FAQ = [
     a: "Assinatura mensal no cartão de crédito, processada pelo Stripe. O Submitin não vê nem guarda os dados do seu cartão.",
   },
   {
+    q: "Como funciona o plano anual?",
+    a: "Você paga 10 meses e usa 12 — dois meses de graça. O limite de documentos continua sendo por mês e renova todo dia 1º. Se cancelar, o plano segue até o fim do ano já pago.",
+  },
+  {
     q: "Também posso criar formulários comuns?",
     a: "Sim. Todos os planos incluem formulários avulsos (sem documento): 5 no Grátis, 20 no Pro e ilimitados no Ilimitado, cada um com o seu limite de respostas por mês.",
   },
@@ -107,50 +112,9 @@ export default async function PricingPage() {
 
         {/* Planos */}
         <section className="container mx-auto px-4 pb-20" aria-label="Planos">
-          <div className="mx-auto grid max-w-5xl items-stretch gap-6 md:grid-cols-3">
-            {SOLD_PLANS.map((key) => {
-              const plan = PLANS[key];
-              const featured = key === "pro";
-              return (
-                <div
-                  key={key}
-                  className={`relative flex flex-col rounded-3xl border bg-background p-7 ${
-                    featured ? "border-brand shadow-xl shadow-brand/10 ring-1 ring-brand" : ""
-                  }`}
-                >
-                  {featured && (
-                    <span className="absolute -top-3 left-7 rounded-full bg-brand px-3 py-1 text-xs font-semibold text-white">
-                      Recomendado
-                    </span>
-                  )}
-                  <h2 className="font-display text-2xl font-bold">{plan.name}</h2>
-                  <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
-                  <p className="mt-6 flex items-baseline gap-1.5">
-                    <span className="font-display text-5xl font-bold tracking-tight tabular-nums">
-                      R$ {plan.price}
-                    </span>
-                    <span className="text-muted-foreground">{plan.price > 0 ? "/mês" : "para sempre"}</span>
-                  </p>
-                  <ul className="mt-6 flex-1 space-y-3">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2.5 text-sm">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button asChild size="lg" variant={featured ? "default" : "outline"} className="mt-8 w-full">
-                    <Link href={key === "free" ? "/dashboard/documents/new" : `/register?plan=${key}`}>
-                      {key === "free" ? "Começar grátis" : `Assinar ${plan.name}`}
-                      <ArrowRight className="ml-1 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
+          <PricingCards />
           <p className="mt-6 text-center text-sm text-muted-foreground">
-            Preços em reais, por mês, cobrados no cartão. Sem taxa de adesão.
+            Preços em reais, cobrados no cartão (mensal ou anual). Sem taxa de adesão.
           </p>
         </section>
 

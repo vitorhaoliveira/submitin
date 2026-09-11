@@ -1111,7 +1111,14 @@
     "darkMode": "Escuro",
     "sectionMain": "Geral",
     "sectionGeneral": "Conta",
-    "documents": "Documentos"
+    "documents": "Documentos",
+    "usage": {
+      "label": "Documentos este mês",
+      "renews": "Renova no dia 1º",
+      "warn": "Quase no limite · ver planos",
+      "full": "Limite atingido · novos PDFs aguardam o upgrade",
+      "unlimited": "Plano ilimitado"
+    }
   },
   "documents": {
     "title": "Documentos",

@@ -24,6 +24,17 @@ export const STRIPE_DOCS_UNLIMITED_PRICE_ID =
   process.env.STRIPE_DOCS_UNLIMITED_PRICE_ID ||
   "";
 
+// Anual (2 meses grátis): preço próprio no Stripe para cada plano à venda.
+export const STRIPE_DOCS_PRO_YEARLY_PRICE_ID =
+  process.env.NEXT_PUBLIC_STRIPE_DOCS_PRO_YEARLY_PRICE_ID ||
+  process.env.STRIPE_DOCS_PRO_YEARLY_PRICE_ID ||
+  "";
+
+export const STRIPE_DOCS_UNLIMITED_YEARLY_PRICE_ID =
+  process.env.NEXT_PUBLIC_STRIPE_DOCS_UNLIMITED_YEARLY_PRICE_ID ||
+  process.env.STRIPE_DOCS_UNLIMITED_YEARLY_PRICE_ID ||
+  "";
+
 // Planos legados (Plus/Premium): não são mais vendidos, mas assinaturas ativas
 // continuam reconhecidas pelo webhook com as mesmas condições.
 export const STRIPE_PLUS_PRICE_ID =
@@ -52,6 +63,9 @@ export const PLANS = {
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: "",
+    // Anual: exibição (a cobrança real é o price anual no Stripe).
+    yearlyPrice: 0,
+    stripeYearlyPriceId: "",
     legacy: false,
     features: [
       "20 documentos por mês",
@@ -79,6 +93,9 @@ export const PLANS = {
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: STRIPE_DOCS_PRO_PRICE_ID,
+    // Anual: exibição (a cobrança real é o price anual no Stripe).
+    yearlyPrice: 790,
+    stripeYearlyPriceId: STRIPE_DOCS_PRO_YEARLY_PRICE_ID,
     legacy: false,
     features: [
       "Tudo do Grátis +",
@@ -105,6 +122,9 @@ export const PLANS = {
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: STRIPE_DOCS_UNLIMITED_PRICE_ID,
+    // Anual: exibição (a cobrança real é o price anual no Stripe).
+    yearlyPrice: 1790,
+    stripeYearlyPriceId: STRIPE_DOCS_UNLIMITED_YEARLY_PRICE_ID,
     legacy: false,
     features: [
       "Tudo do Pro +",
@@ -132,6 +152,9 @@ export const PLANS = {
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: STRIPE_PLUS_PRICE_ID,
+    // Anual: exibição (a cobrança real é o price anual no Stripe).
+    yearlyPrice: 0,
+    stripeYearlyPriceId: "",
     legacy: true,
     features: [
       "Tudo do Grátis +",
@@ -159,6 +182,9 @@ export const PLANS = {
     currency: "BRL",
     interval: "month" as const,
     stripePriceId: STRIPE_PREMIUM_PRICE_ID,
+    // Anual: exibição (a cobrança real é o price anual no Stripe).
+    yearlyPrice: 0,
+    stripeYearlyPriceId: "",
     legacy: true,
     features: [
       "Tudo do Plus +",
@@ -237,18 +263,33 @@ export function maxDocumentsPerMonthFor(plan: string | null | undefined): number
   return planLimits(plan).documentsPerMonth;
 }
 
+export type BillingInterval = "month" | "year";
+
 // Mapeia o price ID de uma assinatura Stripe para o plano correspondente
-// (inclui os legados, para assinaturas antigas continuarem valendo).
+// (mensal ou anual; inclui os legados, para assinaturas antigas continuarem valendo).
 export function planFromPriceId(priceId: string | null | undefined): PlanType {
   if (!priceId) return "free";
-  const plan = PLAN_KEYS.find((key) => key !== "free" && PLANS[key].stripePriceId === priceId);
+  const plan = PLAN_KEYS.find(
+    (key) =>
+      key !== "free" && (PLANS[key].stripePriceId === priceId || PLANS[key].stripeYearlyPriceId === priceId)
+  );
   return plan ?? "free";
 }
 
+export function intervalFromPriceId(priceId: string | null | undefined): BillingInterval {
+  return priceId && PLAN_KEYS.some((key) => PLANS[key].stripeYearlyPriceId === priceId) ? "year" : "month";
+}
+
 // Price ID do Stripe para um plano à venda ("" para free, legado ou desconhecido).
-export function priceIdForPlan(plan: string | null | undefined): string {
+export function priceIdForPlan(plan: string | null | undefined, interval: BillingInterval = "month"): string {
   const key = normalizePlan(plan);
-  return PLANS[key].legacy ? "" : PLANS[key].stripePriceId;
+  if (PLANS[key].legacy) return "";
+  return interval === "year" ? PLANS[key].stripeYearlyPriceId : PLANS[key].stripePriceId;
+}
+
+/** Quanto sai por mês no anual (para "equivale a R$ X/mês"). */
+export function yearlyMonthlyEquivalent(plan: PlanType): number {
+  return Math.round((PLANS[plan].yearlyPrice / 12) * 100) / 100;
 }
 
 export function getStripeCustomerPortalUrl(customerId: string): Promise<string> {

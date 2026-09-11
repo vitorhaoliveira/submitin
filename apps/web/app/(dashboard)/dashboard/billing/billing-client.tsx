@@ -6,13 +6,15 @@ import { Button } from "@submitin/ui/components/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
 import { Loader2, Check, X, Crown, Sparkles, Phone } from "lucide-react";
-import { PLANS, SOLD_PLANS, type PlanType, isLegacyPlan, isPaid as isPaidPlan } from "@/lib/stripe";
+import { PLANS, SOLD_PLANS, type BillingInterval, type PlanType, isLegacyPlan, isPaid as isPaidPlan } from "@/lib/stripe";
 import { PlanComparisonTable, type SoldPlan } from "@/components/plan-comparison";
+import { IntervalToggle, PlanPriceTag } from "@/components/billing-interval";
 import { SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_TEL } from "@/lib/utils";
 import { useTranslations } from "@/lib/i18n-context";
 
 interface UserSubscription {
   plan: string;
+  interval?: BillingInterval;
   stripeCurrentPeriodEnd: string | null;
   stripeCustomerId: string | null;
   cancelAtPeriodEnd: boolean;
@@ -22,13 +24,20 @@ function formatBRL(value: number): string {
   return value === 0 ? "Grátis" : `R$ ${value}`;
 }
 
-export function BillingClient({ chosenPlan = null }: { chosenPlan?: "pro" | "unlimited" | null }) {
+export function BillingClient({
+  chosenPlan = null,
+  chosenInterval = "month",
+}: {
+  chosenPlan?: "pro" | "unlimited" | null;
+  chosenInterval?: BillingInterval;
+}) {
   const { data: session } = useSession();
   const t = useTranslations("landing");
   const [mounted, setMounted] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<PlanType | null>(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [userPlan, setUserPlan] = useState<UserSubscription | null>(null);
+  const [interval, setInterval] = useState<BillingInterval>(chosenInterval);
 
   useEffect(() => {
     setMounted(true);
@@ -51,13 +60,13 @@ export function BillingClient({ chosenPlan = null }: { chosenPlan?: "pro" | "unl
     }
   }, [session]);
 
-  const handleUpgrade = async (plan: PlanType) => {
+  const handleUpgrade = async (plan: PlanType, billing: BillingInterval = interval) => {
     try {
       setLoadingPlan(plan);
       const response = await fetch("/api/billing/create-checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, interval: billing }),
       });
 
       const data = await response.json();
@@ -121,7 +130,7 @@ export function BillingClient({ chosenPlan = null }: { chosenPlan?: "pro" | "unl
     }
 
     const isCurrent = currentPlan === planKey;
-    const priceConfigured = !!PLANS[planKey].stripePriceId;
+    const priceConfigured = !!(interval === "year" ? PLANS[planKey].stripeYearlyPriceId : PLANS[planKey].stripePriceId);
 
     // Usuário já pago gerencia/troca pelo portal do Stripe.
     if (isPaid) {
@@ -163,14 +172,20 @@ export function BillingClient({ chosenPlan = null }: { chosenPlan?: "pro" | "unl
       {chosenPlan && !isPaid && (
         <div className="mb-6 flex flex-col gap-3 rounded-xl border border-brand/30 bg-brand-soft/60 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-semibold">Conta criada! Falta só assinar o {PLANS[chosenPlan].name}.</p>
+            <p className="font-semibold">
+              Conta criada! Falta só assinar o {PLANS[chosenPlan].name}
+              {chosenInterval === "year" ? " anual" : ""}.
+            </p>
             <p className="text-sm text-muted-foreground">
               Você também pode continuar no Grátis e assinar quando quiser.
             </p>
           </div>
           <Button
-            onClick={() => handleUpgrade(chosenPlan)}
-            disabled={loadingPlan !== null || !PLANS[chosenPlan].stripePriceId}
+            onClick={() => handleUpgrade(chosenPlan, chosenInterval)}
+            disabled={
+              loadingPlan !== null ||
+              !(chosenInterval === "year" ? PLANS[chosenPlan].stripeYearlyPriceId : PLANS[chosenPlan].stripePriceId)
+            }
             className="shrink-0"
           >
             {loadingPlan === chosenPlan && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -198,7 +213,7 @@ export function BillingClient({ chosenPlan = null }: { chosenPlan?: "pro" | "unl
             <span className="font-semibold">
               {userPlan.cancelAtPeriodEnd
                 ? "Assinatura cancelada"
-                : `Plano ${PLANS[currentPlan].name} ativo`}
+                : `Plano ${PLANS[currentPlan].name}${userPlan.interval === "year" ? " anual" : ""} ativo`}
             </span>
           </div>
           <p className="text-sm text-muted-foreground">
@@ -219,6 +234,10 @@ export function BillingClient({ chosenPlan = null }: { chosenPlan?: "pro" | "unl
           </p>
         </div>
       )}
+
+      <div className="mb-6 flex justify-center">
+        <IntervalToggle value={interval} onChange={setInterval} />
+      </div>
 
       <div className="grid md:grid-cols-3 gap-6 mb-8">
         {SOLD_PLANS.map((planKey) => {
@@ -243,9 +262,8 @@ export function BillingClient({ chosenPlan = null }: { chosenPlan?: "pro" | "unl
                   </div>
                   {isCurrent && <Badge variant="default" className="shrink-0 whitespace-nowrap">Plano atual</Badge>}
                 </div>
-                <div className="mt-4">
-                  <span className="text-3xl font-semibold tracking-tight">{formatBRL(plan.price)}</span>
-                  {plan.price > 0 && <span className="text-muted-foreground ml-2">/ mês</span>}
+                <div className="mt-4 min-h-[4.5rem]">
+                  <PlanPriceTag plan={planKey} interval={interval} size="md" />
                 </div>
               </CardHeader>
               <CardContent>

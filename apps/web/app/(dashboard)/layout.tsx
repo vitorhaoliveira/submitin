@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { DashboardShell } from "@/components/dashboard-shell";
+import { documentUsageFor } from "@/lib/usage";
 import { ClaimGuestDraft } from "@/components/claim-guest-draft";
 import { buildMetadata } from "@/lib/seo";
 import { getTranslations, getLocaleFromCookie } from "@/lib/i18n";
@@ -23,11 +24,14 @@ export default async function DashboardLayout({
   // Visitantes (sem login) podem acessar o app; cada página que depende de conta
   // se protege individualmente. Ações de salvar/publicar acionam o cadastro.
   const session = await auth();
+  const usage = session?.user?.id ? await documentUsageFor(session.user.id) : null;
 
   return (
     <>
       <ClaimGuestDraft />
-      <DashboardShell user={session?.user ?? null}>{children}</DashboardShell>
+      <DashboardShell user={session?.user ?? null} usage={usage}>
+        {children}
+      </DashboardShell>
     </>
   );
 }

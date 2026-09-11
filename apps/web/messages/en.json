@@ -1111,7 +1111,14 @@
     "darkMode": "Dark",
     "sectionMain": "Main",
     "sectionGeneral": "Account",
-    "documents": "Documents"
+    "documents": "Documents",
+    "usage": {
+      "label": "Documents this month",
+      "renews": "Resets on the 1st",
+      "warn": "Almost at the limit · see plans",
+      "full": "Limit reached · new PDFs wait for an upgrade",
+      "unlimited": "Unlimited plan"
+    }
   },
   "documents": {
     "title": "Documents",
