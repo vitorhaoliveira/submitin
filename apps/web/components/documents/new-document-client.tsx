@@ -14,6 +14,7 @@ import { useTranslations } from "@/lib/i18n-context";
 import { toast } from "@/hooks/use-toast";
 import { fmt, useFieldTypeLabel } from "./shared";
 import { clearGuestDocument, loadGuestDocument, saveGuestDocument } from "@/lib/guest-document";
+import { ModelPicker } from "@/components/templates/model-picker";
 
 type Preview = {
   fileName: string;
@@ -35,11 +36,14 @@ function prettyName(fileName: string): string {
 export function NewDocumentClient({
   isGuest = false,
   claim = false,
+  model = null,
 }: {
   /** Visitante sem conta: analisa e mostra o formulário; cadastro vem para salvar. */
   isGuest?: boolean;
   /** Voltou do cadastro/login: cria o documento que o visitante montou. */
   claim?: boolean;
+  /** Veio de "Usar este modelo" (/modelos/[slug]). */
+  model?: { slug: string; title: string } | null;
 }) {
   const t = useTranslations("documents");
   const tCommon = useTranslations("common");
@@ -55,6 +59,28 @@ export function NewDocumentClient({
   const [creating, setCreating] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [claiming, setClaiming] = useState(claim);
+  const [modelSlug, setModelSlug] = useState<string | null>(model?.slug ?? null);
+
+  // "Usar este modelo": baixa o .docx do modelo e já mostra a análise.
+  useEffect(() => {
+    if (!model || claim) return;
+    let cancelled = false;
+    (async () => {
+      const res = await fetch(`/modelos/${model.slug}.docx`);
+      if (!res.ok || cancelled) return;
+      const blob = await res.blob();
+      const modelFile = new File([blob], `${model.slug}.docx`, {
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      });
+      setModelSlug(model.slug);
+      await analyze(modelFile, model.slug);
+      if (!cancelled) setName(model.title);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [model?.slug]);
 
   // Pós-cadastro: recupera o .docx montado como visitante e cria o documento.
   useEffect(() => {
@@ -69,7 +95,8 @@ export function NewDocumentClient({
       }
       setFile(guest.file);
       setName(guest.name);
-      await create(guest.file, guest.name);
+      setModelSlug(guest.modelo ?? null);
+      await create(guest.file, guest.name, guest.modelo ?? null);
     })();
     return () => {
       cancelled = true;
@@ -77,7 +104,7 @@ export function NewDocumentClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [claim]);
 
-  async function analyze(selected: File) {
+  async function analyze(selected: File, modelo: string | null = modelSlug) {
     setFile(selected);
     setPreview(null);
     setError(null);
@@ -85,6 +112,7 @@ export function NewDocumentClient({
     try {
       const body = new FormData();
       body.append("file", selected);
+      if (modelo) body.append("modelo", modelo);
       const res = await fetch("/api/documents/preview", { method: "POST", body });
       const data = await res.json();
       if (!res.ok) {
@@ -105,20 +133,21 @@ export function NewDocumentClient({
     if (!file) return;
     setCreating(true);
     try {
-      await saveGuestDocument(file, name.trim() || file.name.replace(/\.docx$/i, ""));
+      await saveGuestDocument(file, name.trim() || prettyName(file.name), modelSlug);
     } catch {
       // Sem IndexedDB (aba privada): segue mesmo assim; a pessoa sobe o arquivo de novo depois.
     }
     router.push(`${next}?next=${encodeURIComponent(CLAIM_PATH)}`);
   }
 
-  async function create(fileToCreate: File | null = file, docName: string = name) {
+  async function create(fileToCreate: File | null = file, docName: string = name, modelo: string | null = modelSlug) {
     if (!fileToCreate) return;
     setCreating(true);
     try {
       const body = new FormData();
       body.append("file", fileToCreate);
       body.append("name", docName);
+      if (modelo) body.append("modelo", modelo);
       const res = await fetch("/api/documents", { method: "POST", body });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -138,6 +167,7 @@ export function NewDocumentClient({
   }
 
   function reset() {
+    setModelSlug(null);
     setFile(null);
     setPreview(null);
     setError(null);
@@ -238,6 +268,10 @@ export function NewDocumentClient({
                 {t("guest.sample")}
               </a>
             </p>
+          )}
+
+          {!model && !analyzing && (
+            <ModelPicker title={t("models.title")} subtitle={t("models.subtitle")} />
           )}
 
           <Card>

@@ -7,6 +7,7 @@ import { AlertTriangle, Braces, ChevronRight, Plus, Share2, Upload } from "lucid
 import { useLocale, useTranslations } from "@/lib/i18n-context";
 import { formatRelativeDate } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
+import { ModelPicker } from "@/components/templates/model-picker";
 import { fmt } from "./shared";
 
 type DocumentItem = {
@@ -88,6 +89,9 @@ export function DocumentsList({
                 {t("new")}
               </Button>
             </Link>
+          </div>
+          <div className="mx-auto mt-10 max-w-2xl border-t pt-8 text-left">
+            <ModelPicker title={t("models.title")} subtitle={t("models.subtitle")} />
           </div>
         </div>
       ) : (

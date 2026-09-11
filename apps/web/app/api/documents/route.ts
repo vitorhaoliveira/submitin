@@ -9,6 +9,8 @@ import {
   readTemplateUpload,
   templateFileKey,
 } from "@/lib/documents/service";
+import { findModel } from "@/lib/templates/catalog";
+import { applyModelOverrides } from "@/lib/templates/model-fields";
 
 /**
  * POST /api/documents (multipart: file, name?)
@@ -23,7 +25,7 @@ export async function POST(request: Request) {
     // Documentos não contam no limite de formulários: o limite é de PDFs gerados/mês.
     const user = await prisma.user.findUniqueOrThrow({
       where: { id: userId },
-      select: { email: true },
+      select: { email: true, brandName: true },
     });
 
     const formData = await request.formData();
@@ -34,6 +36,16 @@ export async function POST(request: Request) {
         `O documento tem ${upload.variables.length} variáveis; o máximo é ${MAX_FIELDS_PER_FORM}.`
       );
     }
+
+    // Veio de um modelo pronto: perguntas, tipos e dados fixos da empresa já ajustados.
+    const model = findModel(String(formData.get("modelo") ?? ""));
+    const fields = model
+      ? applyModelOverrides(model, upload.variables).map((f) => ({
+          ...f,
+          // Nome da empresa já sai com o nome da marca da conta, se houver.
+          defaultValue: f.company && model.companyKeys[0] === f.key ? (user.brandName ?? null) : null,
+        }))
+      : upload.variables.map((v) => ({ ...v, defaultValue: null as string | null }));
 
     const rawName = String(formData.get("name") ?? "").trim();
     const name = (rawName || upload.fileName.replace(/\.docx$/i, "")).slice(0, 100);
@@ -48,13 +60,14 @@ export async function POST(request: Request) {
             slug: generateSlug(),
             userId,
             fields: {
-              create: upload.variables.map((v) => ({
+              create: fields.map((v, order) => ({
                 type: v.type,
                 label: v.label,
                 required: v.required,
-                order: v.order,
+                order,
                 variableKey: v.key,
                 nature: v.nature,
+                defaultValue: v.defaultValue,
                 ...(v.options && { options: v.options }),
               })),
             },

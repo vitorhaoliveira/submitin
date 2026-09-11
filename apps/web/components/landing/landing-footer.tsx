@@ -12,6 +12,7 @@ export async function LandingFooter() {
     { href: "/#como-funciona", label: t("nav.howItWorks") },
     { href: "/#documentos", label: t("nav.documents") },
     { href: "/#recursos", label: t("nav.features") },
+    { href: "/modelos", label: t("nav.templates") },
     { href: "/precos", label: t("nav.pricing") },
     { href: "/#faq", label: t("nav.faq") },
   ];

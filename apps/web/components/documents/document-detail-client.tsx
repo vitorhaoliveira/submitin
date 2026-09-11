@@ -101,6 +101,8 @@ export function DocumentDetailClient({
   useEffect(() => setOrigin(window.location.origin), []);
   const publicUrl = `${origin}/f/${form.slug}`;
 
+  // Dados fixos sem valor saem em branco no PDF (ex.: dados da empresa de um modelo).
+  const fixedMissing = fields.filter((f) => f.nature === "fixa" && !f.defaultValue?.trim());
   const fieldKeys = new Set(fields.map((f) => f.variableKey).filter(Boolean));
   const templateKeys = new Set(template?.variables ?? []);
   const keysWithoutField = (template?.variables ?? []).filter(
@@ -307,6 +309,12 @@ export function DocumentDetailClient({
             <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
               <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
               {fmt(t("detail.fields.missing"), { keys: keysWithoutField.join(", ") })}
+            </div>
+          )}
+          {fixedMissing.length > 0 && (
+            <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
+              <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+              {fmt(t("detail.fields.fixedMissingBanner"), { labels: fixedMissing.map((f) => f.label).join(", ") })}
             </div>
           )}
           {orphanFields.length > 0 && (

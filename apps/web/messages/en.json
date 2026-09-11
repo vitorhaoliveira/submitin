@@ -1213,7 +1213,8 @@
         "helpTextPlaceholder": "e.g. as shown on the ID",
         "derived": "{{{base}}} in words",
         "moveUp": "Move up",
-        "moveDown": "Move down"
+        "moveDown": "Move down",
+        "fixedMissingBanner": "Fill in the fixed values: {labels}. Open each one below and enter the value — otherwise those parts come out blank in the PDF."
       },
       "delivery": {
         "title": "Delivery",
@@ -1374,6 +1375,10 @@
       "readyText": "Create your free account to save it, publish the link and get your first PDF. Takes under a minute, no card needed.",
       "signup": "Create free account and save",
       "haveAccount": "I already have an account"
+    },
+    "models": {
+      "title": "Or start from a ready-made template",
+      "subtitle": "Contracts and forms with variables already in place. Adjust the text and your company details later."
     }
   }
 }

@@ -8,7 +8,7 @@ const STORE = "guest-document";
 const KEY = "current";
 const MAX_AGE_MS = 24 * 60 * 60_000;
 
-export type GuestDocument = { file: File; name: string; savedAt: number };
+export type GuestDocument = { file: File; name: string; savedAt: number; modelo?: string | null };
 
 function open(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
@@ -28,8 +28,8 @@ async function run<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore) => I
   });
 }
 
-export async function saveGuestDocument(file: File, name: string): Promise<void> {
-  await run("readwrite", (s) => s.put({ file, name, savedAt: Date.now() } satisfies GuestDocument, KEY));
+export async function saveGuestDocument(file: File, name: string, modelo?: string | null): Promise<void> {
+  await run("readwrite", (s) => s.put({ file, name, modelo, savedAt: Date.now() } satisfies GuestDocument, KEY));
 }
 
 export async function loadGuestDocument(): Promise<GuestDocument | null> {
