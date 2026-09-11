@@ -47,8 +47,6 @@ export async function findUsableInvite(formId: string, token: string) {
   return { id: invite.id, values: (invite.values ?? {}) as Record<string, string> };
 }
 
-
-
 type FormWithRelations = {
   id: string;
   name: string;
@@ -96,15 +94,13 @@ export function mapValuesByLabelToFieldIds(
 }
 
 /**
- * Valida e cria uma resposta no formulário; envia emails e webhook se configurados.
- * valuesByFieldId deve ter chaves = id dos campos do form.
+ * Valida o envio e monta os valores a gravar (respostas + fixas, automáticas e
+ * pré-preenchidas). Usado pelo envio e pelo preview do documento, que precisam
+ * validar exatamente igual. Lança { status, message } em caso de erro.
  */
-export async function createFormResponse(
+export async function prepareSubmission(
   form: FormWithRelations,
   valuesByFieldId: Record<string, string>,
-  /** Se enviado, converte a resposta parcial deste id em completa (sem duplicar). */
-  partialId?: string | null,
-  /** Token do link personalizado (campos já preenchidos pela empresa). */
   inviteToken?: string | null
 ) {
   if (form._count.responses >= MAX_RESPONSES_PER_FORM) {
@@ -180,11 +176,32 @@ export async function createFormResponse(
   const fieldValuesCreate = Object.entries(values)
     .filter(
       ([fieldId, value]) =>
-        value &&
-        validFieldIds.has(fieldId) &&
-        (visibleIds.has(fieldId) || lockedIds.has(fieldId))
+        value && validFieldIds.has(fieldId) && (visibleIds.has(fieldId) || lockedIds.has(fieldId))
     )
     .map(([fieldId, value]) => ({ fieldId, value: String(value) }));
+
+  return { invite, values, fieldValuesCreate };
+}
+
+/**
+ * Valida e cria uma resposta no formulário; envia emails e webhook se configurados.
+ * valuesByFieldId deve ter chaves = id dos campos do form.
+ */
+export async function createFormResponse(
+  form: FormWithRelations,
+  valuesByFieldId: Record<string, string>,
+  /** Se enviado, converte a resposta parcial deste id em completa (sem duplicar). */
+  partialId?: string | null,
+  /** Token do link personalizado (campos já preenchidos pela empresa). */
+  inviteToken?: string | null,
+  /** Preview do documento que o respondente conferiu (reaproveitado na geração). */
+  previewId?: string | null
+) {
+  const { invite, values, fieldValuesCreate } = await prepareSubmission(
+    form,
+    valuesByFieldId,
+    inviteToken
+  );
 
   // Link de uso único: reclama antes de gravar; libera se a gravação falhar.
   let claimed: ClaimedInvite | null = null;
@@ -248,7 +265,7 @@ export async function createFormResponse(
 
   // Formulário de documento: a entrega (e-mail com PDF + webhook) acontece após a
   // geração assíncrona do documento, não aqui.
-  const generation = await enqueueDocumentGeneration(form.id, response.id);
+  const generation = await enqueueDocumentGeneration(form.id, response.id, previewId);
   if (generation) return response;
 
   const emailsToNotify: string[] = [];

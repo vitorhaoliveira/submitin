@@ -56,3 +56,6 @@ docs
 
 # Storage local (dev) do módulo Documentos
 .storage
+
+# worker do pdf.js (copiado no dev/build)
+apps/web/public/vendor

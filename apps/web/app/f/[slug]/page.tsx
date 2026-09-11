@@ -61,6 +61,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
         orderBy: { order: "asc" },
       },
       settings: true,
+      document: { select: { id: true } },
     },
   });
 
@@ -171,6 +172,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       form={transformedForm}
       availability={availability}
       invite={invite ? { token: invite.token, prefilled } : undefined}
+      isDocument={Boolean(form.document)}
     />
   );
 }

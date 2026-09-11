@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
@@ -16,7 +17,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@submitin/ui/components/card";
-import { Loader2, CheckCircle, ArrowRight, ArrowLeft, Star, Clock, Lock, Check } from "lucide-react";
+import {
+  Loader2,
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft,
+  Star,
+  Clock,
+  Lock,
+  Check,
+  ExternalLink,
+} from "lucide-react";
 import { cn } from "@submitin/ui/lib/utils";
 import { LanguageSwitcher } from "./language-switcher";
 import { Captcha, type CaptchaProvider } from "./captcha";
@@ -24,6 +35,10 @@ import { generateThemeStyles, type CustomTheme } from "@/lib/theme-utils";
 import { computeVisibleFieldIds, type VisibilityRule } from "@/lib/field-visibility";
 import { Logo } from "@/components/logo";
 import { maskInput, validateMaskedField } from "@submitin/documents/input";
+
+// pdf.js só entra no bundle quando o respondente pede para revisar o documento.
+const loadPdfPreview = () => import("./documents/pdf-preview");
+const PdfPreview = dynamic(loadPdfPreview, { ssr: false });
 
 // Tipos brasileiros com máscara (módulo Documentos).
 const MASKED_PLACEHOLDERS: Record<string, string> = {
@@ -72,7 +87,11 @@ interface PublicFormProps {
   availability?: { isOpen: boolean; reason: string };
   /** Link personalizado: dados já preenchidos pela empresa para este respondente. */
   invite?: { token: string; prefilled: { label: string; value: string }[] };
+  /** Formulário de documento: o respondente revisa o PDF antes de enviar. */
+  isDocument?: boolean;
 }
+
+type Preview = { previewId: string; pdfUrl: string };
 
 // Tempo médio de preenchimento por tipo de campo (em segundos). Usado para o
 // badge "leva ~X min", que reduz a ansiedade de início e aumenta a conclusão.
@@ -161,7 +180,28 @@ function PrefilledSummary({
   );
 }
 
-export function PublicForm({ form, availability, invite }: PublicFormProps) {
+function PreviewUnavailable({
+  message,
+  action,
+  busy,
+  onSend,
+}: {
+  message: string;
+  action: string;
+  busy: boolean;
+  onSend: () => void;
+}) {
+  return (
+    <div className="space-y-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
+      <p className="text-sm text-amber-900">{message}</p>
+      <Button type="button" variant="outline" size="sm" disabled={busy} onClick={onSend}>
+        {action}
+      </Button>
+    </div>
+  );
+}
+
+export function PublicForm({ form, availability, invite, isDocument = false }: PublicFormProps) {
   const t = useTranslations("publicForm");
   const tCommon = useTranslations("common");
   const [values, setValues] = useState<Record<string, string>>({});
@@ -171,6 +211,11 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [captchaError, setCaptchaError] = useState(false);
+  // Documento: prévia gerada no servidor (o mesmo PDF vira o definitivo se confirmado).
+  const [preview, setPreview] = useState<Preview | null>(null);
+  const [previewRenderFailed, setPreviewRenderFailed] = useState(false);
+  const [previewUnavailable, setPreviewUnavailable] = useState(false);
+  const handlePreviewRenderError = useCallback(() => setPreviewRenderFailed(true), []);
   // Modo conversacional: índice da pergunta atual.
   const [step, setStep] = useState(0);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -359,28 +404,28 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  // Envia apenas valores de campos visíveis (descarta respostas ocultas)
+  function visibleValues(): Record<string, string> {
+    const result: Record<string, string> = {};
+    for (const id of Object.keys(values)) {
+      if (visibleFieldIds.has(id)) result[id] = values[id]!;
+    }
+    return result;
+  }
 
-    if (!validate()) return;
-
+  async function submitResponse(previewId?: string) {
     setIsSubmitting(true);
     try {
-      // Envia apenas valores de campos visíveis (descarta respostas ocultas)
-      const visibleValues: Record<string, string> = {};
-      for (const id of Object.keys(values)) {
-        if (visibleFieldIds.has(id)) visibleValues[id] = values[id]!;
-      }
-
       const response = await fetch(`/api/forms/${form.id}/responses`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          values: visibleValues,
+          values: visibleValues(),
           captchaToken: captchaEnabled ? captchaToken : undefined,
           // Converte a parcial deste lead em completa (sem duplicar)
           partialId: partialIdRef.current,
           inviteToken: invite?.token,
+          previewId,
         }),
       });
 
@@ -397,6 +442,49 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  /** Gera a prévia do documento (mesma validação do envio) e abre a etapa de revisão. */
+  async function requestPreview() {
+    setIsSubmitting(true);
+    setPreviewUnavailable(false);
+    // Baixa o pdf.js enquanto o servidor converte o documento.
+    void loadPdfPreview();
+    try {
+      const response = await fetch(`/api/forms/${form.id}/preview`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ values: visibleValues(), inviteToken: invite?.token }),
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (response.ok && data.previewId) {
+        setPreviewRenderFailed(false);
+        setPreview({ previewId: data.previewId, pdfUrl: data.pdfUrl });
+        window.scrollTo({ top: 0 });
+        return;
+      }
+      // Sem saldo no plano da empresa: não há prévia, envia direto.
+      if (response.ok && data.skipped) {
+        setIsSubmitting(false);
+        await submitResponse();
+        return;
+      }
+      // Erro de conversão: a resposta não pode se perder — permite enviar sem revisar.
+      if (response.status >= 500) setPreviewUnavailable(true);
+      else setErrors({ _form: data.error || t("errors.submitFailed") });
+    } catch {
+      setPreviewUnavailable(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!validate()) return;
+    if (isDocument) await requestPreview();
+    else await submitResponse();
   }
 
   // ── Renderização de campos (compartilhada entre página única e conversacional) ──
@@ -788,6 +876,92 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
     );
   }
 
+  // ── Documento: revisão do PDF antes de enviar ──
+  if (preview) {
+    return (
+      <div className="min-h-screen bg-muted/40 px-4 py-8 sm:py-12" style={themeStyles}>
+        <div className="mx-auto max-w-2xl space-y-5 animate-fade-in-up">
+          <div className="space-y-1.5">
+            <p className="text-sm font-medium text-muted-foreground">{form.name}</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{t("previewTitle")}</h1>
+            <p className="text-muted-foreground">{t("previewSubtitle")}</p>
+          </div>
+
+          {previewRenderFailed ? (
+            <div className="rounded-xl border bg-background p-6 text-center">
+              <p className="text-sm text-muted-foreground mb-4">{t("previewFallback")}</p>
+              <Button asChild variant="outline">
+                <a href={preview.pdfUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  {t("previewOpen")}
+                </a>
+              </Button>
+            </div>
+          ) : (
+            <>
+              <PdfPreview
+                url={preview.pdfUrl}
+                onError={handlePreviewRenderError}
+                loadingLabel={t("previewLoading")}
+              />
+              <a
+                href={preview.pdfUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+              >
+                <ExternalLink className="w-3.5 h-3.5" />
+                {t("previewOpen")}
+              </a>
+            </>
+          )}
+
+          {errors._form && (
+            <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+              <p className="text-sm text-destructive">{errors._form}</p>
+            </div>
+          )}
+
+          {/* Ações fixas no rodapé: no celular o documento é longo */}
+          <div className="sticky bottom-0 -mx-4 border-t bg-background/95 px-4 py-3 backdrop-blur sm:static sm:mx-0 sm:rounded-xl sm:border">
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+              <Button
+                type="button"
+                variant="ghost"
+                disabled={isSubmitting}
+                onClick={() => {
+                  setPreview(null);
+                  setErrors({});
+                }}
+              >
+                <ArrowLeft className="w-4 h-4 mr-1.5" />
+                {t("previewBack")}
+              </Button>
+              <Button
+                type="button"
+                size="lg"
+                disabled={isSubmitting}
+                onClick={() => void submitResponse(preview.previewId)}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    {t("submitting")}
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    {t("previewConfirm")}
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // ── Modo conversacional: uma pergunta por vez ──
   if (conversational && totalSteps > 0 && currentField) {
     const progressPct = ((clampedStep + 1) / totalSteps) * 100;
@@ -869,6 +1043,17 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
               </div>
             )}
 
+            {showLastStepExtras && previewUnavailable && (
+              <div className="mt-6">
+                <PreviewUnavailable
+                  message={t("previewUnavailable")}
+                  action={t("previewSendAnyway")}
+                  busy={isSubmitting}
+                  onSend={() => void submitResponse()}
+                />
+              </div>
+            )}
+
             {showLastStepExtras && errors._form && (
               <div className="mt-6 p-4 rounded-lg bg-red-50 border border-red-200">
                 <p className="text-sm text-destructive">{errors._form}</p>
@@ -896,11 +1081,11 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      {t("submitting")}
+                      {isDocument ? t("reviewing") : t("submitting")}
                     </>
                   ) : (
                     <>
-                      {t("submit")}
+                      {isDocument ? t("review") : t("submit")}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </>
                   )}
@@ -987,6 +1172,15 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
                 </div>
               )}
 
+              {previewUnavailable && (
+                <PreviewUnavailable
+                  message={t("previewUnavailable")}
+                  action={t("previewSendAnyway")}
+                  busy={isSubmitting}
+                  onSend={() => void submitResponse()}
+                />
+              )}
+
               {errors._form && (
                 <div className="p-4 rounded-lg bg-red-50 border border-red-200">
                   <p className="text-sm text-destructive">{errors._form}</p>
@@ -1002,11 +1196,11 @@ export function PublicForm({ form, availability, invite }: PublicFormProps) {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    {t("submitting")}
+                    {isDocument ? t("reviewing") : t("submitting")}
                   </>
                 ) : (
                   <>
-                    {t("submit")}
+                    {isDocument ? t("review") : t("submit")}
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </>
                 )}

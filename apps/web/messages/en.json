@@ -1029,7 +1029,18 @@
       "inviteUsed": "This link has already been used. If you need to submit again, ask the sender for a new link.",
       "inviteInvalid": "This link isn't valid. Check that it was copied in full or ask for a new one."
     },
-    "prefilledTitle": "Already filled in for you"
+    "prefilledTitle": "Already filled in for you",
+    "review": "Review document",
+    "reviewing": "Preparing document...",
+    "previewTitle": "Check your document",
+    "previewSubtitle": "This is exactly how it will be generated. If something is wrong, go back and fix it before sending.",
+    "previewLoading": "Loading pages...",
+    "previewOpen": "Open PDF",
+    "previewFallback": "We couldn't display the document here.",
+    "previewBack": "Go back and fix",
+    "previewConfirm": "Confirm and send",
+    "previewUnavailable": "We couldn't generate the preview right now. You can send anyway — the document will be generated right after.",
+    "previewSendAnyway": "Send without reviewing"
   },
   "legal": {
     "terms": {

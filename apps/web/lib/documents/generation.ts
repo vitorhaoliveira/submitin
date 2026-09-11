@@ -3,14 +3,9 @@ import { prisma } from "@submitin/database";
 import { sendEmail } from "@submitin/email";
 import { DocumentReadyEmail } from "@submitin/email/templates/document-ready";
 import { DocumentLimitEmail } from "@submitin/email/templates/document-limit";
-import {
-  convertDocxToPdf,
-  mergeTemplate,
-  PdfConversionError,
-  stampBranding,
-  TemplateError,
-} from "@submitin/documents";
-import { getObject, putObject, DOCX_MIME, PDF_MIME } from "@/lib/storage";
+import { PdfConversionError, TemplateError } from "@submitin/documents";
+import { documentDataHash, renderDocument } from "./render";
+import { deleteObjects, getObject, putObject, DOCX_MIME, PDF_MIME } from "@/lib/storage";
 import { hasFeature, maxDocumentsPerMonthFor } from "@/lib/stripe";
 import {
   appBaseUrl,
@@ -38,7 +33,11 @@ export const MAX_AUTO_ATTEMPTS = 3;
 const STALE_PROCESSING_MS = 2 * 60_000;
 
 /** Cria a geração para uma resposta de formulário-documento e agenda o processamento. */
-export async function enqueueDocumentGeneration(formId: string, responseId: string) {
+export async function enqueueDocumentGeneration(
+  formId: string,
+  responseId: string,
+  previewId?: string | null
+) {
   const document = await prisma.document.findUnique({
     where: { formId },
     select: {
@@ -51,7 +50,7 @@ export async function enqueueDocumentGeneration(formId: string, responseId: stri
 
   const generation = await prisma.documentGeneration.upsert({
     where: { responseId },
-    create: { documentId: document.id, templateId: template.id, responseId },
+    create: { documentId: document.id, templateId: template.id, responseId, previewId: previewId ?? null },
     update: {},
   });
   scheduleGeneration(generation.id);
@@ -79,7 +78,7 @@ async function claim(generationId: string, allowFailed: boolean): Promise<boolea
   return count === 1;
 }
 
-function userFacingError(err: unknown): string {
+export function userFacingError(err: unknown): string {
   if (err instanceof TemplateError) return [err.message, ...err.details].join(" ");
   if (err instanceof PdfConversionError) return `Falha na conversão para PDF. ${err.message}`;
   return "Erro inesperado ao gerar o documento. Tente reprocessar.";
@@ -127,17 +126,29 @@ export async function processDocumentGeneration(
     form.fields,
     response.fieldValues
   );
+  const branded = !hasFeature(user.plan, "hideBranding");
   let pdf: Buffer;
   let pdfKey: string;
   let docxKey: string;
   try {
-    const docx = mergeTemplate(await getObject(template.fileKey), variables, answers);
-    pdf = await convertDocxToPdf(docx, { filename: template.fileName });
-    if (!hasFeature(user.plan, "hideBranding")) {
-      pdf = await stampBranding(pdf, { url: `${appBaseUrl()}/?ref=documento` });
+    // O respondente conferiu este mesmo documento no preview? Reaproveita o arquivo
+    // (uma conversão por envio). Qualquer diferença nos dados gera de novo.
+    const hash = documentDataHash(template.id, variables, answers, branded);
+    const preview = generation.previewId
+      ? await prisma.documentPreview.findFirst({
+          where: { id: generation.previewId, documentId: document.id, templateId: template.id },
+        })
+      : null;
+
+    let docx: Buffer;
+    if (preview && preview.dataHash === hash) {
+      [pdf, docx] = await Promise.all([getObject(preview.pdfKey), getObject(preview.docxKey)]);
+    } else {
+      ({ pdf, docx } = await renderDocument({ template, variables, answers, branded }));
     }
 
     // Chave inclui a tentativa: arquivos gerados nunca são sobrescritos.
+    // (O preview é temporário; o definitivo ganha cópia própria.)
     const base = `generated/${user.id}/${document.id}/${generation.id}-${generation.attempts}`;
     pdfKey = `${base}.pdf`;
     docxKey = `${base}.docx`;
@@ -258,6 +269,24 @@ async function notifyLimitReached(
     subject: "Você atingiu o limite de documentos do mês",
     react: DocumentLimitEmail({ limit, billingUrl: `${appBaseUrl()}/dashboard/billing` }),
   }).catch((err) => console.error("[documents] aviso de limite falhou:", err));
+}
+
+/** Apaga previews expirados (linhas + arquivos). */
+export async function cleanupExpiredPreviews() {
+  const expired = await prisma.documentPreview.findMany({
+    where: { expiresAt: { lt: new Date() } },
+    take: 200,
+    select: { id: true, pdfKey: true, docxKey: true },
+  });
+  if (expired.length === 0) return 0;
+  try {
+    await deleteObjects(expired.flatMap((p) => [p.pdfKey, p.docxKey]));
+  } catch (err) {
+    console.error("[documents] limpeza de previews:", err);
+    return 0;
+  }
+  await prisma.documentPreview.deleteMany({ where: { id: { in: expired.map((p) => p.id) } } });
+  return expired.length;
 }
 
 /** Varredura do cron: processa o que o `after()` não concluiu. */

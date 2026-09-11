@@ -1029,7 +1029,18 @@
       "inviteUsed": "Este link já foi usado. Se precisar enviar de novo, peça um novo link a quem te enviou.",
       "inviteInvalid": "Este link não é válido. Confira se ele foi copiado inteiro ou peça um novo."
     },
-    "prefilledTitle": "Já preenchido para você"
+    "prefilledTitle": "Já preenchido para você",
+    "review": "Revisar documento",
+    "reviewing": "Preparando documento...",
+    "previewTitle": "Confira seu documento",
+    "previewSubtitle": "É exatamente assim que ele será gerado. Se algo estiver errado, volte e corrija antes de enviar.",
+    "previewLoading": "Carregando páginas...",
+    "previewOpen": "Abrir PDF",
+    "previewFallback": "Não foi possível mostrar o documento aqui.",
+    "previewBack": "Voltar e corrigir",
+    "previewConfirm": "Confirmar e enviar",
+    "previewUnavailable": "Não conseguimos gerar a prévia agora. Você pode enviar mesmo assim — o documento será gerado em seguida.",
+    "previewSendAnyway": "Enviar sem revisar"
   },
   "legal": {
     "terms": {

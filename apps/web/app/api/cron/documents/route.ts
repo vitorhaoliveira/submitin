@@ -1,4 +1,4 @@
-import { processPendingGenerations } from "@/lib/documents/generation";
+import { cleanupExpiredPreviews, processPendingGenerations } from "@/lib/documents/generation";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
@@ -13,5 +13,6 @@ export async function GET(request: Request) {
     return Response.json({ error: "Não autorizado" }, { status: 401 });
   }
   const result = await processPendingGenerations();
-  return Response.json(result);
+  const previewsDeleted = await cleanupExpiredPreviews();
+  return Response.json({ ...result, previewsDeleted });
 }

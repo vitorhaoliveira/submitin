@@ -188,21 +188,36 @@ export function safeFileName(...parts: string[]): string {
 // Link público do PDF (webhook): token HMAC, sem expiração — PDF é imutável.
 // ---------------------------------------------------------------------------
 
-function tokenFor(generationId: string): string {
+type TokenScope = "document-pdf" | "preview-pdf";
+
+function tokenFor(scope: TokenScope, id: string): string {
   const secret = process.env.AUTH_SECRET;
   if (!secret) throw new Error("AUTH_SECRET não configurado.");
-  return createHmac("sha256", secret).update(`document-pdf:${generationId}`).digest("base64url");
+  return createHmac("sha256", secret).update(`${scope}:${id}`).digest("base64url");
+}
+
+function verifyToken(scope: TokenScope, id: string, token: string | null): boolean {
+  if (!token) return false;
+  const expected = Buffer.from(tokenFor(scope, id));
+  const received = Buffer.from(token);
+  return expected.length === received.length && timingSafeEqual(expected, received);
 }
 
 export function publicPdfUrl(generationId: string): string {
-  return `${appBaseUrl()}/api/public/documents/${generationId}/pdf?token=${tokenFor(generationId)}`;
+  return `${appBaseUrl()}/api/public/documents/${generationId}/pdf?token=${tokenFor("document-pdf", generationId)}`;
 }
 
 export function verifyPdfToken(generationId: string, token: string | null): boolean {
-  if (!token) return false;
-  const expected = Buffer.from(tokenFor(generationId));
-  const received = Buffer.from(token);
-  return expected.length === received.length && timingSafeEqual(expected, received);
+  return verifyToken("document-pdf", generationId, token);
+}
+
+/** Caminho relativo do PDF de preview (mesma origem do formulário, para o pdf.js). */
+export function previewPdfPath(previewId: string): string {
+  return `/api/public/previews/${previewId}/pdf?token=${tokenFor("preview-pdf", previewId)}`;
+}
+
+export function verifyPreviewToken(previewId: string, token: string | null): boolean {
+  return verifyToken("preview-pdf", previewId, token);
 }
 
 // ---------------------------------------------------------------------------

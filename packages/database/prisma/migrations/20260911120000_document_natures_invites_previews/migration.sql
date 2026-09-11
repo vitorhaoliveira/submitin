@@ -8,7 +8,8 @@ ADD COLUMN "brandLogoKey" TEXT;
 
 ALTER TABLE "documents" ADD COLUMN "emailRespondent" BOOLEAN NOT NULL DEFAULT true;
 
-ALTER TABLE "document_generations" ADD COLUMN "accessToken" TEXT;
+ALTER TABLE "document_generations" ADD COLUMN "accessToken" TEXT,
+ADD COLUMN "previewId" TEXT;
 UPDATE "document_generations" SET "accessToken" = md5(random()::text || id) WHERE "accessToken" IS NULL;
 ALTER TABLE "document_generations" ALTER COLUMN "accessToken" SET NOT NULL;
 CREATE UNIQUE INDEX "document_generations_accessToken_key" ON "document_generations"("accessToken");

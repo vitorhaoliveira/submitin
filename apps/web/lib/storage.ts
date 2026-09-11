@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 /**
@@ -58,6 +58,21 @@ export async function getObject(key: string): Promise<Buffer> {
   });
   if (!res.ok) throw new Error(`Falha ao ler arquivo (${res.status}).`);
   return Buffer.from(await res.arrayBuffer());
+}
+
+/** Remove arquivos (best-effort; usado na limpeza de previews expirados). */
+export async function deleteObjects(keys: string[]): Promise<void> {
+  if (keys.length === 0) return;
+  if (useLocalDisk()) {
+    await Promise.all(keys.map((key) => rm(localPath(key), { force: true })));
+    return;
+  }
+  const res = await fetch(`${supabaseUrl()}/storage/v1/object/${bucket()}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${serviceKey()}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ prefixes: keys }),
+  });
+  if (!res.ok) throw new Error(`Falha ao remover arquivos (${res.status}).`);
 }
 
 export const DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
