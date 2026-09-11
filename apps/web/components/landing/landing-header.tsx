@@ -13,10 +13,11 @@ export function LandingHeader() {
   const [open, setOpen] = useState(false);
 
   const navLinks = [
-    { href: "#como-funciona", label: t("nav.howItWorks") },
-    { href: "#documentos", label: t("nav.documents") },
-    { href: "#recursos", label: t("nav.features") },
-    { href: "#faq", label: t("nav.faq") },
+    { href: "/#como-funciona", label: t("nav.howItWorks") },
+    { href: "/#documentos", label: t("nav.documents") },
+    { href: "/#recursos", label: t("nav.features") },
+    { href: "/precos", label: t("nav.pricing") },
+    { href: "/#faq", label: t("nav.faq") },
   ];
 
   return (

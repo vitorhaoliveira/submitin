@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
@@ -75,8 +76,18 @@ export default function RegisterPage() {
         return;
       }
 
-      // Sucesso - redireciona para login
-      router.push("/login?registered=true");
+      // Sucesso: entra direto (sem passar pela tela de login de novo).
+      const params = new URLSearchParams(window.location.search);
+      const plan = params.get("plan");
+      const target =
+        plan === "pro" || plan === "unlimited" ? `/dashboard/billing?plan=${plan}` : "/dashboard";
+      const login = await signIn("credentials", { email, password, redirect: false });
+      if (login?.error) {
+        router.push("/login?registered=true");
+        return;
+      }
+      router.push(target);
+      router.refresh();
     } catch (err) {
       console.error("Erro ao criar conta:", err);
       setError(t("errors.generic"));

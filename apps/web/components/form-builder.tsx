@@ -1705,7 +1705,7 @@ export function FormBuilder({
                   aria-hidden={!form.published}
                 >
                   <QRCodeCanvas
-                    value={getPublicUrl() || "https://submitin.app"}
+                    value={getPublicUrl() || "https://submitin.com"}
                     size={120}
                     level="M"
                     marginSize={1}
