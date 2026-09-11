@@ -2,7 +2,7 @@ import { prisma, Prisma } from "@submitin/database";
 import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { customThemeSchema, captchaProviders } from "@/lib/validations";
-import { isPaid, isPremium } from "@/lib/stripe";
+import { hasFeature, isPaid, isPremium } from "@/lib/stripe";
 import { documentErrorResponse, HttpError } from "@/lib/documents/service";
 
 const optionalText = (max: number) => z.string().trim().max(max).nullable().optional();
@@ -66,6 +66,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     }
     if (!isPremium(user.plan) && TOP_KEYS.some((k) => input[k] !== undefined && input[k] !== null && input[k] !== "" && input[k] !== false)) {
       throw new HttpError(403, "Prazo, limite de envios e anti-spam fazem parte do plano Ilimitado.");
+    }
+    if (input.requireAcceptance === true && !hasFeature(user.plan, "electronicAcceptance")) {
+      throw new HttpError(403, "O aceite eletrônico faz parte do plano Pro.");
     }
     if (input.captchaEnabled && (!input.captchaProvider || !input.captchaSiteKey || !input.captchaSecretKey)) {
       throw new HttpError(400, "Para ativar o anti-spam, informe o provedor e as duas chaves.");

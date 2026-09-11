@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { DocumentDetailClient } from "@/components/documents/document-detail-client";
 import type { CustomTheme } from "@/lib/theme-utils";
 import { appBaseUrl } from "@/lib/documents/service";
-import { isPaid, isPremium } from "@/lib/stripe";
+import { hasFeature, isPaid, isPremium } from "@/lib/stripe";
 
 export const metadata = {
   title: "Documento",
@@ -109,7 +109,11 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
         captchaSiteKey: st?.captchaSiteKey ?? "",
         captchaSecretKey: st?.captchaSecretKey ?? "",
       }}
-      plan={{ paid: isPaid(user.plan), top: isPremium(user.plan) }}
+      plan={{
+        paid: isPaid(user.plan),
+        top: isPremium(user.plan),
+        acceptance: hasFeature(user.plan, "electronicAcceptance"),
+      }}
       publicUrl={`${appBaseUrl()}/f/${form.slug}`}
       delivery={{
         emails,

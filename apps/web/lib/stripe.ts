@@ -81,6 +81,8 @@ export const PLANS = {
       documentsPerMonth: 20,
       customTheme: false,
       hideBranding: false,
+      // Aceite eletrônico com página de registro e verificação pública.
+      electronicAcceptance: false,
       captcha: false,
       advancedAnalytics: false,
       prioritySupport: false,
@@ -101,6 +103,7 @@ export const PLANS = {
       "Tudo do Grátis +",
       "200 documentos por mês",
       "PDF sem o selo Submitin",
+      "Aceite eletrônico com registro",
       "Tema personalizado",
       "+ 20 formulários avulsos (5.000 respostas/mês)",
     ],
@@ -110,6 +113,8 @@ export const PLANS = {
       documentsPerMonth: 200,
       customTheme: true,
       hideBranding: true,
+      // Aceite eletrônico com página de registro e verificação pública.
+      electronicAcceptance: true,
       captcha: false,
       advancedAnalytics: false,
       prioritySupport: false,
@@ -139,6 +144,8 @@ export const PLANS = {
       documentsPerMonth: -1,
       customTheme: true,
       hideBranding: true,
+      // Aceite eletrônico com página de registro e verificação pública.
+      electronicAcceptance: true,
       captcha: true,
       advancedAnalytics: true,
       prioritySupport: true,
@@ -170,6 +177,8 @@ export const PLANS = {
       documentsPerMonth: 200,
       customTheme: true,
       hideBranding: true,
+      // Aceite eletrônico com página de registro e verificação pública.
+      electronicAcceptance: true,
       captcha: false,
       advancedAnalytics: false,
       prioritySupport: false,
@@ -201,6 +210,8 @@ export const PLANS = {
       documentsPerMonth: -1, // ilimitado
       customTheme: true,
       hideBranding: true,
+      // Aceite eletrônico com página de registro e verificação pública.
+      electronicAcceptance: true,
       captcha: true,
       advancedAnalytics: true,
       prioritySupport: true,
