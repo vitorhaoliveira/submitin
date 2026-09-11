@@ -648,7 +648,8 @@
       "published": "Publicado",
       "created": "Criado em",
       "viewResponses": "Ver Respostas",
-      "edit": "Editar"
+      "edit": "Editar",
+      "response": "resposta"
     },
     "stats": {
       "totalForms": "Total de Formulários",
@@ -1125,7 +1126,8 @@
       "published": "Publicado",
       "draft": "Rascunho",
       "viewSubmissions": "Envios",
-      "manage": "Gerenciar"
+      "manage": "Gerenciar",
+      "submission": "envio"
     },
     "status": {
       "recebida": "Na fila",

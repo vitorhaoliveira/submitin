@@ -648,7 +648,8 @@
       "published": "Published",
       "created": "Created on",
       "viewResponses": "View Responses",
-      "edit": "Edit"
+      "edit": "Edit",
+      "response": "response"
     },
     "stats": {
       "totalForms": "Total Forms",
@@ -1125,7 +1126,8 @@
       "published": "Published",
       "draft": "Draft",
       "viewSubmissions": "Submissions",
-      "manage": "Manage"
+      "manage": "Manage",
+      "submission": "submission"
     },
     "status": {
       "recebida": "Queued",
