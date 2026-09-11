@@ -831,7 +831,7 @@ export function PublicForm({
   if (availability && !availability.isOpen) {
     const scheduled = availability.reason === "scheduled";
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-background" style={themeStyles}>
+      <div className="min-h-screen flex items-center justify-center px-4 bg-background text-foreground" style={themeStyles}>
         <Card className="max-w-md w-full text-center animate-fade-in-up">
           <CardContent className="pt-12 pb-8">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
@@ -860,7 +860,7 @@ export function PublicForm({
   if (isSubmitted) {
     return (
       <div
-        className="relative min-h-screen flex items-center justify-center px-4 bg-background overflow-hidden"
+        className="relative min-h-screen flex items-center justify-center px-4 bg-background text-foreground overflow-hidden"
         style={themeStyles}
       >
         <Confetti />
@@ -902,7 +902,10 @@ export function PublicForm({
   // ── Documento: revisão do PDF antes de enviar ──
   if (preview) {
     return (
-      <div className="min-h-screen bg-muted/40 px-4 py-8 sm:py-12" style={themeStyles}>
+      <div
+        className={cn("min-h-screen px-4 py-8 sm:py-12 text-foreground", customTheme ? "bg-background" : "bg-muted/40")}
+        style={themeStyles}
+      >
         <div className="mx-auto max-w-2xl space-y-5 animate-fade-in-up">
           {brand && <BrandHeader name={brand.name} logoUrl={brand.logoUrl} />}
           <div className="space-y-1.5">
@@ -1010,7 +1013,7 @@ export function PublicForm({
     const showLastStepExtras = isLastStep;
 
     return (
-      <div className="relative min-h-screen flex flex-col bg-background" style={themeStyles}>
+      <div className="relative min-h-screen flex flex-col bg-background text-foreground" style={themeStyles}>
         {/* Barra de progresso fixa no topo */}
         <div className="fixed top-0 left-0 right-0 h-1 bg-muted z-20">
           <div
@@ -1168,7 +1171,7 @@ export function PublicForm({
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 bg-background" style={themeStyles}>
+    <div className="min-h-screen py-12 px-4 bg-background text-foreground" style={themeStyles}>
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
