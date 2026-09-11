@@ -6,7 +6,6 @@ import {
   sanitizeFormValues,
   isValidEmail,
   MAX_FIELD_VALUE_LENGTH,
-  MAX_RESPONSES_PER_FORM,
 } from "@/lib/security";
 import { computeVisibleFieldIds, parseVisibility } from "@/lib/field-visibility";
 import { getFormAvailability } from "@/lib/form-availability";
@@ -14,6 +13,7 @@ import { validateMaskedField } from "@submitin/documents/input";
 import { parseCurrency } from "@submitin/documents/format";
 import { enqueueDocumentGeneration } from "@/lib/documents/generation";
 import { activeTemplateKeys, resolveNatures } from "@/lib/documents/natures";
+import { monthlyResponseQuotaReached } from "@/lib/response-quota";
 
 const MASKED_FIELD_ERRORS = {
   invalidCpf: "CPF inválido",
@@ -62,6 +62,7 @@ type FormWithRelations = {
     maxResponses?: number | null;
     closedMessage?: string | null;
   } | null;
+  userId: string;
   _count: { responses: number };
 };
 
@@ -103,8 +104,19 @@ export async function prepareSubmission(
   valuesByFieldId: Record<string, string>,
   inviteToken?: string | null
 ) {
-  if (form._count.responses >= MAX_RESPONSES_PER_FORM) {
-    throw { status: 403, message: "Este formulário atingiu o limite máximo de respostas." };
+  // Documento: limite é de documentos/mês (na geração). Formulário avulso: respostas/mês do plano.
+  const document = await prisma.document.findUnique({
+    where: { formId: form.id },
+    select: { templates: { orderBy: { version: "desc" }, take: 1, select: { variables: true } } },
+  });
+  if (!document) {
+    const owner = await prisma.user.findUnique({ where: { id: form.userId }, select: { plan: true } });
+    if (await monthlyResponseQuotaReached(form.userId, owner?.plan)) {
+      throw {
+        status: 403,
+        message: "Este formulário atingiu o limite de respostas do mês. Tente novamente mais tarde.",
+      };
+    }
   }
 
   // PRO: Agendamento e limites — bloqueia envio fora da janela/limite definidos.
@@ -120,16 +132,11 @@ export async function prepareSubmission(
   // Só os campos perguntados vêm do respondente; fixa, automática e pré-preenchida
   // (pelo link) são definidas aqui e não podem ser sobrescritas.
   const invite = inviteToken ? await findUsableInvite(form.id, inviteToken) : null;
-  const template = await prisma.documentTemplate.findFirst({
-    where: { document: { formId: form.id } },
-    orderBy: { version: "desc" },
-    select: { variables: true },
-  });
   const { locked, askedIds } = resolveNatures(
     form.fields,
     invite?.values,
     new Date(),
-    activeTemplateKeys(template?.variables)
+    activeTemplateKeys(document?.templates[0]?.variables)
   );
   const clientValues = sanitizeFormValues(valuesByFieldId);
   for (const id of Object.keys(clientValues)) if (!askedIds.has(id)) delete clientValues[id];

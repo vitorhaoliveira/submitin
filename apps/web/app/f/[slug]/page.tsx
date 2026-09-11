@@ -10,6 +10,7 @@ import { activeTemplateKeys, resolveNatures } from "@/lib/documents/natures";
 import { toDocumentFieldType } from "@/lib/documents/service";
 import { formatValue } from "@submitin/documents/format";
 import { brandLogoUrl } from "@/lib/branding";
+import { monthlyResponseQuotaReached } from "@/lib/response-quota";
 
 // Conteúdo dinâmico: conta views e depende de estado mutável (agendamento,
 // limite de respostas). Sem isto, o Next cacheia a rota e o form mostra estado
@@ -69,7 +70,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
           templates: { orderBy: { version: "desc" }, take: 1, select: { variables: true } },
         },
       },
-      user: { select: { id: true, brandName: true, brandLogoKey: true } },
+      user: { select: { id: true, brandName: true, brandLogoKey: true, plan: true } },
     },
   });
 
@@ -158,8 +159,12 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
   };
 
   // Disponibilidade (agendamento/limites) avaliada no servidor.
-  const responseCount = await prisma.response.count({ where: { formId: form.id } });
-  const availability = getFormAvailability(
+  const [responseCount, quotaReached] = await Promise.all([
+    prisma.response.count({ where: { formId: form.id, partial: false } }),
+    // Formulário avulso: respostas/mês do plano da conta.
+    form.document ? false : monthlyResponseQuotaReached(form.user.id, form.user.plan),
+  ]);
+  const scheduleAvailability = getFormAvailability(
     form.settings
       ? {
           opensAt: form.settings.opensAt,
@@ -170,6 +175,10 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       : null,
     responseCount
   );
+  const availability =
+    quotaReached && scheduleAvailability.isOpen
+      ? { isOpen: false, reason: "closed_limit" as const }
+      : scheduleAvailability;
 
   const brand =
     form.user.brandName || form.user.brandLogoKey
