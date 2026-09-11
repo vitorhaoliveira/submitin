@@ -62,7 +62,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
         orderBy: { order: "asc" },
       },
       settings: true,
-      document: { select: { id: true } },
+      document: { select: { id: true, emailRespondent: true } },
       user: { select: { id: true, brandName: true, brandLogoKey: true } },
     },
   });
@@ -181,6 +181,10 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       availability={availability}
       invite={invite ? { token: invite.token, prefilled } : undefined}
       isDocument={Boolean(form.document)}
+      respondentCopy={
+        Boolean(form.document?.emailRespondent) &&
+        form.fields.some((f) => f.type === "email" && askedIds.has(f.id))
+      }
       brand={brand}
     />
   );

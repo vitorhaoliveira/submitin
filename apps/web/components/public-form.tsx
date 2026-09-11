@@ -90,6 +90,8 @@ interface PublicFormProps {
   invite?: { token: string; prefilled: { label: string; value: string }[] };
   /** Formulário de documento: o respondente revisa o PDF antes de enviar. */
   isDocument?: boolean;
+  /** Documento: o cliente recebe cópia do PDF por e-mail (muda a tela de sucesso). */
+  respondentCopy?: boolean;
   /** Marca da conta (logo + nome); substitui o logo do Submitin no topo. */
   brand?: { name: string | null; logoUrl: string | null };
 }
@@ -204,7 +206,14 @@ function PreviewUnavailable({
   );
 }
 
-export function PublicForm({ form, availability, invite, isDocument = false, brand }: PublicFormProps) {
+export function PublicForm({
+  form,
+  availability,
+  invite,
+  isDocument = false,
+  respondentCopy = false,
+  brand,
+}: PublicFormProps) {
   const t = useTranslations("publicForm");
   const tCommon = useTranslations("common");
   const [values, setValues] = useState<Record<string, string>>({});
@@ -857,9 +866,14 @@ export function PublicForm({ form, availability, invite, isDocument = false, bra
                 <CheckCircle className="w-8 h-8 text-emerald-500 animate-pop-in" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold mb-2">{thankYouTitle || t("success.title")}</h2>
+            <h2 className="text-2xl font-bold mb-2">
+              {thankYouTitle || (isDocument ? t("documentSuccess.title") : t("success.title"))}
+            </h2>
             <p className="text-muted-foreground mb-8">
-              {thankYouMessage || t("success.subtitle")}
+              {thankYouMessage || (isDocument ? t("documentSuccess.subtitle") : t("success.subtitle"))}
+              {isDocument && respondentCopy && (
+                <span className="block mt-2 text-sm">{t("documentSuccess.copy")}</span>
+              )}
             </p>
             {thankYouRedirectUrl ? (
               <p className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
@@ -1009,6 +1023,10 @@ export function PublicForm({ form, availability, invite, isDocument = false, bra
               <span>{form.name}</span>
             </div>
 
+            {clampedStep === 0 && form.description && (
+              <p className="mb-6 text-muted-foreground">{form.description}</p>
+            )}
+
             {clampedStep === 0 && invite && invite.prefilled.length > 0 && (
               <div className="mb-6">
                 <PrefilledSummary items={invite.prefilled} title={t("prefilledTitle")} />
@@ -1112,12 +1130,14 @@ export function PublicForm({ form, availability, invite, isDocument = false, bra
               <p className="text-xs text-muted-foreground text-center mt-4">{t("enterHint")}</p>
             )}
 
-            <p className="text-center text-sm text-muted-foreground mt-10">
-              {t("poweredBy")}{" "}
-              <Link href="/" className="text-primary hover:underline">
-                {tCommon("appName")}
-              </Link>
-            </p>
+            {!hideBranding && (
+              <p className="text-center text-sm text-muted-foreground mt-10">
+                {t("poweredBy")}{" "}
+                <Link href="/" className="text-primary hover:underline">
+                  {tCommon("appName")}
+                </Link>
+              </p>
+            )}
           </form>
         </div>
       </div>
@@ -1225,13 +1245,15 @@ export function PublicForm({ form, availability, invite, isDocument = false, bra
           </CardContent>
         </Card>
 
-        {/* Footer - sempre visível */}
-        <p className="text-center text-sm text-muted-foreground animate-fade-in-up animation-delay-200">
-          {t("poweredBy")}{" "}
-          <Link href="/" className="text-primary hover:underline">
-            {tCommon("appName")}
-          </Link>
-        </p>
+        {/* Rodapé "Feito com Submitin" — removível nos planos pagos */}
+        {!hideBranding && (
+          <p className="text-center text-sm text-muted-foreground animate-fade-in-up animation-delay-200">
+            {t("poweredBy")}{" "}
+            <Link href="/" className="text-primary hover:underline">
+              {tCommon("appName")}
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );

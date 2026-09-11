@@ -1060,7 +1060,12 @@
     "previewBack": "Go back and fix",
     "previewConfirm": "Confirm and send",
     "previewUnavailable": "We couldn't generate the preview right now. You can send anyway — the document will be generated right after.",
-    "previewSendAnyway": "Send without reviewing"
+    "previewSendAnyway": "Send without reviewing",
+    "documentSuccess": {
+      "title": "Document sent!",
+      "subtitle": "Done! The company has received your document.",
+      "copy": "You'll get a PDF copy in your email shortly."
+    }
   },
   "legal": {
     "terms": {
@@ -1255,6 +1260,47 @@
         "deleteError": "Could not cancel the link",
         "empty": "No links created yet.",
         "noCompanyFields": "No variable is set as “Prefilled”. Mark below what you want to fill per client before sending."
+      },
+      "formSettings": {
+        "title": "Customer form",
+        "desc": "How the form looks and behaves for whoever fills it in.",
+        "open": "Open form",
+        "intro": "Intro text",
+        "introDesc": "Shown below the title, before the questions.",
+        "introPlaceholder": "e.g. Fill in the financial guardian's details.",
+        "conversational": "One question at a time",
+        "conversationalDesc": "Shows questions in sequence, like a conversation. Great on mobile and for long forms.",
+        "thankYou": "After submitting",
+        "thankYouDesc": "What the customer sees after confirming the document.",
+        "thankYouTitle": "Title",
+        "thankYouTitlePlaceholder": "Document sent!",
+        "thankYouMessage": "Message",
+        "thankYouMessagePlaceholder": "e.g. The office will confirm your enrollment within 2 business days.",
+        "redirect": "Redirect to (optional)",
+        "appearance": "Appearance",
+        "hideBranding": "Remove \"Made with Submitin\"",
+        "hideBrandingDesc": "Removes the Submitin footer from the form.",
+        "schedule": "Deadline and limit",
+        "scheduleDesc": "Opens and closes the form automatically, or stops after a number of submissions.",
+        "opensAt": "Opens at",
+        "closesAt": "Closes at",
+        "maxResponses": "Max submissions",
+        "noLimit": "No limit",
+        "closedMessage": "Message when closed",
+        "closedMessagePlaceholder": "e.g. Enrollment for 2027 is closed.",
+        "captcha": "Anti-spam",
+        "captchaDesc": "Asks for a check before submitting to block bots.",
+        "captchaEnable": "Enable verification",
+        "captchaProvider": "Provider",
+        "captchaProviderPlaceholder": "Choose",
+        "captchaSiteKey": "Site key",
+        "captchaSecretKey": "Secret key",
+        "lockedPro": "Available from the Pro plan.",
+        "lockedTop": "Available on the Unlimited plan.",
+        "save": "Save form",
+        "saved": "Form saved",
+        "error": "Couldn't save.",
+        "seePlans": "See plans"
       }
     },
     "submissions": {

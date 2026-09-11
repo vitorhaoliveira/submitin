@@ -39,6 +39,7 @@ import { fmt, useFieldTypeLabel } from "./shared";
 import { PageHeader } from "@/components/page-header";
 import { VariablesEditor, type DocField } from "./variables-editor";
 import { InvitesCard } from "./invites-card";
+import { FormSettingsCard, type DocumentFormSettings } from "./form-settings-card";
 
 type Props = {
   document: { id: string; name: string; submissions: number };
@@ -57,6 +58,9 @@ type Props = {
   } | null;
   delivery: { emails: string[]; webhookUrl: string; emailRespondent: boolean; hasEmailField: boolean };
   invites: { id: string; token: string; label: string; usedAt: string | null; createdAt: string }[];
+  formSettings: DocumentFormSettings;
+  plan: { paid: boolean; top: boolean };
+  publicUrl: string;
 };
 
 async function requestJson(url: string, init: RequestInit) {
@@ -66,7 +70,16 @@ async function requestJson(url: string, init: RequestInit) {
   return data;
 }
 
-export function DocumentDetailClient({ document, form, template, delivery, invites }: Props) {
+export function DocumentDetailClient({
+  document,
+  form,
+  template,
+  delivery,
+  invites,
+  formSettings,
+  plan,
+  publicUrl: formPublicUrl,
+}: Props) {
   const t = useTranslations("documents");
   const tCommon = useTranslations("common");
   const locale = useLocale();
@@ -323,6 +336,8 @@ export function DocumentDetailClient({ document, form, template, delivery, invit
           />
         </CardContent>
       </Card>
+
+      <FormSettingsCard documentId={document.id} initial={formSettings} plan={plan} publicUrl={formPublicUrl} />
 
       <DeliveryCard documentId={document.id} initial={delivery} onError={fail} />
 
