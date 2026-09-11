@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getTranslations } from "@/lib/i18n";
 import { Button } from "@submitin/ui/components/button";
-import { FileText, MessageCircle, ArrowRight } from "lucide-react";
+import { MessageCircle, ArrowRight } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { SUPPORT_PHONE_DISPLAY, SUPPORT_PHONE_TEL } from "@/lib/utils";
 
 export async function LandingFooter() {
@@ -23,12 +24,7 @@ export async function LandingFooter() {
           {/* Marca */}
           <div className="space-y-4 max-w-sm">
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-9 h-9 rounded-md bg-brand flex items-center justify-center">
-                <FileText className="w-5 h-5 text-background" />
-              </div>
-              <span className="font-display text-xl font-bold tracking-tight">
-                submitin<span className="text-pop">*</span>
-              </span>
+              <Logo markClassName="w-9 h-9" />
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed">{t("footer.tagline")}</p>
             <Button asChild>

@@ -16,12 +16,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@submitin/ui/components/card";
-import { FileText, Loader2, CheckCircle, ArrowRight, ArrowLeft, Star, Clock, Lock, Check } from "lucide-react";
+import { Loader2, CheckCircle, ArrowRight, ArrowLeft, Star, Clock, Lock, Check } from "lucide-react";
 import { cn } from "@submitin/ui/lib/utils";
 import { LanguageSwitcher } from "./language-switcher";
 import { Captcha, type CaptchaProvider } from "./captcha";
 import { generateThemeStyles, type CustomTheme } from "@/lib/theme-utils";
 import { computeVisibleFieldIds, type VisibilityRule } from "@/lib/field-visibility";
+import { Logo } from "@/components/logo";
 import { maskInput, validateMaskedField } from "@submitin/documents/input";
 
 // Tipos brasileiros com máscara (módulo Documentos).
@@ -737,10 +738,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
           <form onSubmit={handleSubmit} onBlur={() => void savePartial()} className="w-full max-w-xl">
             {!hideBranding && (
               <Link href="/" className="inline-flex items-center gap-2 mb-8 animate-fade-in-up">
-                <div className="w-8 h-8 rounded-md bg-brand flex items-center justify-center">
-                <FileText className="w-4 h-4 text-background" />
-                </div>
-                <span className="font-semibold">{tCommon("appName")}</span>
+                <Logo />
               </Link>
             )}
 
@@ -859,10 +857,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
         {!hideBranding && (
           <div className="text-center animate-fade-in-up">
             <Link href="/" className="inline-flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 rounded-md bg-brand flex items-center justify-center">
-                <FileText className="w-4 h-4 text-background" />
-              </div>
-              <span className="font-semibold">{tCommon("appName")}</span>
+              <Logo />
             </Link>
           </div>
         )}

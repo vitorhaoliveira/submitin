@@ -21,6 +21,7 @@ import {
   PanelLeft,
   Globe,
 } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 type NavUser = { name?: string | null; email?: string | null } | null;
 
@@ -84,14 +85,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         className="flex items-center gap-2 min-w-0"
         aria-label={tCommon("appName")}
       >
-        <div className="w-7 h-7 shrink-0 rounded-md bg-brand flex items-center justify-center">
-          <FileText className="w-4 h-4 text-background" />
-        </div>
-        {!compact && (
-          <span className="font-display text-lg font-bold tracking-tight truncate">
-            submitin<span className="text-pop">*</span>
-          </span>
-        )}
+        <Logo markClassName="w-7 h-7" textClassName="text-lg" showText={!compact} />
       </Link>
     );
   }

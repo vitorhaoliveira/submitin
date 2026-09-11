@@ -15,8 +15,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@submitin/ui/components/card";
-import { FileText, Mail, Lock, Loader2, ArrowLeft, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Loader2, ArrowLeft, AlertCircle, Eye, EyeOff } from "lucide-react";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { Logo } from "@/components/logo";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -75,10 +76,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center animate-fade-in-up">
           <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-8 h-8 rounded-md bg-brand flex items-center justify-center">
-                <FileText className="w-4 h-4 text-background" />
-            </div>
-            <span className="font-semibold text-xl">{tCommon("appName")}</span>
+            <Logo />
           </Link>
         </div>
 

@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { cn } from "@submitin/ui/lib/utils";
-import { ArrowRight, Check, FileText, Inbox, Paperclip } from "lucide-react";
+import { ArrowRight, Check, Inbox, Paperclip } from "lucide-react";
+import { LogoMark } from "@/components/logo";
 import { Sparkle } from "./doodles";
 
 const STEPS = 4;
@@ -221,9 +222,7 @@ function InboxStep({ t }: { t: T }) {
       </div>
       <div className="mt-4 rounded-xl border bg-brand-soft/60 p-4">
         <div className="flex items-start gap-3">
-          <div className="w-9 h-9 shrink-0 rounded-md bg-brand flex items-center justify-center">
-            <FileText className="w-4 h-4 text-brand-foreground" />
-          </div>
+          <LogoMark className="w-9 h-9" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
               <p className="text-sm font-semibold">{t("mock.emailFrom")}</p>

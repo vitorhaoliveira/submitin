@@ -1,9 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" fill="none">
-  <rect width="180" height="180" rx="40" fill="#0B0E1A"/>
-  <rect x="22" y="22" width="136" height="136" rx="24" fill="#151A2C" stroke="#6366F1" stroke-width="4"/>
-  <rect x="44" y="50" width="56" height="12" rx="6" fill="#6366F1"/>
-  <rect x="44" y="78" width="92" height="12" rx="6" fill="#475569"/>
-  <rect x="44" y="106" width="68" height="12" rx="6" fill="#475569"/>
-  <circle cx="124" cy="124" r="22" fill="#6366F1"/>
-  <path d="M115 124L121 130L133 118" stroke="#0B0E1A" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Marca Submitin em fundo índigo (ícone de tela inicial) -->
+  <rect width="180" height="180" rx="40" fill="#4F46E5"/>
+  <g transform="translate(36 34) scale(2.25)">
+    <path fill="#FFFFFF" d="M11 5h20.5L43 16.5V33a7 7 0 0 1-7 7H21.5l-8.6 6.3c-.9.6-2.1-.1-1.9-1.2l.9-5.1H11a7 7 0 0 1-7-7V12a7 7 0 0 1 7-7Z"/>
+    <path fill="#F127BB" d="M31.5 5v8.5a3 3 0 0 0 3 3H43Z"/>
+    <rect x="11" y="19" width="17" height="4" rx="2" fill="#4F46E5"/>
+    <rect x="11" y="27" width="24" height="4" rx="2" fill="#4F46E5"/>
+  </g>
 </svg>

@@ -1,5 +1,6 @@
 import { getTranslations } from "@/lib/i18n";
-import { ArrowRight, Check, FileText, Paperclip } from "lucide-react";
+import { ArrowRight, Check, Paperclip } from "lucide-react";
+import { LogoMark } from "@/components/logo";
 import { CurlyArrow } from "./doodles";
 
 /**
@@ -86,9 +87,7 @@ export async function FormToPdf() {
         {/* Notificação de e-mail */}
         <div className="absolute right-10 bottom-2 w-[260px] rounded-xl border bg-background p-3 shadow-lg">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 shrink-0 rounded-md bg-brand flex items-center justify-center">
-              <FileText className="w-4 h-4 text-brand-foreground" />
-            </div>
+            <LogoMark className="w-8 h-8" />
             <div className="min-w-0">
               <p className="text-[11px] font-semibold">{t("mock.emailFrom")}</p>
               <p className="text-[11px] text-muted-foreground truncate">{t("mock.emailSubject")}</p>
