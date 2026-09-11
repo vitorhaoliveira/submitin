@@ -11,15 +11,7 @@ import {
 } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
 import { ArrowRight, Check, Crown, Sparkles } from "lucide-react";
-import { PLANS, type PlanType } from "@/lib/stripe";
-
-const PLAN_ORDER: PlanType[] = ["free", "plus", "premium"];
-
-const PLAN_DESC: Record<PlanType, string> = {
-  free: "Perfeito para começar",
-  plus: "Para quem está crescendo",
-  premium: "Tudo ilimitado, sem limites",
-};
+import { PLANS, SOLD_PLANS } from "@/lib/stripe";
 
 function formatBRL(value: number): string {
   return value === 0 ? "Grátis" : `R$ ${value}`;
@@ -37,10 +29,10 @@ export async function PricingSection() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto items-start">
-          {PLAN_ORDER.map((planKey) => {
+          {SOLD_PLANS.map((planKey) => {
             const plan = PLANS[planKey];
-            const isPlus = planKey === "plus";
-            const isPremium = planKey === "premium";
+            const isPlus = planKey === "pro";
+            const isPremium = planKey === "unlimited";
             return (
               <Card
                 key={planKey}
@@ -60,7 +52,7 @@ export async function PricingSection() {
                     {plan.name}
                     {isPremium && <Crown className="h-5 w-5 text-yellow-500" />}
                   </CardTitle>
-                  <CardDescription>{PLAN_DESC[planKey]}</CardDescription>
+                  <CardDescription>{plan.tagline}</CardDescription>
                   <div className="mt-4">
                     <span className="text-4xl font-bold">{formatBRL(plan.price)}</span>
                     {plan.price > 0 && (

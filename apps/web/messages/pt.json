@@ -726,7 +726,9 @@
       "tooLarge": "Logo muito grande (máximo 1 MB).",
       "previewLabel": "Como o cliente vê",
       "previewEmpty": "Sem marca definida: o formulário mostra o Submitin."
-    }
+    },
+    "documentsMonthUsage": "PDFs gerados no mês",
+    "documentsUsage": "Documentos"
   },
   "formsGrid": {
     "title": "Formulários",

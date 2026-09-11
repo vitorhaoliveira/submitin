@@ -4,12 +4,11 @@ import { Crown } from "lucide-react";
 import { Badge } from "@submitin/ui/components/badge";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { PLANS, isPaid as isPaidPlan } from "@/lib/stripe";
 
-const PLAN_LABEL: Record<string, string> = {
-  free: "Grátis",
-  plus: "Plus",
-  premium: "Premium",
-};
+const PLAN_LABEL = Object.fromEntries(
+  Object.entries(PLANS).map(([key, plan]) => [key, plan.name])
+) as Record<string, string>;
 
 export function ProBadge() {
   const { data: session } = useSession();
@@ -43,7 +42,7 @@ export function ProBadge() {
     return null;
   }
 
-  const isPaid = plan === "plus" || plan === "premium";
+  const isPaid = isPaidPlan(plan);
 
   if (!isPaid) {
     return (

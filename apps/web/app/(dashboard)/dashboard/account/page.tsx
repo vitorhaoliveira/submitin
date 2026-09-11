@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@submitin/database";
 import { AccountClient } from "./account-client";
 import { brandLogoUrl } from "@/lib/branding";
+import { monthlyDocumentUsage } from "@/lib/documents/service";
 
 export default async function AccountPage() {
   const session = await auth();
@@ -10,7 +11,7 @@ export default async function AccountPage() {
     redirect("/login");
   }
 
-  const [user, formCount, publishedCount, responseCount] = await Promise.all([
+  const [user, formCount, documentCount, documentsThisMonth] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: {
@@ -24,8 +25,8 @@ export default async function AccountPage() {
       },
     }),
     prisma.form.count({ where: { userId: session.user.id, document: { is: null } } }),
-    prisma.form.count({ where: { userId: session.user.id, published: true, document: { is: null } } }),
-    prisma.response.count({ where: { form: { userId: session.user.id } } }),
+    prisma.document.count({ where: { userId: session.user.id } }),
+    monthlyDocumentUsage(session.user.id),
   ]);
 
   if (!user) {
@@ -41,7 +42,7 @@ export default async function AccountPage() {
         plan: user.plan,
         createdAt: user.createdAt.toISOString(),
       }}
-      usage={{ forms: formCount, published: publishedCount, responses: responseCount }}
+      usage={{ forms: formCount, documents: documentCount, documentsThisMonth }}
       brand={{ name: user.brandName, logoUrl: brandLogoUrl(user.id, user.brandLogoKey) }}
     />
   );

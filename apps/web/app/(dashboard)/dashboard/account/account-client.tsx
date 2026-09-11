@@ -32,7 +32,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { PLANS, isPaid, maxFormsFor, maxResponsesPerMonthFor } from "@/lib/stripe";
+import { PLANS, isPaid, maxDocumentsPerMonthFor, maxFormsFor, normalizePlan } from "@/lib/stripe";
 import { formatDate } from "@/lib/utils";
 import { BrandCard } from "@/components/brand-card";
 
@@ -44,7 +44,7 @@ interface AccountClientProps {
     plan: string;
     createdAt: string;
   };
-  usage: { forms: number; published: number; responses: number };
+  usage: { forms: number; documents: number; documentsThisMonth: number };
   brand: { name: string | null; logoUrl: string | null };
 }
 
@@ -61,7 +61,7 @@ export function AccountClient({ profile, usage, brand }: AccountClientProps) {
 
   const isPro = isPaid(profile.plan);
   const maxForms = maxFormsFor(profile.plan);
-  const maxResponses = maxResponsesPerMonthFor(profile.plan);
+  const maxDocuments = maxDocumentsPerMonthFor(profile.plan);
 
   // ---- Perfil (editar nome) ----
   const [name, setName] = useState(profile.name ?? "");
@@ -163,27 +163,27 @@ export function AccountClient({ profile, usage, brand }: AccountClientProps) {
 
   const usageStats = [
     {
-      key: "forms",
-      label: t("formsUsage"),
-      value: usage.forms,
-      limit: maxForms === -1 ? null : maxForms,
+      key: "documentsMonth",
+      label: t("documentsMonthUsage"),
+      value: usage.documentsThisMonth,
+      limit: maxDocuments === -1 ? null : maxDocuments,
       icon: FileText,
       tint: "bg-brand-soft text-brand",
     },
     {
-      key: "responses",
-      label: t("responsesUsage"),
-      value: usage.responses,
-      limit: maxResponses === -1 ? null : maxResponses,
-      icon: MessageSquare,
+      key: "documents",
+      label: t("documentsUsage"),
+      value: usage.documents,
+      limit: null,
+      icon: TrendingUp,
       tint: "bg-brand-soft text-brand",
     },
     {
-      key: "published",
-      label: t("publishedUsage"),
-      value: usage.published,
-      limit: null,
-      icon: TrendingUp,
+      key: "forms",
+      label: t("formsUsage"),
+      value: usage.forms,
+      limit: maxForms === -1 ? null : maxForms,
+      icon: MessageSquare,
       tint: "bg-brand-soft text-brand",
     },
   ];
@@ -213,7 +213,7 @@ export function AccountClient({ profile, usage, brand }: AccountClientProps) {
             }`}
           >
             {isPro ? <Crown className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-            {isPro ? t("planPro") : t("planFree")}
+            {PLANS[normalizePlan(profile.plan)].name}
           </div>
         </div>
       </Card>
@@ -229,7 +229,7 @@ export function AccountClient({ profile, usage, brand }: AccountClientProps) {
             const Icon = s.icon;
             const pct =
               s.limit && s.limit > 0 ? Math.min(100, Math.round((s.value / s.limit) * 100)) : null;
-            const showUnlimited = s.limit === null && (s.key === "forms" || s.key === "responses");
+            const showUnlimited = s.limit === null && (s.key === "forms" || s.key === "documentsMonth");
             return (
               <Card key={s.key}>
                 <CardContent className="p-5">
@@ -272,7 +272,7 @@ export function AccountClient({ profile, usage, brand }: AccountClientProps) {
                 </div>
                 <div>
                   <p className="font-semibold">{t("upgradeCta")}</p>
-                  <p className="text-sm text-muted-foreground">{PLANS.premium.features[1]}</p>
+                  <p className="text-sm text-muted-foreground">{PLANS.pro.features[1]}</p>
                 </div>
               </div>
               <Link href="/dashboard/billing" className="shrink-0">
@@ -372,7 +372,7 @@ export function AccountClient({ profile, usage, brand }: AccountClientProps) {
               {t("planLabel")}
             </span>
             <Link href="/dashboard/billing" className="text-sm font-medium text-primary hover:underline">
-              {isPro ? t("planPro") : t("planFree")} · {t("managePlan")}
+              {PLANS[normalizePlan(profile.plan)].name} · {t("managePlan")}
             </Link>
           </div>
           <div className="flex items-center justify-between py-3 last:pb-0">

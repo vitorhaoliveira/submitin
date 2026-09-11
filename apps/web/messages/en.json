@@ -726,7 +726,9 @@
       "tooLarge": "Logo too large (max 1 MB).",
       "previewLabel": "What your customer sees",
       "previewEmpty": "No brand set: the form shows Submitin."
-    }
+    },
+    "documentsMonthUsage": "PDFs generated this month",
+    "documentsUsage": "Documents"
   },
   "formsGrid": {
     "title": "Forms",
