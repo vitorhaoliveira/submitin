@@ -45,3 +45,18 @@ export function formatRelativeDate(date: Date | string, locale = "pt"): string {
   return formatDate(date, locale === "pt" ? "pt-BR" : "en-US");
 }
 
+/** Como formatRelativeDate, mas datas antigas saem curtas ("2 jun." / "2 jun. 2025"), sem hora — para listas. */
+export function formatRelativeShort(date: Date | string, locale = "pt"): string {
+  const target = new Date(date);
+  if (Date.now() - target.getTime() < 604800_000) return formatRelativeDate(target, locale);
+  const sameYear = target.getFullYear() === new Date().getFullYear();
+  return new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : "en-US", {
+    day: "numeric",
+    month: "short",
+    ...(sameYear ? {} : { year: "numeric" }),
+    timeZone: "America/Sao_Paulo",
+  })
+    .format(target)
+    .replace(/ de /g, " ");
+}
+

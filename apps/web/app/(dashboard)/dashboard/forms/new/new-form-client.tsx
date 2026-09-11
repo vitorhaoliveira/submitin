@@ -68,6 +68,7 @@ export function NewFormClient() {
     try {
       const form = await createForm(data);
       toast({ title: tCommon("success") });
+      router.refresh();
       router.push(`/dashboard/forms/${form.id}`);
     } catch {
       toast({
@@ -99,6 +100,7 @@ export function NewFormClient() {
         });
       }
       toast({ title: tCommon("success") });
+      router.refresh();
       router.push(`/dashboard/forms/${form.id}`);
     } catch {
       toast({

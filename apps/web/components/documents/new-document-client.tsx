@@ -70,6 +70,8 @@ export function NewDocumentClient() {
       const res = await fetch("/api/documents", { method: "POST", body });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
+      // Limpa o cache do router: painel e lista mostram o documento novo na hora.
+      router.refresh();
       router.push(`/dashboard/documents/${data.id}`);
     } catch (err) {
       toast({

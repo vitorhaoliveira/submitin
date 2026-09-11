@@ -5,7 +5,7 @@ import Link from "next/link";
 import { getLocaleFromCookie, getTranslations } from "@/lib/i18n";
 import { Button } from "@submitin/ui/components/button";
 import { ArrowRight, ChevronRight, FileCheck2, FileText, Plus } from "lucide-react";
-import { formatRelativeDate } from "@/lib/utils";
+import { formatRelativeShort } from "@/lib/utils";
 import { monthlyDocumentUsage } from "@/lib/documents/service";
 
 export const metadata = {
@@ -132,8 +132,8 @@ export default async function DashboardPage() {
             href: `/dashboard/documents/${doc.id}`,
             name: doc.name,
             published: doc.form.published,
-            meta: `${doc._count.generations} ${tDocs("card.submissions")}`,
-            date: formatRelativeDate(doc.generations[0]?.createdAt ?? doc.updatedAt, locale),
+            meta: `${doc._count.generations} ${doc._count.generations === 1 ? tDocs("card.submission") : tDocs("card.submissions")}`,
+            date: formatRelativeShort(doc.generations[0]?.createdAt ?? doc.updatedAt, locale),
           }))}
           publishedLabel={t("formCard.published")}
           draftLabel={t("formCard.draft")}
@@ -161,8 +161,8 @@ export default async function DashboardPage() {
             href: `/dashboard/forms/${form.id}`,
             name: form.name,
             published: form.published,
-            meta: `${form._count.responses} ${t("formCard.responses")}`,
-            date: formatRelativeDate(form.updatedAt, locale),
+            meta: `${form._count.responses} ${form._count.responses === 1 ? t("formCard.response") : t("formCard.responses")}`,
+            date: formatRelativeShort(form.updatedAt, locale),
           }))}
           publishedLabel={t("formCard.published")}
           draftLabel={t("formCard.draft")}
@@ -221,7 +221,7 @@ function RecentList({
               <span className="hidden sm:inline text-sm text-muted-foreground tabular-nums whitespace-nowrap">
                 {item.meta}
               </span>
-              <span className="hidden md:inline w-24 text-right text-sm text-muted-foreground whitespace-nowrap">
+              <span className="hidden md:inline shrink-0 min-w-[5.5rem] text-right text-sm text-muted-foreground whitespace-nowrap">
                 {item.date}
               </span>
               <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
