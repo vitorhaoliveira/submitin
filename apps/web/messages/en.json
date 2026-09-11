@@ -709,7 +709,24 @@
     "upgradeCta": "Upgrade to Pro",
     "managePlan": "Manage plan",
     "detailsTitle": "Account details",
-    "securityTitle": "Security"
+    "securityTitle": "Security",
+    "brand": {
+      "title": "Your brand",
+      "description": "Your company logo and name at the top of your forms and in the email your customer receives with the document.",
+      "logo": "Logo",
+      "upload": "Upload logo",
+      "replace": "Replace",
+      "remove": "Remove",
+      "logoHint": "PNG, JPG or WebP up to 1 MB. Transparent backgrounds look best.",
+      "name": "Company name",
+      "namePlaceholder": "e.g. Horizonte Language School",
+      "save": "Save brand",
+      "saved": "Brand saved",
+      "error": "Couldn't save your brand.",
+      "tooLarge": "Logo too large (max 1 MB).",
+      "previewLabel": "What your customer sees",
+      "previewEmpty": "No brand set: the form shows Submitin."
+    }
   },
   "formsGrid": {
     "title": "Forms",

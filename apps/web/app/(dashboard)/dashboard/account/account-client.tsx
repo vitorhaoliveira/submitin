@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { PLANS, isPaid, maxFormsFor, maxResponsesPerMonthFor } from "@/lib/stripe";
 import { formatDate } from "@/lib/utils";
+import { BrandCard } from "@/components/brand-card";
 
 interface AccountClientProps {
   profile: {
@@ -44,6 +45,7 @@ interface AccountClientProps {
     createdAt: string;
   };
   usage: { forms: number; published: number; responses: number };
+  brand: { name: string | null; logoUrl: string | null };
 }
 
 interface PasswordRequirement {
@@ -51,7 +53,7 @@ interface PasswordRequirement {
   test: (password: string) => boolean;
 }
 
-export function AccountClient({ profile, usage }: AccountClientProps) {
+export function AccountClient({ profile, usage, brand }: AccountClientProps) {
   const t = useTranslations("account");
   const tAuth = useTranslations("auth");
   const locale = useLocale();
@@ -283,6 +285,8 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
           </Card>
         )}
       </div>
+
+      <BrandCard brand={brand} />
 
       {/* Perfil (editar nome) */}
       <Card>

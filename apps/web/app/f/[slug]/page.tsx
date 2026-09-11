@@ -9,6 +9,7 @@ import type { CustomTheme } from "@/lib/theme-utils";
 import { resolveNatures } from "@/lib/documents/natures";
 import { toDocumentFieldType } from "@/lib/documents/service";
 import { formatValue } from "@submitin/documents/format";
+import { brandLogoUrl } from "@/lib/branding";
 
 // Conteúdo dinâmico: conta views e depende de estado mutável (agendamento,
 // limite de respostas). Sem isto, o Next cacheia a rota e o form mostra estado
@@ -62,6 +63,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       },
       settings: true,
       document: { select: { id: true } },
+      user: { select: { id: true, brandName: true, brandLogoKey: true } },
     },
   });
 
@@ -158,11 +160,17 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
     responseCount
   );
 
+  const brand =
+    form.user.brandName || form.user.brandLogoKey
+      ? { name: form.user.brandName, logoUrl: brandLogoUrl(form.user.id, form.user.brandLogoKey) }
+      : undefined;
+
   if (inviteProblem) {
     return (
       <PublicForm
         form={transformedForm}
         availability={{ isOpen: false, reason: inviteProblem === "used" ? "inviteUsed" : "inviteInvalid" }}
+        brand={brand}
       />
     );
   }
@@ -173,6 +181,7 @@ export default async function PublicFormPage({ params, searchParams }: PublicFor
       availability={availability}
       invite={invite ? { token: invite.token, prefilled } : undefined}
       isDocument={Boolean(form.document)}
+      brand={brand}
     />
   );
 }

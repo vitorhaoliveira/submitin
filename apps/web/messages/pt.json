@@ -709,7 +709,24 @@
     "upgradeCta": "Assinar o Pro",
     "managePlan": "Gerenciar plano",
     "detailsTitle": "Detalhes da conta",
-    "securityTitle": "Segurança"
+    "securityTitle": "Segurança",
+    "brand": {
+      "title": "Sua marca",
+      "description": "Logo e nome da empresa no topo dos seus formulários e no e-mail que o cliente recebe com o documento.",
+      "logo": "Logo",
+      "upload": "Enviar logo",
+      "replace": "Trocar",
+      "remove": "Remover",
+      "logoHint": "PNG, JPG ou WebP até 1 MB. Fundo transparente fica melhor.",
+      "name": "Nome da empresa",
+      "namePlaceholder": "Ex.: Escola de Idiomas Horizonte",
+      "save": "Salvar marca",
+      "saved": "Marca salva",
+      "error": "Não foi possível salvar a marca.",
+      "tooLarge": "Logo muito grande (máximo 1 MB).",
+      "previewLabel": "Como o cliente vê",
+      "previewEmpty": "Sem marca definida: o formulário mostra o Submitin."
+    }
   },
   "formsGrid": {
     "title": "Formulários",

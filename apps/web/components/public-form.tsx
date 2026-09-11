@@ -34,6 +34,7 @@ import { Captcha, type CaptchaProvider } from "./captcha";
 import { generateThemeStyles, type CustomTheme } from "@/lib/theme-utils";
 import { computeVisibleFieldIds, type VisibilityRule } from "@/lib/field-visibility";
 import { Logo } from "@/components/logo";
+import { BrandHeader } from "@/components/brand-header";
 import { maskInput, validateMaskedField } from "@submitin/documents/input";
 
 // pdf.js só entra no bundle quando o respondente pede para revisar o documento.
@@ -89,6 +90,8 @@ interface PublicFormProps {
   invite?: { token: string; prefilled: { label: string; value: string }[] };
   /** Formulário de documento: o respondente revisa o PDF antes de enviar. */
   isDocument?: boolean;
+  /** Marca da conta (logo + nome); substitui o logo do Submitin no topo. */
+  brand?: { name: string | null; logoUrl: string | null };
 }
 
 type Preview = { previewId: string; pdfUrl: string };
@@ -201,7 +204,7 @@ function PreviewUnavailable({
   );
 }
 
-export function PublicForm({ form, availability, invite, isDocument = false }: PublicFormProps) {
+export function PublicForm({ form, availability, invite, isDocument = false, brand }: PublicFormProps) {
   const t = useTranslations("publicForm");
   const tCommon = useTranslations("common");
   const [values, setValues] = useState<Record<string, string>>({});
@@ -881,6 +884,7 @@ export function PublicForm({ form, availability, invite, isDocument = false }: P
     return (
       <div className="min-h-screen bg-muted/40 px-4 py-8 sm:py-12" style={themeStyles}>
         <div className="mx-auto max-w-2xl space-y-5 animate-fade-in-up">
+          {brand && <BrandHeader name={brand.name} logoUrl={brand.logoUrl} />}
           <div className="space-y-1.5">
             <p className="text-sm font-medium text-muted-foreground">{form.name}</p>
             <h1 className="text-2xl font-semibold tracking-tight">{t("previewTitle")}</h1>
@@ -983,10 +987,16 @@ export function PublicForm({ form, availability, invite, isDocument = false }: P
 
         <div className="flex-1 flex items-center justify-center px-4 py-16">
           <form onSubmit={handleSubmit} onBlur={() => void savePartial()} className="w-full max-w-xl">
-            {!hideBranding && (
-              <Link href="/" className="inline-flex items-center gap-2 mb-8 animate-fade-in-up">
-                <Logo />
-              </Link>
+            {brand ? (
+              <div className="mb-8 animate-fade-in-up">
+                <BrandHeader name={brand.name} logoUrl={brand.logoUrl} />
+              </div>
+            ) : (
+              !hideBranding && (
+                <Link href="/" className="inline-flex items-center gap-2 mb-8 animate-fade-in-up">
+                  <Logo />
+                </Link>
+              )
             )}
 
             <div className="flex items-center gap-2 mb-4 text-sm text-muted-foreground">
@@ -1121,12 +1131,18 @@ export function PublicForm({ form, availability, invite, isDocument = false }: P
       </div>
       <div className="max-w-2xl mx-auto space-y-8">
         {/* Header - só mostra se branding não estiver escondido */}
-        {!hideBranding && (
-          <div className="text-center animate-fade-in-up">
-            <Link href="/" className="inline-flex items-center gap-2 mb-8">
-              <Logo />
-            </Link>
+        {brand ? (
+          <div className="flex justify-center animate-fade-in-up">
+            <BrandHeader name={brand.name} logoUrl={brand.logoUrl} />
           </div>
+        ) : (
+          !hideBranding && (
+            <div className="text-center animate-fade-in-up">
+              <Link href="/" className="inline-flex items-center gap-2 mb-8">
+                <Logo />
+              </Link>
+            </div>
+          )
         )}
 
         {/* Form */}

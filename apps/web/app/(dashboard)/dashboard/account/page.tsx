@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@submitin/database";
 import { AccountClient } from "./account-client";
+import { brandLogoUrl } from "@/lib/branding";
 
 export default async function AccountPage() {
   const session = await auth();
@@ -12,7 +13,15 @@ export default async function AccountPage() {
   const [user, formCount, publishedCount, responseCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { id: true, name: true, email: true, plan: true, createdAt: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        plan: true,
+        createdAt: true,
+        brandName: true,
+        brandLogoKey: true,
+      },
     }),
     prisma.form.count({ where: { userId: session.user.id, document: { is: null } } }),
     prisma.form.count({ where: { userId: session.user.id, published: true, document: { is: null } } }),
@@ -33,6 +42,7 @@ export default async function AccountPage() {
         createdAt: user.createdAt.toISOString(),
       }}
       usage={{ forms: formCount, published: publishedCount, responses: responseCount }}
+      brand={{ name: user.brandName, logoUrl: brandLogoUrl(user.id, user.brandLogoKey) }}
     />
   );
 }
