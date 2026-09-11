@@ -52,3 +52,25 @@ export async function convertDocxToPdf(
   }
   return Buffer.from(await res.arrayBuffer());
 }
+
+/**
+ * Acorda o conversor (Cloud Run escala a zero): um GET em /health sobe o
+ * contêiner e o LibreOffice enquanto o usuário ainda está preenchendo.
+ */
+export async function warmUpConverter(options: { gotenbergUrl?: string; timeoutMs?: number } = {}): Promise<boolean> {
+  const baseUrl = options.gotenbergUrl ?? process.env.GOTENBERG_URL;
+  if (!baseUrl) return false;
+  const headers: Record<string, string> = {};
+  if (process.env.GOTENBERG_BASIC_AUTH) {
+    headers.Authorization = `Basic ${Buffer.from(process.env.GOTENBERG_BASIC_AUTH).toString("base64")}`;
+  }
+  try {
+    const res = await fetch(`${baseUrl.replace(/\/$/, "")}/health`, {
+      headers,
+      signal: AbortSignal.timeout(options.timeoutMs ?? 20_000),
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}

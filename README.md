@@ -149,11 +149,11 @@ O formulário vira o meio; o entregável é um `.docx`/PDF preenchido com as res
 cd infra/gotenberg
 gcloud run deploy gotenberg --source . --region us-east1 --allow-unauthenticated \
   --memory 2Gi --cpu 1 --concurrency 4 --timeout 120 --min-instances 0 --max-instances 2 \
-  --args="gotenberg,--api-port-from-env=PORT,--api-enable-basic-auth,--api-timeout=90s" \
+  --args="gotenberg,--api-port-from-env=PORT,--api-enable-basic-auth,--api-timeout=90s,--libreoffice-auto-start=true" \
   --set-env-vars="GOTENBERG_API_BASIC_AUTH_USERNAME=...,GOTENBERG_API_BASIC_AUTH_PASSWORD=..."
 ```
 
-Escala a zero quando parado: a primeira conversão depois disso leva ~10 s (as seguintes, ~1 s). Há alerta de orçamento de R$ 5 no projeto.
+Escala a zero quando parado; o LibreOffice sobe junto com o contêiner e o app chama `/api/warmup` ao abrir formulários de documento e páginas de modelo, então a primeira conversão fica em ~3 s (as seguintes, ~1 s). Há alerta de orçamento de R$ 5 no projeto.
 
 > Fontes: a imagem do Gotenberg inclui MS core fonts, Carlito/Caladea (métricas de Calibri/Cambria), Open Sans, Roboto, Lato e Montserrat. Fontes fora de `SUPPORTED_FONTS` (`packages/documents/src/fonts.ts`) geram aviso no upload.
 

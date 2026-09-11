@@ -44,6 +44,11 @@ export function ModelDemo({
 
   useEffect(() => () => void (pdfUrl && URL.revokeObjectURL(pdfUrl)), [pdfUrl]);
 
+  // Acorda o conversor de PDF enquanto a pessoa lê/preenche o modelo.
+  useEffect(() => {
+    void fetch("/api/warmup", { method: "POST", keepalive: true }).catch(() => {});
+  }, []);
+
   const company = fields.filter((f) => f.company);
   const asked = fields.filter((f) => !f.company && f.nature !== "automatica");
 
