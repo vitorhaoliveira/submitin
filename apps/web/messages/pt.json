@@ -1313,6 +1313,11 @@
         },
         "copy": "Copiar código",
         "copied": "Copiado"
+      },
+      "unsaved": {
+        "message": "Você tem alterações não salvas",
+        "discard": "Descartar",
+        "allSaved": "Tudo salvo"
       }
     },
     "submissions": {
