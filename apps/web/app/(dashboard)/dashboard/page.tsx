@@ -6,6 +6,7 @@ import { getLocaleFromCookie, getTranslations } from "@/lib/i18n";
 import { Button } from "@submitin/ui/components/button";
 import { ArrowRight, ChevronRight, FileCheck2, FileText, Plus } from "lucide-react";
 import { formatRelativeShort } from "@/lib/utils";
+import { OnboardingChecklist, type OnboardingStep } from "@/components/onboarding-checklist";
 import { monthlyDocumentUsage } from "@/lib/documents/service";
 
 export const metadata = {
@@ -35,7 +36,7 @@ export default async function DashboardPage() {
     prisma.document.findMany({
       where: { userId },
       include: {
-        form: { select: { published: true } },
+        form: { select: { published: true, slug: true } },
         _count: { select: { generations: true } },
         generations: { orderBy: { createdAt: "desc" }, take: 1, select: { createdAt: true } },
       },
@@ -43,6 +44,53 @@ export default async function DashboardPage() {
     }),
     monthlyDocumentUsage(userId),
   ]);
+
+  // Primeiros passos: da conta nova até o primeiro PDF.
+  const [owner, firstPdfCount] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: userId },
+      select: { brandName: true, brandLogoKey: true, onboardingDismissedAt: true },
+    }),
+    prisma.documentGeneration.count({ where: { status: "concluida", document: { userId } } }),
+  ]);
+  const firstDoc = documents[documents.length - 1] ?? null; // o mais antigo
+  const publishedDoc = documents.find((d) => d.form.published) ?? null;
+  const onboardingSteps: OnboardingStep[] = [
+    {
+      key: "document",
+      title: "Crie seu primeiro documento",
+      description: "Suba o Word que você já usa ou comece por um modelo pronto.",
+      done: documents.length > 0,
+      cta: "Criar documento",
+      href: "/dashboard/documents/new",
+    },
+    {
+      key: "brand",
+      title: "Coloque sua marca",
+      description: "Logo e nome da empresa no topo do formulário e no e-mail do cliente.",
+      done: Boolean(owner?.brandName || owner?.brandLogoKey),
+      cta: "Adicionar marca",
+      href: "/dashboard/account#marca",
+    },
+    {
+      key: "publish",
+      title: "Publique o link",
+      description: "Deixe o formulário no ar e copie o link para mandar pelo WhatsApp ou pôr no site.",
+      done: Boolean(publishedDoc),
+      cta: "Abrir documento",
+      href: firstDoc ? `/dashboard/documents/${firstDoc.id}` : null,
+    },
+    {
+      key: "pdf",
+      title: "Receba o primeiro PDF",
+      description: "Preencha o link você mesmo, como teste: o PDF chega no seu e-mail em segundos.",
+      done: firstPdfCount > 0,
+      cta: "Testar o link",
+      href: publishedDoc ? `/f/${publishedDoc.form.slug}` : null,
+      external: true,
+    },
+  ];
+  const showOnboarding = !owner?.onboardingDismissedAt;
 
   const firstName = (session.user.name || session.user.email?.split("@")[0] || "").split(" ")[0];
   const recentForms = forms.slice(0, 5);
@@ -78,6 +126,8 @@ export default async function DashboardPage() {
           </Button>
         </Link>
       </div>
+
+      {showOnboarding && <OnboardingChecklist steps={onboardingSteps} />}
 
       {/* Números */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden rounded-xl border bg-border">

@@ -77,7 +77,7 @@ export function BrandCard({ brand }: { brand: { name: string | null; logoUrl: st
   }
 
   return (
-    <Card>
+    <Card id="marca" className="scroll-mt-6">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <Palette className="w-5 h-5" />

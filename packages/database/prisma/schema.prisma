@@ -35,6 +35,8 @@ model User {
   documentLimitNotifiedAt DateTime?
   // Aviso mensal de 80% dos documentos do plano já enviado
   documentUsageWarnedAt   DateTime?
+  // Checklist de primeiros passos ocultado no painel
+  onboardingDismissedAt   DateTime?
   // Aviso mensal de limite de respostas (formulários avulsos) já enviado
   responseLimitNotifiedAt DateTime?
 
