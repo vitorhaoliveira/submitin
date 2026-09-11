@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { parseTemplate, type DocumentFieldType } from "@submitin/documents";
 import type { DocumentModel } from "./catalog";
+import { appBaseUrl } from "@/lib/documents/service";
 
 /** Campo do modelo já com os ajustes do catálogo (usado na página e na criação). */
 export type ModelField = {
@@ -14,9 +15,18 @@ export type ModelField = {
   company: boolean;
 };
 
-/** Lê o .docx do modelo (public/modelos, incluído nas funções via outputFileTracingIncludes). */
+/**
+ * Lê o .docx do modelo: do disco (public/modelos, incluído nas funções via
+ * outputFileTracingIncludes) ou, se não estiver lá, pela URL pública do site.
+ */
 export async function readModelDocx(slug: string): Promise<Buffer> {
-  return readFile(join(process.cwd(), "public", "modelos", `${slug}.docx`));
+  try {
+    return await readFile(join(process.cwd(), "public", "modelos", `${slug}.docx`));
+  } catch {
+    const res = await fetch(`${appBaseUrl()}/modelos/${slug}.docx`, { cache: "force-cache" });
+    if (!res.ok) throw new Error(`Modelo ${slug} indisponível (${res.status}).`);
+    return Buffer.from(await res.arrayBuffer());
+  }
 }
 
 export function applyModelOverrides(
