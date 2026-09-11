@@ -4,7 +4,7 @@ import { LandingHeader } from "@/components/landing/landing-header";
 import { HeroSection } from "@/components/landing/hero-section";
 import { AudienceStrip } from "@/components/landing/audience-strip";
 import { DocumentStory } from "@/components/landing/document-story";
-import { DocumentTypes } from "@/components/landing/document-types";
+import { SegmentDocuments } from "@/components/landing/segment-documents";
 import { FeaturesSection } from "@/components/landing/features-section";
 import { FaqSection } from "@/components/landing/faq-section";
 import { CtaSection } from "@/components/landing/cta-section";
@@ -70,7 +70,7 @@ export default async function HomePage() {
         <HeroSection />
         <AudienceStrip />
         <DocumentStory />
-        <DocumentTypes />
+        <SegmentDocuments />
         <FeaturesSection />
         <FaqSection />
         <CtaSection />

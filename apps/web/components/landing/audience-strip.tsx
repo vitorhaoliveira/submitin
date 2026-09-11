@@ -2,7 +2,7 @@ import { getTranslations } from "@/lib/i18n";
 
 export async function AudienceStrip() {
   const t = await getTranslations("landing");
-  const items = [0, 1, 2, 3, 4, 5].map((i) => t(`audience.items.${i}`));
+  const items = [0, 1, 2, 3, 4].map((i) => t(`audience.items.${i}`));
 
   return (
     <section className="border-y bg-muted/30">

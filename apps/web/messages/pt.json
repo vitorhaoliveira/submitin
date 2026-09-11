@@ -28,7 +28,7 @@
   "landing": {
     "seo": {
       "title": "Submitin – Seu Word vira formulário, o PDF chega pronto",
-      "keywords": "formulários online, criar formulário, pesquisa, survey, form builder, coleta de respostas, Submitin"
+      "keywords": "gerar documento a partir de formulário, contrato automático, preencher Word online, formulário para PDF, ficha de matrícula, ficha de anamnese, contrato de locação, Submitin"
     },
     "hero": {
       "badge": "Novo: documentos automáticos",
@@ -171,11 +171,11 @@
     },
     "faq": {
       "title": "Perguntas frequentes",
-      "subtitle": "O que as escolas costumam perguntar antes de começar.",
+      "subtitle": "O que costumam perguntar antes de começar.",
       "items": {
         "0": {
           "q": "Preciso mudar o meu documento?",
-          "a": "Não. Você só escreve os campos entre chaves duplas, como {{nome_aluno}}, no Word que já usa."
+          "a": "Não. Você só escreve os campos entre chaves duplas, como {{nome_cliente}}, no Word que já usa."
         },
         "1": {
           "q": "O PDF fica igual ao meu Word?",
@@ -186,16 +186,16 @@
           "a": "Não. Ele abre o link no celular ou no computador, preenche e envia."
         },
         "3": {
+          "q": "Funciona para o meu tipo de negócio?",
+          "a": "Se o documento está no Word e hoje alguém preenche à mão ou copia dados de uma mensagem, funciona: escolas, clínicas, academias, imobiliárias, prestadores de serviço e o que mais precisar."
+        },
+        "4": {
           "q": "É grátis?",
           "a": "Você começa de graça, sem cartão de crédito, e já gera seus primeiros documentos."
         },
-        "4": {
+        "5": {
           "q": "E se eu só precisar de um formulário?",
           "a": "Também dá. O Submitin continua sendo um construtor de formulários completo, com modelos, respostas em tempo real e exportação em CSV."
-        },
-        "5": {
-          "q": "Consigo integrar com outros sistemas?",
-          "a": "Sim. Cada documento gerado dispara um webhook com os dados e o link do PDF."
         }
       }
     },
@@ -368,14 +368,13 @@
       "attachment": "contrato-pedro-almeida.pdf"
     },
     "audience": {
-      "title": "Feito para quem ainda preenche documento à mão",
+      "title": "Para quem vive de papelada",
       "items": {
-        "0": "Escolas de idiomas",
-        "1": "Escolas de música",
-        "2": "Estúdios de dança",
-        "3": "Autoescolas",
-        "4": "Escolinhas esportivas",
-        "5": "Cursos livres"
+        "0": "Escolas e cursos",
+        "1": "Clínicas e consultórios",
+        "2": "Academias e personal",
+        "3": "Imobiliárias e corretores",
+        "4": "Prestadores de serviço"
       }
     },
     "story": {
@@ -386,7 +385,7 @@
       "steps": {
         "0": {
           "title": "Marque os campos no Word",
-          "description": "Escreva {{nome_aluno}}, {{cpf_responsavel}}… onde cada dado deve entrar. Esse é o seu modelo."
+          "description": "Escreva {{nome_cliente}}, {{cpf}}… onde cada dado deve entrar. Esse é o seu modelo."
         },
         "1": {
           "title": "O formulário nasce sozinho",
@@ -412,38 +411,8 @@
       "inbox": "Caixa de entrada",
       "now": "agora"
     },
-    "docTypes": {
-      "title": "Os documentos que dão mais trabalho",
-      "subtitle": "Se hoje você imprime, preenche à mão e escaneia, dá para automatizar.",
-      "items": {
-        "0": {
-          "title": "Contrato de matrícula",
-          "description": "Dados do aluno, responsável, valores e vencimento."
-        },
-        "1": {
-          "title": "Ficha do aluno",
-          "description": "Contatos, saúde, autorizações de saída."
-        },
-        "2": {
-          "title": "Autorização de uso de imagem",
-          "description": "Assinada antes da primeira foto no Instagram."
-        },
-        "3": {
-          "title": "Declaração de matrícula",
-          "description": "Pedida pelo responsável, pronta em segundos."
-        },
-        "4": {
-          "title": "Contrato de serviço",
-          "description": "Para aulas particulares, pacotes e eventos."
-        },
-        "5": {
-          "title": "Termo de responsabilidade",
-          "description": "Viagens, passeios e atividades externas."
-        }
-      }
-    },
     "bento": {
-      "title": "Pensado para o dia a dia da secretaria",
+      "title": "Pensado para quem vive de papelada",
       "subtitle": "Tudo o que um documento sério precisa, sem virar um projeto de TI.",
       "fidelity": {
         "title": "Fiel ao seu Word",
@@ -468,6 +437,103 @@
       "forms": {
         "title": "Formulários também",
         "description": "Precisa só de um formulário? Crie do zero ou comece de um modelo pronto."
+      }
+    },
+    "segments": {
+      "title": "Os documentos que dão mais trabalho",
+      "subtitle": "Se hoje você imprime, preenche à mão e escaneia, dá para automatizar.",
+      "yours": "Tem outro documento? Se ele está no Word, funciona.",
+      "items": {
+        "0": {
+          "name": "Escolas e cursos",
+          "intro": "Matrícula de novembro sem fila na secretaria.",
+          "docs": {
+            "0": {
+              "title": "Contrato de matrícula",
+              "description": "Dados do aluno, responsável, valores e vencimento."
+            },
+            "1": {
+              "title": "Ficha do aluno",
+              "description": "Contatos, saúde e autorizações de saída."
+            },
+            "2": {
+              "title": "Autorização de uso de imagem",
+              "description": "Assinada antes da primeira foto no Instagram."
+            }
+          }
+        },
+        "1": {
+          "name": "Clínicas e consultórios",
+          "intro": "O paciente preenche antes de chegar; a ficha já está pronta.",
+          "docs": {
+            "0": {
+              "title": "Ficha de anamnese",
+              "description": "Histórico, alergias e medicamentos em uso."
+            },
+            "1": {
+              "title": "Termo de consentimento",
+              "description": "Para procedimentos, com os dados do paciente."
+            },
+            "2": {
+              "title": "Cadastro de paciente",
+              "description": "Documento, convênio e contato de emergência."
+            }
+          }
+        },
+        "2": {
+          "name": "Academias e personal",
+          "intro": "O aluno novo resolve tudo pelo celular, na recepção ou em casa.",
+          "docs": {
+            "0": {
+              "title": "Contrato de plano",
+              "description": "Modalidade, valor, fidelidade e forma de pagamento."
+            },
+            "1": {
+              "title": "Questionário de saúde",
+              "description": "PAR-Q e liberação para atividade física."
+            },
+            "2": {
+              "title": "Termo de responsabilidade",
+              "description": "Para aulas, avaliações e treinos ao ar livre."
+            }
+          }
+        },
+        "3": {
+          "name": "Imobiliárias e corretores",
+          "intro": "Cadastro do interessado sem troca de e-mails e PDFs rabiscados.",
+          "docs": {
+            "0": {
+              "title": "Ficha cadastral",
+              "description": "Dados do locatário, renda e fiadores."
+            },
+            "1": {
+              "title": "Proposta de locação",
+              "description": "Imóvel, valor proposto e condições."
+            },
+            "2": {
+              "title": "Termo de visita",
+              "description": "Registro da visita com os dados do cliente."
+            }
+          }
+        },
+        "4": {
+          "name": "Prestadores de serviço",
+          "intro": "Do orçamento aprovado ao contrato em minutos.",
+          "docs": {
+            "0": {
+              "title": "Contrato de prestação de serviço",
+              "description": "Escopo, prazo, valor e forma de pagamento."
+            },
+            "1": {
+              "title": "Ordem de serviço",
+              "description": "O que será feito, onde e para quem."
+            },
+            "2": {
+              "title": "Procuração",
+              "description": "Com os dados do outorgante preenchidos certinho."
+            }
+          }
+        }
       }
     }
   },

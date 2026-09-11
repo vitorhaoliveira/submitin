@@ -28,7 +28,7 @@
   "landing": {
     "seo": {
       "title": "Submitin – Your Word file becomes a form, the PDF arrives ready",
-      "keywords": "online forms, form builder, survey, create form, collect responses, Submitin"
+      "keywords": "generate document from form, automatic contract, fill Word online, form to PDF, enrollment form, intake form, lease application, Submitin"
     },
     "hero": {
       "badge": "New: automatic documents",
@@ -171,11 +171,11 @@
     },
     "faq": {
       "title": "Frequently asked questions",
-      "subtitle": "What schools usually ask before getting started.",
+      "subtitle": "What people usually ask before getting started.",
       "items": {
         "0": {
           "q": "Do I need to change my document?",
-          "a": "No. You just type the fields between double curly braces, like {{student_name}}, in the Word file you already use."
+          "a": "No. You just type the fields between double curly braces, like {{client_name}}, in the Word file you already use."
         },
         "1": {
           "q": "Will the PDF look like my Word file?",
@@ -186,16 +186,16 @@
           "a": "No. They open the link on their phone or computer, fill it in and submit."
         },
         "3": {
+          "q": "Does it work for my kind of business?",
+          "a": "If the document is in Word and someone fills it by hand or copies data from a message today, it works: schools, clinics, gyms, real estate, service providers and more."
+        },
+        "4": {
           "q": "Is it free?",
           "a": "You start free, no credit card needed, and can generate your first documents right away."
         },
-        "4": {
+        "5": {
           "q": "What if I just need a form?",
           "a": "That works too. Submitin is still a complete form builder, with templates, real-time responses and CSV export."
-        },
-        "5": {
-          "q": "Can I integrate with other systems?",
-          "a": "Yes. Every generated document triggers a webhook with the data and the PDF link."
         }
       }
     },
@@ -368,14 +368,13 @@
       "attachment": "contract-pedro-almeida.pdf"
     },
     "audience": {
-      "title": "Made for anyone still filling documents by hand",
+      "title": "For anyone buried in paperwork",
       "items": {
-        "0": "Language schools",
-        "1": "Music schools",
-        "2": "Dance studios",
-        "3": "Driving schools",
-        "4": "Sports academies",
-        "5": "Short courses"
+        "0": "Schools and courses",
+        "1": "Clinics and practices",
+        "2": "Gyms and trainers",
+        "3": "Real estate agents",
+        "4": "Service providers"
       }
     },
     "story": {
@@ -386,7 +385,7 @@
       "steps": {
         "0": {
           "title": "Mark the fields in Word",
-          "description": "Type {{student_name}}, {{guardian_cpf}}… wherever each value goes. That's your template."
+          "description": "Type {{client_name}}, {{cpf}}… wherever each value goes. That's your template."
         },
         "1": {
           "title": "The form builds itself",
@@ -412,38 +411,8 @@
       "inbox": "Inbox",
       "now": "now"
     },
-    "docTypes": {
-      "title": "The documents that take the most work",
-      "subtitle": "If you print, fill by hand and scan today, you can automate it.",
-      "items": {
-        "0": {
-          "title": "Enrollment contract",
-          "description": "Student, guardian, fees and due dates."
-        },
-        "1": {
-          "title": "Student record",
-          "description": "Contacts, health info, pickup authorizations."
-        },
-        "2": {
-          "title": "Image use consent",
-          "description": "Signed before the first Instagram photo."
-        },
-        "3": {
-          "title": "Enrollment certificate",
-          "description": "Requested by parents, ready in seconds."
-        },
-        "4": {
-          "title": "Service contract",
-          "description": "For private lessons, packages and events."
-        },
-        "5": {
-          "title": "Liability waiver",
-          "description": "Trips, outings and outdoor activities."
-        }
-      }
-    },
     "bento": {
-      "title": "Built for the front desk's daily routine",
+      "title": "Built for anyone buried in paperwork",
       "subtitle": "Everything a serious document needs, without an IT project.",
       "fidelity": {
         "title": "True to your Word file",
@@ -468,6 +437,103 @@
       "forms": {
         "title": "Forms too",
         "description": "Just need a form? Start from scratch or from a ready-made template."
+      }
+    },
+    "segments": {
+      "title": "The documents that take the most work",
+      "subtitle": "If you print, fill by hand and scan today, you can automate it.",
+      "yours": "Got a different document? If it's in Word, it works.",
+      "items": {
+        "0": {
+          "name": "Schools and courses",
+          "intro": "Enrollment season without a line at the front desk.",
+          "docs": {
+            "0": {
+              "title": "Enrollment contract",
+              "description": "Student, guardian, fees and due dates."
+            },
+            "1": {
+              "title": "Student record",
+              "description": "Contacts, health info and pickup authorizations."
+            },
+            "2": {
+              "title": "Image use consent",
+              "description": "Signed before the first Instagram photo."
+            }
+          }
+        },
+        "1": {
+          "name": "Clinics and practices",
+          "intro": "Patients fill it in before they arrive; the record is ready.",
+          "docs": {
+            "0": {
+              "title": "Intake form",
+              "description": "History, allergies and current medication."
+            },
+            "1": {
+              "title": "Consent form",
+              "description": "For procedures, with the patient's details."
+            },
+            "2": {
+              "title": "Patient registration",
+              "description": "ID, insurance and emergency contact."
+            }
+          }
+        },
+        "2": {
+          "name": "Gyms and trainers",
+          "intro": "New members sort it all out on their phone.",
+          "docs": {
+            "0": {
+              "title": "Membership contract",
+              "description": "Plan, price, commitment and payment method."
+            },
+            "1": {
+              "title": "Health questionnaire",
+              "description": "PAR-Q and clearance for physical activity."
+            },
+            "2": {
+              "title": "Liability waiver",
+              "description": "For classes, assessments and outdoor training."
+            }
+          }
+        },
+        "3": {
+          "name": "Real estate agents",
+          "intro": "Applicant details without email ping-pong and scribbled PDFs.",
+          "docs": {
+            "0": {
+              "title": "Rental application",
+              "description": "Tenant details, income and guarantors."
+            },
+            "1": {
+              "title": "Lease proposal",
+              "description": "Property, offered price and terms."
+            },
+            "2": {
+              "title": "Viewing record",
+              "description": "Visit log with the client's details."
+            }
+          }
+        },
+        "4": {
+          "name": "Service providers",
+          "intro": "From approved quote to contract in minutes.",
+          "docs": {
+            "0": {
+              "title": "Service agreement",
+              "description": "Scope, timeline, price and payment terms."
+            },
+            "1": {
+              "title": "Work order",
+              "description": "What will be done, where and for whom."
+            },
+            "2": {
+              "title": "Power of attorney",
+              "description": "With the grantor's details filled in correctly."
+            }
+          }
+        }
       }
     }
   },
