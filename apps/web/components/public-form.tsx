@@ -233,6 +233,12 @@ export function PublicForm({
   // Aceite eletrônico marcado na revisão (zera ao voltar e corrigir).
   const [accepted, setAccepted] = useState(false);
   const handlePreviewRenderError = useCallback(() => setPreviewRenderFailed(true), []);
+
+  // Formulário de documento: acorda o conversor de PDF enquanto a pessoa preenche.
+  useEffect(() => {
+    if (!isDocument) return;
+    void fetch("/api/warmup", { method: "POST", keepalive: true }).catch(() => {});
+  }, [isDocument]);
   // Modo conversacional: índice da pergunta atual.
   const [step, setStep] = useState(0);
   const autoAdvanceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
