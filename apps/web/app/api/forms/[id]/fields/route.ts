@@ -115,11 +115,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     const body = await request.json();
     const { fields } = body as { fields: { id: string; order: number }[] };
 
-    // Update field orders
+    // Update field orders (restrito aos campos deste formulário)
     await prisma.$transaction(
       fields.map((field: { id: string; order: number }) =>
-        prisma.field.update({
-          where: { id: field.id },
+        prisma.field.updateMany({
+          where: { id: field.id, formId: id },
           data: { order: field.order },
         })
       )

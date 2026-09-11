@@ -21,6 +21,7 @@ import {
   PanelLeftClose,
   PanelLeft,
   Globe,
+  FileCheck2,
 } from "lucide-react";
 
 type NavUser = { name?: string | null; email?: string | null } | null;
@@ -84,6 +85,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   const mainNav = [
     { href: "/dashboard", label: t("dashboard"), icon: LayoutDashboard },
     { href: "/dashboard/forms", label: t("forms"), icon: FileText },
+    { href: "/dashboard/documents", label: t("documents"), icon: FileCheck2 },
   ];
   const generalNav = [
     { href: "/dashboard/account", label: t("account"), icon: Settings },

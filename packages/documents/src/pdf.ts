@@ -22,7 +22,7 @@ export async function convertDocxToPdf(
   const form = new FormData();
   form.append(
     "files",
-    new Blob([docx], {
+    new Blob([new Uint8Array(docx)], {
       type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     }),
     options.filename ?? "documento.docx"

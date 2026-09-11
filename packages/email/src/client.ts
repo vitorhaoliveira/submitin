@@ -17,6 +17,7 @@ interface SendEmailOptions {
   to: string;
   subject: string;
   react: ReactElement;
+  attachments?: { filename: string; content: Buffer }[];
 }
 
 /**
@@ -46,7 +47,7 @@ function extractDomain(from: string): string | null {
   return null;
 }
 
-export async function sendEmail({ to, subject, react }: SendEmailOptions) {
+export async function sendEmail({ to, subject, react, attachments }: SendEmailOptions) {
   const fromEmail = process.env.AUTH_EMAIL_FROM || "Submitin <no-reply@submitin.com>";
   
   if (!fromEmail) {
@@ -93,6 +94,7 @@ export async function sendEmail({ to, subject, react }: SendEmailOptions) {
     to,
     subject,
     react,
+    attachments,
   });
 
   if (error) {

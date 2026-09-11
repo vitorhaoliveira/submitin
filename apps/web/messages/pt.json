@@ -684,7 +684,11 @@
       "date": "Data",
       "select": "Múltipla Escolha",
       "checkbox": "Checkbox",
-      "rating": "Avaliação (Estrelas)"
+      "rating": "Avaliação (Estrelas)",
+      "cpf": "CPF",
+      "cnpj": "CNPJ",
+      "cep": "CEP",
+      "currency": "Valor (R$)"
     },
     "status": {
       "draft": "Rascunho",
@@ -717,7 +721,11 @@
       "label": "Capturar respostas parciais",
       "help": "Salve leads que preenchem um contato mas não enviam.",
       "proHint": "Disponível no plano Pro — capture leads que começam mas não concluem."
-    }
+    },
+    "documentBanner": "Este formulário gera o documento “{name}” — ver documento e envios",
+    "moveUp": "Mover para cima",
+    "moveDown": "Mover para baixo",
+    "fieldMoveError": "Não foi possível reordenar os campos"
   },
   "responses": {
     "title": "Respostas",
@@ -802,7 +810,10 @@
       "invalidEmail": "Email inválido",
       "submitFailed": "Erro ao enviar resposta. Tente novamente.",
       "notFound": "Formulário não encontrado",
-      "limitReached": "Este formulário atingiu o limite de respostas."
+      "limitReached": "Este formulário atingiu o limite de respostas.",
+      "invalidCpf": "CPF inválido",
+      "invalidCnpj": "CNPJ inválido",
+      "invalidCep": "CEP inválido"
     },
     "poweredBy": "Criado com",
     "closed": {
@@ -850,6 +861,140 @@
     "lightMode": "Claro",
     "darkMode": "Escuro",
     "sectionMain": "Geral",
-    "sectionGeneral": "Conta"
+    "sectionGeneral": "Conta",
+    "documents": "Documentos"
+  },
+  "documents": {
+    "title": "Documentos",
+    "subtitle": "O cliente preenche um link, você recebe o documento pronto em PDF.",
+    "new": "Novo documento",
+    "usage": "{used} de {limit} documentos gerados este mês",
+    "usageUnlimited": "{used} documentos gerados este mês",
+    "empty": {
+      "title": "Transforme seu Word em formulário",
+      "description": "Suba o contrato, ficha ou autorização que você já usa. Cada resposta vira um PDF preenchido, direto no seu e-mail.",
+      "step1": "No Word, marque os campos com {{nome_da_variavel}}",
+      "step2": "Suba o .docx — o formulário é criado automaticamente",
+      "step3": "Compartilhe o link e receba cada documento em PDF"
+    },
+    "card": {
+      "submissions": "envios",
+      "failed": "com problema",
+      "lastSubmission": "Último envio {date}",
+      "noSubmissions": "Nenhum envio ainda",
+      "published": "Publicado",
+      "draft": "Rascunho",
+      "viewSubmissions": "Envios",
+      "manage": "Gerenciar"
+    },
+    "status": {
+      "recebida": "Na fila",
+      "processando": "Gerando",
+      "concluida": "Pronto",
+      "falha": "Falha",
+      "limite": "Limite do plano"
+    },
+    "newPage": {
+      "title": "Novo documento",
+      "subtitle": "Suba o .docx com as variáveis marcadas. Nós criamos o formulário.",
+      "dropTitle": "Arraste o .docx aqui ou clique para escolher",
+      "dropHint": "Documento do Word (.docx), até 10 MB",
+      "howTo": "Como marcar as variáveis",
+      "howToText": "No Word, escreva o nome de cada campo entre chaves duplas, no lugar onde o valor deve aparecer:",
+      "example": "Eu, {{nome_responsavel}}, CPF {{cpf_responsavel}}, matriculo o aluno {{nome_aluno}} no curso de {{curso}}, com mensalidade de {{valor_mensalidade}} ({{valor_mensalidade_extenso}}).",
+      "howToTips": "Use letras minúsculas e _ no lugar de espaços. A mesma variável pode aparecer várias vezes, inclusive no cabeçalho, rodapé e tabelas. O tipo do campo é deduzido pelo nome (cpf, email, telefone, data, valor…) e valores terminados em _extenso saem por extenso automaticamente.",
+      "analyzing": "Analisando documento…",
+      "detected": "{count} campos detectados",
+      "detectedDesc": "Revise abaixo. Depois você poderá ajustar perguntas, tipos, obrigatoriedade e ordem.",
+      "name": "Nome do documento",
+      "namePlaceholder": "Contrato de Matrícula 2027",
+      "variable": "Variável",
+      "label": "Pergunta",
+      "type": "Tipo",
+      "missingFonts": "Fontes não disponíveis no gerador de PDF: {fonts}. Elas serão trocadas por fontes parecidas, o que pode mudar quebras de linha. Para fidelidade total, use Arial, Calibri, Times New Roman, Verdana ou Georgia.",
+      "unsupported": "Blocos condicionais ou de repetição ainda não são suportados e serão ignorados: {tags}",
+      "otherFile": "Escolher outro arquivo",
+      "create": "Criar documento",
+      "creating": "Criando…",
+      "error": "Não foi possível ler o documento"
+    },
+    "detail": {
+      "back": "Voltar",
+      "submissions": "Envios",
+      "editFields": "Editar formulário",
+      "delete": "Excluir documento",
+      "deleteConfirm": "O formulário, as respostas e os PDFs gerados deste documento serão removidos. Essa ação não pode ser desfeita.",
+      "deleted": "Documento excluído",
+      "rename": "Renomear",
+      "link": {
+        "title": "Link público",
+        "desc": "Envie este link para quem vai preencher. Funciona no celular.",
+        "copy": "Copiar",
+        "copied": "Copiado!",
+        "open": "Abrir formulário",
+        "unpublished": "O formulário ainda não está publicado — o link não aceita respostas.",
+        "publish": "Publicar",
+        "unpublish": "Despublicar",
+        "publishedToast": "Formulário publicado",
+        "unpublishedToast": "Formulário despublicado",
+        "embedHint": "Código de incorporação (embed), QR code e aparência ficam no editor do formulário:"
+      },
+      "fields": {
+        "title": "Campos do formulário",
+        "desc": "Uma pergunta por variável do documento.",
+        "required": "Obrigatório",
+        "missing": "Variáveis do documento sem campo no formulário (sairão em branco): {keys}",
+        "orphan": "Campos de variáveis que não existem mais no template atual: {labels}"
+      },
+      "delivery": {
+        "title": "Entrega",
+        "desc": "A cada envio, o PDF gerado vai em anexo para estes e-mails e para o webhook.",
+        "emails": "E-mails",
+        "addEmail": "Adicionar",
+        "emailPlaceholder": "secretaria@escola.com.br",
+        "noEmails": "Nenhum e-mail — os documentos ficarão só na tela de Envios.",
+        "webhook": "Webhook (opcional)",
+        "webhookDesc": "Recebe um POST com as respostas e a URL do PDF gerado.",
+        "save": "Salvar entrega",
+        "saved": "Entrega salva"
+      },
+      "template": {
+        "title": "Template",
+        "version": "Versão {version}",
+        "uploadedAt": "enviado em {date}",
+        "download": "Baixar .docx",
+        "replace": "Substituir template",
+        "replaceDesc": "Substituir cria uma nova versão; documentos já emitidos não mudam.",
+        "replacing": "Enviando…",
+        "replaced": "Template atualizado para a versão {version}",
+        "added": "Novos campos adicionados ao formulário: {labels}",
+        "orphaned": "Variáveis que saíram do template (os campos foram mantidos): {labels}"
+      }
+    },
+    "submissions": {
+      "title": "Envios",
+      "subtitle": "Documentos gerados a partir das respostas de {name}.",
+      "search": "Buscar por nome, CPF, e-mail…",
+      "from": "De",
+      "to": "Até",
+      "allStatuses": "Todos os status",
+      "filter": "Filtrar",
+      "clear": "Limpar",
+      "date": "Data",
+      "identifier": "Identificação",
+      "status": "Status",
+      "actions": "Documento",
+      "download": "PDF",
+      "downloadDocx": "Word",
+      "retry": "Reprocessar",
+      "retried": "Documento enviado para a fila novamente",
+      "empty": "Nenhum envio ainda. Compartilhe o link do formulário para começar.",
+      "noResults": "Nenhum envio encontrado com esses filtros.",
+      "total": "{count} envios",
+      "previous": "Anterior",
+      "next": "Próxima",
+      "page": "Página {page} de {pages}",
+      "autoRefresh": "Atualizando…"
+    }
   }
 }

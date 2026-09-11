@@ -684,7 +684,11 @@
       "date": "Date",
       "select": "Multiple Choice",
       "checkbox": "Checkbox",
-      "rating": "Rating (Stars)"
+      "rating": "Rating (Stars)",
+      "cpf": "CPF (BR tax ID)",
+      "cnpj": "CNPJ (BR company ID)",
+      "cep": "CEP (BR zip code)",
+      "currency": "Amount (R$)"
     },
     "status": {
       "draft": "Draft",
@@ -717,7 +721,11 @@
       "label": "Capture partial responses",
       "help": "Save leads who fill in a contact but do not submit.",
       "proHint": "Available on the Pro plan — capture leads who start but do not finish."
-    }
+    },
+    "documentBanner": "This form generates the document “{name}” — view document and submissions",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "fieldMoveError": "Could not reorder fields"
   },
   "responses": {
     "title": "Responses",
@@ -802,7 +810,10 @@
       "invalidEmail": "Invalid email",
       "submitFailed": "Failed to submit response. Please try again.",
       "notFound": "Form not found",
-      "limitReached": "This form has reached its response limit."
+      "limitReached": "This form has reached its response limit.",
+      "invalidCpf": "Invalid CPF",
+      "invalidCnpj": "Invalid CNPJ",
+      "invalidCep": "Invalid CEP"
     },
     "poweredBy": "Created with",
     "closed": {
@@ -850,6 +861,140 @@
     "lightMode": "Light",
     "darkMode": "Dark",
     "sectionMain": "Main",
-    "sectionGeneral": "Account"
+    "sectionGeneral": "Account",
+    "documents": "Documents"
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Your client fills a link, you get the finished PDF document.",
+    "new": "New document",
+    "usage": "{used} of {limit} documents generated this month",
+    "usageUnlimited": "{used} documents generated this month",
+    "empty": {
+      "title": "Turn your Word file into a form",
+      "description": "Upload the contract, record or consent form you already use. Each response becomes a filled PDF, straight to your inbox.",
+      "step1": "In Word, mark fields as {{variable_name}}",
+      "step2": "Upload the .docx — the form is created automatically",
+      "step3": "Share the link and get every document as a PDF"
+    },
+    "card": {
+      "submissions": "submissions",
+      "failed": "with issues",
+      "lastSubmission": "Last submission {date}",
+      "noSubmissions": "No submissions yet",
+      "published": "Published",
+      "draft": "Draft",
+      "viewSubmissions": "Submissions",
+      "manage": "Manage"
+    },
+    "status": {
+      "recebida": "Queued",
+      "processando": "Generating",
+      "concluida": "Ready",
+      "falha": "Failed",
+      "limite": "Plan limit"
+    },
+    "newPage": {
+      "title": "New document",
+      "subtitle": "Upload the .docx with variables marked. We build the form.",
+      "dropTitle": "Drop the .docx here or click to choose",
+      "dropHint": "Word document (.docx), up to 10 MB",
+      "howTo": "How to mark variables",
+      "howToText": "In Word, write each field name between double curly braces where the value should appear:",
+      "example": "I, {{guardian_name}}, CPF {{cpf_guardian}}, enroll {{student_name}} in {{course}}, with a monthly fee of {{valor_mensalidade}} ({{valor_mensalidade_extenso}}).",
+      "howToTips": "Use lowercase letters and _ instead of spaces. The same variable can appear many times, including headers, footers and tables. The field type is inferred from the name (cpf, email, telefone, data, valor…) and names ending in _extenso are written out in words automatically.",
+      "analyzing": "Analyzing document…",
+      "detected": "{count} fields detected",
+      "detectedDesc": "Review below. You can adjust questions, types, required flags and order later.",
+      "name": "Document name",
+      "namePlaceholder": "Enrollment Contract 2027",
+      "variable": "Variable",
+      "label": "Question",
+      "type": "Type",
+      "missingFonts": "Fonts not available in the PDF generator: {fonts}. They will be replaced with similar fonts, which may change line breaks. For full fidelity use Arial, Calibri, Times New Roman, Verdana or Georgia.",
+      "unsupported": "Conditional or repeating blocks are not supported yet and will be ignored: {tags}",
+      "otherFile": "Choose another file",
+      "create": "Create document",
+      "creating": "Creating…",
+      "error": "Could not read the document"
+    },
+    "detail": {
+      "back": "Back",
+      "submissions": "Submissions",
+      "editFields": "Edit form",
+      "delete": "Delete document",
+      "deleteConfirm": "This document's form, responses and generated PDFs will be removed. This cannot be undone.",
+      "deleted": "Document deleted",
+      "rename": "Rename",
+      "link": {
+        "title": "Public link",
+        "desc": "Send this link to whoever will fill it in. Works on mobile.",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "open": "Open form",
+        "unpublished": "The form is not published yet — the link does not accept responses.",
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "publishedToast": "Form published",
+        "unpublishedToast": "Form unpublished",
+        "embedHint": "Embed code, QR code and appearance are in the form editor:"
+      },
+      "fields": {
+        "title": "Form fields",
+        "desc": "One question per document variable.",
+        "required": "Required",
+        "missing": "Document variables without a form field (will be blank): {keys}",
+        "orphan": "Fields for variables no longer in the current template: {labels}"
+      },
+      "delivery": {
+        "title": "Delivery",
+        "desc": "On every submission, the generated PDF is attached to these emails and sent to the webhook.",
+        "emails": "Emails",
+        "addEmail": "Add",
+        "emailPlaceholder": "office@school.com",
+        "noEmails": "No emails — documents will only be in the Submissions screen.",
+        "webhook": "Webhook (optional)",
+        "webhookDesc": "Receives a POST with the answers and the generated PDF URL.",
+        "save": "Save delivery",
+        "saved": "Delivery saved"
+      },
+      "template": {
+        "title": "Template",
+        "version": "Version {version}",
+        "uploadedAt": "uploaded {date}",
+        "download": "Download .docx",
+        "replace": "Replace template",
+        "replaceDesc": "Replacing creates a new version; documents already issued do not change.",
+        "replacing": "Uploading…",
+        "replaced": "Template updated to version {version}",
+        "added": "New fields added to the form: {labels}",
+        "orphaned": "Variables removed from the template (fields kept): {labels}"
+      }
+    },
+    "submissions": {
+      "title": "Submissions",
+      "subtitle": "Documents generated from responses to {name}.",
+      "search": "Search by name, CPF, email…",
+      "from": "From",
+      "to": "To",
+      "allStatuses": "All statuses",
+      "filter": "Filter",
+      "clear": "Clear",
+      "date": "Date",
+      "identifier": "Identification",
+      "status": "Status",
+      "actions": "Document",
+      "download": "PDF",
+      "downloadDocx": "Word",
+      "retry": "Retry",
+      "retried": "Document queued again",
+      "empty": "No submissions yet. Share the form link to get started.",
+      "noResults": "No submissions match these filters.",
+      "total": "{count} submissions",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {page} of {pages}",
+      "autoRefresh": "Refreshing…"
+    }
   }
 }

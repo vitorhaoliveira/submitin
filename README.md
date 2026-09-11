@@ -123,6 +123,28 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
+## 📄 Módulo Documentos
+
+O formulário vira o meio; o entregável é um `.docx`/PDF preenchido com as respostas.
+
+**Fluxo:** upload do `.docx` com variáveis `{{snake_case}}` → formulário gerado (um campo por variável) → resposta → fila → mesclagem (docxtemplater) → PDF (Gotenberg/LibreOffice) → storage → e-mail com PDF anexado + webhook com URL do PDF.
+
+- Código: `packages/documents` (parse, mesclagem, formatação BR, extenso, PDF, marca) e `apps/web/lib/documents` (fila/entrega).
+- Telas: `/dashboard/documents`, `/dashboard/documents/new`, `/dashboard/documents/[id]`, `/dashboard/documents/[id]/envios`.
+- Fila: tabela `document_generations` (`recebida → processando → concluida | falha | limite`), processada via `after()` na submissão e recolhida pelo cron `/api/cron/documents` (`apps/web/vercel.json`, a cada 5 min — exige plano Pro da Vercel; no Hobby o cron é diário).
+- Testes: `GOTENBERG_URL=http://localhost:3030 pnpm --filter @submitin/documents test`
+- Spike de fidelidade com qualquer `.docx`: `GOTENBERG_URL=http://localhost:3030 pnpm --filter @submitin/documents spike arquivo.docx [respostas.json]`
+
+### Infra
+
+| Peça | Local | Produção |
+|---|---|---|
+| Conversor PDF | `docker compose up -d gotenberg` (porta 3030) | Deploy de `infra/gotenberg/Dockerfile` (Railway/Fly), `GOTENBERG_URL` + `GOTENBERG_BASIC_AUTH` |
+| Storage | disco em `apps/web/.storage/` | Supabase Storage: bucket **privado** `documents`, `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` |
+| Cron | `curl -H "Authorization: Bearer $CRON_SECRET" localhost:3000/api/cron/documents` | Vercel Cron + `CRON_SECRET` |
+
+> Fontes: a imagem do Gotenberg inclui MS core fonts, Carlito/Caladea (métricas de Calibri/Cambria), Open Sans, Roboto, Lato e Montserrat. Fontes fora de `SUPPORTED_FONTS` (`packages/documents/src/fonts.ts`) geram aviso no upload.
+
 ## 📝 Available Scripts
 
 | Command | Description |

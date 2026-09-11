@@ -10,11 +10,20 @@ export const fieldTypes = [
   "select",
   "checkbox",
   "rating",
+  // Tipos brasileiros (módulo Documentos): máscara + validação
+  "cpf",
+  "cnpj",
+  "cep",
+  "currency",
 ] as const;
 
 export type FieldType = (typeof fieldTypes)[number];
 
 export const fieldTypeLabels: Record<FieldType, string> = {
+  cpf: "CPF",
+  cnpj: "CNPJ",
+  cep: "CEP",
+  currency: "Valor (R$)",
   text: "Texto",
   textarea: "Texto Longo",
   email: "Email",

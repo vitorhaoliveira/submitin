@@ -22,6 +22,15 @@ import { LanguageSwitcher } from "./language-switcher";
 import { Captcha, type CaptchaProvider } from "./captcha";
 import { generateThemeStyles, type CustomTheme } from "@/lib/theme-utils";
 import { computeVisibleFieldIds, type VisibilityRule } from "@/lib/field-visibility";
+import { maskInput, validateMaskedField } from "@submitin/documents/input";
+
+// Tipos brasileiros com máscara (módulo Documentos).
+const MASKED_PLACEHOLDERS: Record<string, string> = {
+  cpf: "000.000.000-00",
+  cnpj: "00.000.000/0000-00",
+  cep: "00000-000",
+  currency: "0,00",
+};
 
 interface Field {
   id: string;
@@ -73,6 +82,10 @@ const SECONDS_PER_FIELD: Record<string, number> = {
   select: 10,
   checkbox: 5,
   rating: 8,
+  cpf: 12,
+  cnpj: 15,
+  cep: 10,
+  currency: 10,
 };
 
 // Peças de confete com configs determinísticas (evita Math.random em render e
@@ -187,6 +200,9 @@ export function PublicForm({ form, availability }: PublicFormProps) {
         return t("errors.invalidEmail");
       }
     }
+
+    const maskedError = value ? validateMaskedField(field.type, value) : null;
+    if (maskedError) return t(`errors.${maskedError}`);
 
     return null;
   }
@@ -350,7 +366,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
   // ── Renderização de campos (compartilhada entre página única e conversacional) ──
 
   // Tipos de texto em linha: Enter avança e mostramos a dica "pressione Enter".
-  const ENTER_ADVANCE_TYPES = new Set(["text", "email", "phone", "number"]);
+  const ENTER_ADVANCE_TYPES = new Set(["text", "email", "phone", "number", "cpf", "cnpj", "cep", "currency"]);
 
   // Renderiza apenas o controle do campo (sem label/erro), idêntico nos dois modos.
   // `onPick` dispara após uma escolha de toque único (usado pelo auto-advance).
@@ -426,6 +442,42 @@ export function PublicForm({ form, availability }: PublicFormProps) {
             onBlur={() => handleBlur(field)}
             className={inputStateClass(field)}
           />
+        );
+      case "cpf":
+      case "cnpj":
+      case "cep":
+        return (
+          <Input
+            id={field.id}
+            inputMode="numeric"
+            autoComplete={field.type === "cep" ? "postal-code" : "off"}
+            placeholder={field.placeholder || MASKED_PLACEHOLDERS[field.type]}
+            value={values[field.id] || ""}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              handleChange(field.id, maskInput(field.type, e.target.value))
+            }
+            onBlur={() => handleBlur(field)}
+            className={inputStateClass(field)}
+          />
+        );
+      case "currency":
+        return (
+          <div className="relative">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">
+              R$
+            </span>
+            <Input
+              id={field.id}
+              inputMode="numeric"
+              placeholder={field.placeholder || MASKED_PLACEHOLDERS.currency}
+              value={values[field.id] || ""}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                handleChange(field.id, maskInput("currency", e.target.value))
+              }
+              onBlur={() => handleBlur(field)}
+              className={cn("pl-10", inputStateClass(field))}
+            />
+          </div>
         );
       case "rating":
         return (

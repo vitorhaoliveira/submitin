@@ -53,3 +53,6 @@ docs
 
 #Ignore vscode AI rules
 .github/instructions/codacy.instructions.md
+
+# Storage local (dev) do módulo Documentos
+.storage

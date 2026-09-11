@@ -10,6 +10,15 @@ import {
 } from "@/lib/security";
 import { computeVisibleFieldIds, parseVisibility } from "@/lib/field-visibility";
 import { getFormAvailability } from "@/lib/form-availability";
+import { validateMaskedField } from "@submitin/documents/input";
+import { parseCurrency } from "@submitin/documents/format";
+import { enqueueDocumentGeneration } from "@/lib/documents/generation";
+
+const MASKED_FIELD_ERRORS = {
+  invalidCpf: "CPF inválido",
+  invalidCnpj: "CNPJ inválido",
+  invalidCep: "CEP inválido",
+} as const;
 
 type FormField = {
   id: string;
@@ -114,6 +123,15 @@ export async function createFormResponse(
     if (field.type === "email" && value && !isValidEmail(value)) {
       throw { status: 400, message: `Email inválido no campo "${field.label}"` };
     }
+
+    const maskedError = value ? validateMaskedField(field.type, value) : null;
+    if (maskedError) {
+      throw { status: 400, message: `${MASKED_FIELD_ERRORS[maskedError]} no campo "${field.label}"` };
+    }
+
+    if (field.type === "currency" && value && parseCurrency(value) === null) {
+      throw { status: 400, message: `Valor inválido no campo "${field.label}"` };
+    }
   }
 
   const fieldValuesCreate = Object.entries(values)
@@ -149,6 +167,11 @@ export async function createFormResponse(
         },
         include: { fieldValues: true },
       });
+
+  // Formulário de documento: a entrega (e-mail com PDF + webhook) acontece após a
+  // geração assíncrona do documento, não aqui.
+  const generation = await enqueueDocumentGeneration(form.id, response.id);
+  if (generation) return response;
 
   const emailsToNotify: string[] = [];
   if (form.settings?.notifyEmail) {

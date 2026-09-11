@@ -19,7 +19,11 @@ import {
   parseCurrency,
   parseTemplate,
   TemplateError,
+  maskInput,
+  stampBranding,
+  validateMaskedField,
 } from "../src";
+import { PDFDocument } from "pdf-lib";
 
 const fixture = readFileSync(join(import.meta.dirname, "fixtures/contrato-matricula.docx"));
 const answers = JSON.parse(
@@ -175,6 +179,41 @@ describe("template", () => {
 
   test("arquivo que não é .docx", () => {
     assert.throws(() => parseTemplate(Buffer.from("não sou um zip")), TemplateError);
+  });
+});
+
+describe("input", () => {
+  test("máscaras progressivas", () => {
+    assert.equal(maskInput("cpf", "5299"), "529.9");
+    assert.equal(maskInput("cpf", "529982247251234"), "529.982.247-25");
+    assert.equal(maskInput("cnpj", "11222333000181"), "11.222.333/0001-81");
+    assert.equal(maskInput("cep", "13073a001"), "13073-001");
+    assert.equal(maskInput("currency", "5"), "0,05");
+    assert.equal(maskInput("currency", "123456"), "1.234,56");
+    assert.equal(maskInput("currency", ""), "");
+    assert.equal(maskInput("text", "livre"), "livre");
+  });
+
+  test("validação de tipos brasileiros", () => {
+    assert.equal(validateMaskedField("cpf", "529.982.247-25"), null);
+    assert.equal(validateMaskedField("cpf", "111.222.333-00"), "invalidCpf");
+    assert.equal(validateMaskedField("cnpj", "11.222.333/0001-80"), "invalidCnpj");
+    assert.equal(validateMaskedField("cep", "1307"), "invalidCep");
+    assert.equal(validateMaskedField("cpf", ""), null);
+    assert.equal(validateMaskedField("text", "qualquer"), null);
+  });
+});
+
+describe("branding", () => {
+  test("adiciona marca clicável em todas as páginas", async () => {
+    const src = await PDFDocument.create();
+    src.addPage();
+    src.addPage();
+    const stamped = await PDFDocument.load(
+      await stampBranding(Buffer.from(await src.save()), { url: "https://submitin.com" })
+    );
+    assert.equal(stamped.getPageCount(), 2);
+    for (const page of stamped.getPages()) assert.equal(page.node.Annots()?.size(), 1);
   });
 });
 

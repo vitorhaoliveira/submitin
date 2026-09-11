@@ -50,6 +50,9 @@ export const PLANS = {
     limits: {
       maxForms: 5,
       responsesPerMonth: 100,
+      // Documentos gerados com sucesso por mês. TODO(preço): valores provisórios
+      // até a decisão dos planos do módulo Documentos (spec: 20 / 200 / ∞).
+      documentsPerMonth: 20,
       customTheme: false,
       hideBranding: false,
       captcha: false,
@@ -73,6 +76,7 @@ export const PLANS = {
     limits: {
       maxForms: 20,
       responsesPerMonth: 5000,
+      documentsPerMonth: 200,
       customTheme: true,
       hideBranding: true,
       captcha: false,
@@ -97,6 +101,7 @@ export const PLANS = {
     limits: {
       maxForms: -1, // ilimitado
       responsesPerMonth: -1, // ilimitado
+      documentsPerMonth: -1, // ilimitado
       customTheme: true,
       hideBranding: true,
       captcha: true,
@@ -145,6 +150,11 @@ export function maxFormsFor(plan: string | null | undefined): number {
 // Limite de respostas/mês do plano (-1 = ilimitado).
 export function maxResponsesPerMonthFor(plan: string | null | undefined): number {
   return planLimits(plan).responsesPerMonth;
+}
+
+// Limite de documentos gerados/mês do plano (-1 = ilimitado).
+export function maxDocumentsPerMonthFor(plan: string | null | undefined): number {
+  return planLimits(plan).documentsPerMonth;
 }
 
 // Mapeia o price ID de uma assinatura Stripe para o plano correspondente.

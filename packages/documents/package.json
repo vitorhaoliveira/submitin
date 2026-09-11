@@ -6,7 +6,10 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./input": "./src/input.ts",
+    "./validation": "./src/validation.ts",
+    "./format": "./src/format.ts"
   },
   "scripts": {
     "test": "tsx --test test/*.test.ts",
@@ -14,6 +17,7 @@
   },
   "dependencies": {
     "docxtemplater": "^3.69.3",
+    "pdf-lib": "^1.17.1",
     "pizzip": "^3.2.0"
   },
   "devDependencies": {

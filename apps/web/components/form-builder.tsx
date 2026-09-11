@@ -38,7 +38,6 @@ import {
   ArrowLeft,
   Plus,
   Trash2,
-  GripVertical,
   Eye,
   Settings,
   Copy,
@@ -65,6 +64,13 @@ import {
   GitBranch,
   Info,
   CalendarClock,
+  IdCard,
+  Building2,
+  MapPin,
+  BadgeDollarSign,
+  ArrowUp,
+  ArrowDown,
+  FileCheck2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { fieldTypes, type FieldType, type CreateFieldInput } from "@/lib/validations";
@@ -87,6 +93,8 @@ interface Field {
   order: number;
   options: string[] | null;
   visibility?: VisibilityRule | null;
+  /** Documentos: variável do template preenchida por este campo. */
+  variableKey?: string | null;
 }
 
 interface FormSettings {
@@ -128,6 +136,8 @@ interface FormBuilderProps {
   guest?: boolean;
   /** Plano resolvido no servidor; evita a corrida do fetch no client. */
   initialIsPro?: boolean;
+  /** Formulário gerado por um documento (.docx): mostra variáveis e link de volta. */
+  linkedDocument?: { id: string; name: string } | null;
 }
 
 const fieldTypeIcons: Record<FieldType, React.ReactNode> = {
@@ -140,6 +150,10 @@ const fieldTypeIcons: Record<FieldType, React.ReactNode> = {
   select: <List className="w-4 h-4" />,
   checkbox: <CheckSquare className="w-4 h-4" />,
   rating: <Star className="w-4 h-4" />,
+  cpf: <IdCard className="w-4 h-4" />,
+  cnpj: <Building2 className="w-4 h-4" />,
+  cep: <MapPin className="w-4 h-4" />,
+  currency: <BadgeDollarSign className="w-4 h-4" />,
 };
 
 let guestFieldCounter = 0;
@@ -160,7 +174,12 @@ function toDateTimeLocal(value?: string | Date | null): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function FormBuilder({ form: initialForm, guest = false, initialIsPro = false }: FormBuilderProps) {
+export function FormBuilder({
+  form: initialForm,
+  guest = false,
+  initialIsPro = false,
+  linkedDocument = null,
+}: FormBuilderProps) {
   const router = useRouter();
   const t = useTranslations("formBuilder");
   const tCommon = useTranslations("common");
@@ -300,6 +319,10 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
     select: t("fieldTypes.select"),
     checkbox: t("fieldTypes.checkbox"),
     rating: t("fieldTypes.rating"),
+    cpf: t("fieldTypes.cpf"),
+    cnpj: t("fieldTypes.cnpj"),
+    cep: t("fieldTypes.cep"),
+    currency: t("fieldTypes.currency"),
   };
 
   function getPublicUrl() {
@@ -541,6 +564,29 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
     }
   }
 
+  async function handleMoveField(index: number, direction: -1 | 1) {
+    const target = index + direction;
+    if (target < 0 || target >= fields.length) return;
+    const previous = fields;
+    const reordered = [...fields];
+    [reordered[index], reordered[target]] = [reordered[target]!, reordered[index]!];
+    const withOrder = reordered.map((f, order) => ({ ...f, order }));
+    setFields(withOrder);
+    if (guest) return;
+
+    try {
+      const response = await fetch(`/api/forms/${form.id}/fields`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fields: withOrder.map(({ id, order }) => ({ id, order })) }),
+      });
+      if (!response.ok) throw new Error();
+    } catch {
+      setFields(previous);
+      toast({ title: tCommon("error"), description: t("fieldMoveError"), variant: "destructive" });
+    }
+  }
+
   async function handleSaveSettings() {
     if (guest) return gate();
     try {
@@ -718,10 +764,21 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
           {t("guestBanner")}
         </div>
       )}
+      {linkedDocument && (
+        <Link
+          href={`/dashboard/documents/${linkedDocument.id}`}
+          className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm text-primary hover:bg-primary/10 transition-colors"
+        >
+          <FileCheck2 className="w-4 h-4 shrink-0" />
+          <span className="min-w-0 truncate">
+            {t("documentBanner").replace("{name}", linkedDocument.name)}
+          </span>
+        </Link>
+      )}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Link href={guest ? "/" : "/dashboard/forms"}>
+          <Link href={guest ? "/" : linkedDocument ? `/dashboard/documents/${linkedDocument.id}` : "/dashboard/forms"}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-4 h-4" />
             </Button>
@@ -848,12 +905,31 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
             </div>
           ) : (
             <div className="space-y-2">
-              {fields.map((field) => (
+              {fields.map((field, index) => (
                 <div
                   key={field.id}
                   className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors group"
                 >
-                  <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
+                  <div className="flex flex-col -my-1">
+                    <button
+                      type="button"
+                      onClick={() => handleMoveField(index, -1)}
+                      disabled={index === 0}
+                      aria-label={t("moveUp")}
+                      className="p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-30"
+                    >
+                      <ArrowUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMoveField(index, 1)}
+                      disabled={index === fields.length - 1}
+                      aria-label={t("moveDown")}
+                      className="p-0.5 rounded text-muted-foreground hover:text-foreground disabled:opacity-30"
+                    >
+                      <ArrowDown className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
                     {fieldTypeIcons[field.type as FieldType]}
                   </div>
@@ -874,6 +950,9 @@ export function FormBuilder({ form: initialForm, guest = false, initialIsPro = f
                     </div>
                     <span className="text-sm text-muted-foreground">
                       {fieldTypeLabels[field.type as FieldType]}
+                      {field.variableKey && (
+                        <code className="ml-2 text-xs font-mono text-primary/80">{`{{${field.variableKey}}}`}</code>
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
