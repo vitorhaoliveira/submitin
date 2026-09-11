@@ -12,6 +12,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # Conversor .docx → PDF (módulo Documentos). GOTENBERG_URL=http://localhost:3030
+  gotenberg:
+    build: ./infra/gotenberg
+    container_name: submitin-gotenberg
+    restart: unless-stopped
+    ports:
+      - "3030:3000"
+
 volumes:
   postgres_data:
-
