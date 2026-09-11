@@ -1215,7 +1215,10 @@
         "webhook": "Webhook (optional)",
         "webhookDesc": "Receives a POST with the answers and the generated PDF URL.",
         "save": "Save delivery",
-        "saved": "Delivery saved"
+        "saved": "Delivery saved",
+        "respondent": "Send a copy to the customer",
+        "respondentDesc": "The PDF goes to the email the customer entered in the form. If they reply, it reaches you.",
+        "respondentNoField": "Add an email variable to the template (e.g. {{email_responsavel}}) to send the copy."
       },
       "template": {
         "title": "Template",

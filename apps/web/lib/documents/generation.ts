@@ -3,6 +3,9 @@ import { prisma } from "@submitin/database";
 import { sendEmail } from "@submitin/email";
 import { DocumentReadyEmail } from "@submitin/email/templates/document-ready";
 import { DocumentLimitEmail } from "@submitin/email/templates/document-limit";
+import { DocumentCopyEmail } from "@submitin/email/templates/document-copy";
+import { brandLogoUrl } from "@/lib/branding";
+import { isValidEmail } from "@/lib/security";
 import { PdfConversionError, TemplateError } from "@submitin/documents";
 import { documentDataHash, renderDocument } from "./render";
 import { deleteObjects, getObject, putObject, DOCX_MIME, PDF_MIME } from "@/lib/storage";
@@ -97,7 +100,16 @@ export async function processDocumentGeneration(
       response: { include: { fieldValues: true } },
       document: {
         include: {
-          user: { select: { id: true, email: true, plan: true, documentLimitNotifiedAt: true } },
+          user: {
+            select: {
+              id: true,
+              email: true,
+              plan: true,
+              documentLimitNotifiedAt: true,
+              brandName: true,
+              brandLogoKey: true,
+            },
+          },
           form: { include: { fields: true, settings: true } },
         },
       },
@@ -170,9 +182,24 @@ export async function processDocumentGeneration(
   // Entrega (best-effort): falha de e-mail/webhook não invalida o documento gerado.
   const identifier = responseIdentifier(form.fields, response.fieldValues);
   const fileName = `${documentFileName(document.name, identifier)}.pdf`;
+  const companyEmails = deliveryEmails(form.settings);
+  const respondentEmail = document.emailRespondent
+    ? respondentEmailFrom(form.fields, response.fieldValues)
+    : null;
   await Promise.allSettled([
+    respondentEmail && !companyEmails.includes(respondentEmail)
+      ? deliverCopyToRespondent({
+          to: respondentEmail,
+          replyTo: companyEmails.length > 0 ? companyEmails : [user.email],
+          documentName: document.name,
+          brandName: user.brandName,
+          brandLogoUrl: brandLogoUrl(user.id, user.brandLogoKey),
+          pdf,
+          fileName,
+        })
+      : null,
     deliverByEmail({
-      to: deliveryEmails(form.settings),
+      to: companyEmails,
       documentName: document.name,
       documentId: document.id,
       identifier,
@@ -193,6 +220,42 @@ export async function processDocumentGeneration(
       values: answers,
     }),
   ]);
+}
+
+/** E-mail de quem preencheu: primeiro campo de e-mail respondido no formulário. */
+function respondentEmailFrom(
+  fields: { id: string; type: string; order: number }[],
+  fieldValues: { fieldId: string; value: string }[]
+): string | null {
+  const valueByField = new Map(fieldValues.map((fv) => [fv.fieldId, fv.value.trim()]));
+  const field = [...fields]
+    .sort((a, b) => a.order - b.order)
+    .find((f) => f.type === "email" && isValidEmail(valueByField.get(f.id) ?? ""));
+  return field ? valueByField.get(field.id)!.toLowerCase() : null;
+}
+
+async function deliverCopyToRespondent(input: {
+  to: string;
+  replyTo: string[];
+  documentName: string;
+  brandName: string | null;
+  brandLogoUrl: string | null;
+  pdf: Buffer;
+  fileName: string;
+}) {
+  await sendEmail({
+    to: input.to,
+    replyTo: input.replyTo,
+    fromName: input.brandName ?? undefined,
+    subject: `Sua cópia: ${input.documentName}`,
+    react: DocumentCopyEmail({
+      documentName: input.documentName,
+      brandName: input.brandName ?? undefined,
+      brandLogoUrl: input.brandLogoUrl ? `${appBaseUrl()}${input.brandLogoUrl}` : undefined,
+      fileName: input.fileName,
+    }),
+    attachments: [{ filename: input.fileName, content: input.pdf }],
+  }).catch((err) => console.error(`[documents] cópia para o respondente falhou:`, err));
 }
 
 function deliveryEmails(settings: { notifyEmail: string | null; notifyEmails: string[] } | null) {

@@ -6,11 +6,12 @@ import { documentErrorResponse, HttpError } from "@/lib/documents/service";
 const deliverySchema = z.object({
   emails: z.array(z.string().trim().email("E-mail inválido")).max(10, "Máximo de 10 e-mails"),
   webhookUrl: z.string().trim().url("URL inválida").or(z.literal("")),
+  emailRespondent: z.boolean().optional(),
 });
 
 /**
  * PUT /api/documents/[id]/delivery — configura a entrega do documento gerado.
- * Grava só os campos de entrega do FormSettings (e-mails + webhook).
+ * Grava os campos de entrega do FormSettings (e-mails + webhook) e a cópia ao respondente.
  */
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -29,6 +30,12 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       notifyEmails: [...new Set(parsed.data.emails.map((e) => e.toLowerCase()))],
       webhookUrl: parsed.data.webhookUrl || null,
     };
+    if (parsed.data.emailRespondent !== undefined) {
+      await prisma.document.update({
+        where: { id: document.id },
+        data: { emailRespondent: parsed.data.emailRespondent },
+      });
+    }
     await prisma.formSettings.upsert({
       where: { formId: document.formId },
       update: data,

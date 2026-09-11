@@ -86,7 +86,12 @@ export default async function DocumentPage({ params }: { params: Promise<{ id: s
             }
           : null
       }
-      delivery={{ emails, webhookUrl: form.settings?.webhookUrl ?? "" }}
+      delivery={{
+        emails,
+        webhookUrl: form.settings?.webhookUrl ?? "",
+        emailRespondent: document.emailRespondent,
+        hasEmailField: form.fields.some((f) => f.type === "email" && f.nature === "pergunta"),
+      }}
     />
   );
 }

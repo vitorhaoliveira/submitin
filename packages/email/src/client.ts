@@ -18,6 +18,10 @@ interface SendEmailOptions {
   subject: string;
   react: ReactElement;
   attachments?: { filename: string; content: Buffer }[];
+  /** Respostas vão para cá (ex.: a empresa, no e-mail ao cliente). */
+  replyTo?: string | string[];
+  /** Nome exibido no remetente; o endereço continua o de AUTH_EMAIL_FROM. */
+  fromName?: string;
 }
 
 /**
@@ -47,7 +51,7 @@ function extractDomain(from: string): string | null {
   return null;
 }
 
-export async function sendEmail({ to, subject, react, attachments }: SendEmailOptions) {
+export async function sendEmail({ to, subject, react, attachments, replyTo, fromName }: SendEmailOptions) {
   const fromEmail = process.env.AUTH_EMAIL_FROM || "Submitin <no-reply@submitin.com>";
   
   if (!fromEmail) {
@@ -89,12 +93,16 @@ export async function sendEmail({ to, subject, react, attachments }: SendEmailOp
     );
   }
 
-  const { data, error } = await resend.emails.send({  
-    from: fromEmail,
+  const address = fromEmail.match(/<([^>]+)>/)?.[1] ?? fromEmail;
+  const safeName = fromName?.replace(/["<>\r\n]/g, "").trim().slice(0, 60);
+
+  const { data, error } = await resend.emails.send({
+    from: safeName ? `"${safeName}" <${address}>` : fromEmail,
     to,
     subject,
     react,
     attachments,
+    replyTo,
   });
 
   if (error) {

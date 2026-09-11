@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
 import { Label } from "@submitin/ui/components/label";
+import { Switch } from "@submitin/ui/components/switch";
 import { Badge } from "@submitin/ui/components/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import {
@@ -54,7 +55,7 @@ type Props = {
     variables: string[];
     missingFonts: string[];
   } | null;
-  delivery: { emails: string[]; webhookUrl: string };
+  delivery: { emails: string[]; webhookUrl: string; emailRespondent: boolean; hasEmailField: boolean };
   invites: { id: string; token: string; label: string; usedAt: string | null; createdAt: string }[];
 };
 
@@ -354,11 +355,12 @@ function DeliveryCard({
   onError,
 }: {
   documentId: string;
-  initial: { emails: string[]; webhookUrl: string };
+  initial: Props["delivery"];
   onError: (err: unknown) => void;
 }) {
   const t = useTranslations("documents");
   const [emails, setEmails] = useState(initial.emails);
+  const [emailRespondent, setEmailRespondent] = useState(initial.emailRespondent);
   const [newEmail, setNewEmail] = useState("");
   const [webhookUrl, setWebhookUrl] = useState(initial.webhookUrl);
   const [saving, setSaving] = useState(false);
@@ -376,7 +378,7 @@ function DeliveryCard({
       await requestJson(`/api/documents/${documentId}/delivery`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ emails, webhookUrl }),
+        body: JSON.stringify({ emails, webhookUrl, emailRespondent }),
       });
       toast({ title: t("detail.delivery.saved") });
     } catch (err) {
@@ -433,6 +435,21 @@ function DeliveryCard({
               {t("detail.delivery.addEmail")}
             </Button>
           </div>
+        </div>
+        <div className="flex items-start justify-between gap-4 rounded-lg border p-4">
+          <div className="space-y-1">
+            <Label htmlFor="delivery-respondent">{t("detail.delivery.respondent")}</Label>
+            <p className="text-sm text-muted-foreground">
+              {initial.hasEmailField
+                ? t("detail.delivery.respondentDesc")
+                : t("detail.delivery.respondentNoField")}
+            </p>
+          </div>
+          <Switch
+            id="delivery-respondent"
+            checked={emailRespondent}
+            onCheckedChange={setEmailRespondent}
+          />
         </div>
         <div className="space-y-2">
           <Label htmlFor="delivery-webhook">{t("detail.delivery.webhook")}</Label>
