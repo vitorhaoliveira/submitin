@@ -7,6 +7,21 @@ import { Loader2 } from "lucide-react";
  * Renderiza o PDF do preview em canvas com pdf.js. Carregado sob demanda
  * (next/dynamic) só quando o respondente pede para revisar o documento.
  */
+/** pdf.js 6 usa Promise.withResolvers, ausente no iOS < 17.4 (o worker tem o seu em public/vendor). */
+function polyfillWithResolvers() {
+  const P = Promise as PromiseConstructor & { withResolvers?: unknown };
+  if (P.withResolvers) return;
+  P.withResolvers = function <T>() {
+    let resolve!: (value: T | PromiseLike<T>) => void;
+    let reject!: (reason?: unknown) => void;
+    const promise = new Promise<T>((res, rej) => {
+      resolve = res;
+      reject = rej;
+    });
+    return { promise, resolve, reject };
+  };
+}
+
 export default function PdfPreview({
   url,
   onError,
@@ -24,8 +39,9 @@ export default function PdfPreview({
     let destroy: (() => void) | undefined;
 
     (async () => {
+      polyfillWithResolvers();
       const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-      pdfjs.GlobalWorkerOptions.workerSrc = "/vendor/pdf.worker.min.mjs";
+      pdfjs.GlobalWorkerOptions.workerSrc = "/vendor/pdf.worker.entry.mjs";
       const task = pdfjs.getDocument({ url });
       destroy = () => void task.destroy();
       const doc = await task.promise;
