@@ -119,7 +119,7 @@ function ResetPasswordForm() {
     return (
       <Card className="animate-fade-in-up animation-delay-100">
         <CardContent className="pt-6">
-          <div className="flex items-center gap-2 rounded-lg bg-green-500/10 text-green-700 dark:text-green-400 px-3 py-3 text-sm">
+          <div className="flex items-center gap-2 rounded-lg bg-green-500/10 text-green-700 px-3 py-3 text-sm">
             <Check className="w-5 h-5 shrink-0" />
             {t("reset.successMessage")}
           </div>
@@ -137,7 +137,7 @@ function ResetPasswordForm() {
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {error && (
-            <div className="flex items-center gap-2 rounded-lg bg-destructive/10 text-destructive px-3 py-2 text-sm">
+            <div className="flex items-center gap-2 rounded-lg bg-red-50 text-destructive px-3 py-2 text-sm">
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}
             </div>
@@ -179,7 +179,7 @@ function ResetPasswordForm() {
                       key={req.label}
                       className={`flex items-center gap-2 ${
                         valid
-                          ? "text-green-600 dark:text-green-400"
+                          ? "text-green-600"
                           : "text-muted-foreground"
                       }`}
                     >
@@ -246,8 +246,8 @@ export default function ResetPasswordPage() {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center animate-fade-in-up">
           <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
-              <FileText className="w-5 h-5 text-primary" />
+            <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+                <FileText className="w-4 h-4 text-background" />
             </div>
             <span className="font-semibold text-xl">{tCommon("appName")}</span>
           </Link>

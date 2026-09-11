@@ -1,13 +1,14 @@
 "use client";
 
 import { useRef, useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
 import { Label } from "@submitin/ui/components/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@submitin/ui/components/card";
-import { AlertTriangle, ArrowLeft, FileUp, Loader2, XCircle } from "lucide-react";
+import { AlertTriangle, Braces, FileText, FileType2, Loader2, Upload, XCircle } from "lucide-react";
+import { cn } from "@submitin/ui/lib/utils";
+import { PageHeader } from "@/components/page-header";
 import { useTranslations } from "@/lib/i18n-context";
 import { toast } from "@/hooks/use-toast";
 import { fmt, useFieldTypeLabel } from "./shared";
@@ -89,17 +90,12 @@ export function NewDocumentClient() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/documents">
-          <Button variant="ghost" size="icon" aria-label={t("detail.back")}>
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("newPage.title")}</h1>
-          <p className="text-muted-foreground">{t("newPage.subtitle")}</p>
-        </div>
-      </div>
+      <PageHeader
+        title={t("newPage.title")}
+        description={t("newPage.subtitle")}
+        backHref="/dashboard/documents"
+        backLabel={t("title")}
+      />
 
       {!preview && (
         <>
@@ -115,9 +111,12 @@ export function NewDocumentClient() {
               const dropped = e.dataTransfer.files[0];
               if (dropped) void analyze(dropped);
             }}
-            className={`flex flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-14 text-center cursor-pointer transition-colors ${
-              dragging ? "border-primary bg-primary/5" : "border-border hover:border-primary/50 hover:bg-muted/40"
-            }`}
+            className={cn(
+              "flex min-h-64 cursor-pointer flex-col items-center justify-center gap-5 rounded-xl border border-dashed px-6 py-10 text-center transition-colors",
+              dragging
+                ? "border-foreground/40 bg-muted/60"
+                : "border-foreground/20 hover:border-foreground/35 hover:bg-muted/30"
+            )}
           >
             <input
               ref={inputRef}
@@ -130,27 +129,32 @@ export function NewDocumentClient() {
               }}
             />
             {analyzing ? (
-              <>
-                <Loader2 className="w-10 h-10 text-primary animate-spin" />
-                <p className="font-medium">{t("newPage.analyzing")}</p>
-              </>
+              <Loader2 className="w-6 h-6 text-muted-foreground animate-spin" />
             ) : (
-              <>
-                <FileUp className="w-10 h-10 text-primary" />
-                <p className="font-medium">{t("newPage.dropTitle")}</p>
-                <p className="text-sm text-muted-foreground">{t("newPage.dropHint")}</p>
-              </>
+              <UploadIconCluster dragging={dragging} />
+            )}
+            <div className="space-y-1">
+              <p className="text-sm font-medium">
+                {analyzing ? t("newPage.analyzing") : t("newPage.dropTitle")}
+              </p>
+              <p className="text-xs text-muted-foreground">{t("newPage.dropHint")}</p>
+            </div>
+            {!analyzing && (
+              <span className="inline-flex items-center gap-2 rounded-full border bg-background px-3 py-1 text-xs text-muted-foreground">
+                <Upload className="w-3.5 h-3.5" />
+                {t("newPage.browse")}
+              </span>
             )}
           </label>
 
           {error && (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 space-y-2">
-              <p className="flex items-center gap-2 font-medium text-destructive">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4 space-y-2">
+              <p className="flex items-center gap-2 text-sm font-medium text-red-700">
                 <XCircle className="w-4 h-4 shrink-0" />
                 {error.error}
               </p>
               {error.details && error.details.length > 0 && (
-                <ul className="list-disc pl-10 text-sm text-destructive/90 space-y-1">
+                <ul className="list-disc pl-10 text-sm text-red-700/90 space-y-1">
                   {error.details.map((d, i) => (
                     <li key={i}>{d}</li>
                   ))}
@@ -165,7 +169,7 @@ export function NewDocumentClient() {
               <CardDescription>{t("newPage.howToText")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3 text-sm">
-              <p className="rounded-lg bg-muted/60 px-4 py-3 leading-relaxed">
+              <p className="rounded-md border bg-muted/40 px-4 py-3 font-mono text-xs leading-relaxed">
                 {t("newPage.example")}
               </p>
               <p className="text-muted-foreground">{t("newPage.howToTips")}</p>
@@ -213,7 +217,7 @@ export function NewDocumentClient() {
                     <tr key={v.key} className="border-t">
                       <td className="px-3 py-2">{v.label}</td>
                       <td className="px-3 py-2 whitespace-nowrap">{fieldTypeLabel(v.type)}</td>
-                      <td className="px-3 py-2 font-mono text-xs text-primary/80 whitespace-nowrap">{`{{${v.key}}}`}</td>
+                      <td className="px-3 py-2 font-mono text-xs text-muted-foreground whitespace-nowrap">{`{{${v.key}}}`}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -236,9 +240,36 @@ export function NewDocumentClient() {
   );
 }
 
+/** Ícones de arquivo em leque que se abrem ao arrastar (inspirado no File Upload do 21st.dev). */
+const ICON_TRANSFORMS = [
+  { idle: "translate(-96%, -50%) rotate(-8deg)", active: "translate(-114%, -50%) rotate(-12deg) scale(1.08)" },
+  { idle: "translate(-50%, -50%) rotate(0deg)", active: "translate(-50%, -50%) rotate(0deg) scale(1.18)" },
+  { idle: "translate(-4%, -50%) rotate(8deg)", active: "translate(14%, -50%) rotate(12deg) scale(1.08)" },
+];
+
+function UploadIconCluster({ dragging }: { dragging: boolean }) {
+  return (
+    <div className="relative h-14 w-36" aria-hidden>
+      {[Braces, FileType2, FileText].map((Icon, index) => (
+        <div
+          key={index}
+          className={cn(
+            "absolute top-1/2 left-1/2 grid size-12 place-items-center rounded-xl border bg-background text-muted-foreground shadow-sm transition-[transform,color,box-shadow] duration-500 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none",
+            index === 1 && "z-10",
+            dragging && "text-foreground shadow-md"
+          )}
+          style={{ transform: dragging ? ICON_TRANSFORMS[index]?.active : ICON_TRANSFORMS[index]?.idle }}
+        >
+          <Icon className="size-5" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function Warning({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+    <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-900">
       <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
       <p>{children}</p>
     </div>

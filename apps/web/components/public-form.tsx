@@ -655,7 +655,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
   if (availability && !availability.isOpen) {
     const scheduled = availability.reason === "scheduled";
     return (
-      <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-radial" style={themeStyles}>
+      <div className="min-h-screen flex items-center justify-center px-4 bg-background" style={themeStyles}>
         <Card className="max-w-md w-full text-center animate-fade-in-up">
           <CardContent className="pt-12 pb-8">
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
@@ -680,7 +680,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
   if (isSubmitted) {
     return (
       <div
-        className="relative min-h-screen flex items-center justify-center px-4 bg-gradient-radial overflow-hidden"
+        className="relative min-h-screen flex items-center justify-center px-4 bg-background overflow-hidden"
         style={themeStyles}
       >
         <Confetti />
@@ -688,7 +688,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
           <CardContent className="pt-12 pb-8">
             <div className="relative w-16 h-16 mx-auto mb-6">
               <span className="absolute inset-0 rounded-full bg-emerald-500/30 animate-success-ring" />
-              <div className="relative w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center">
+              <div className="relative w-16 h-16 rounded-full bg-emerald-50 flex items-center justify-center">
                 <CheckCircle className="w-8 h-8 text-emerald-500 animate-pop-in" />
               </div>
             </div>
@@ -721,7 +721,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
     const showLastStepExtras = isLastStep;
 
     return (
-      <div className="relative min-h-screen flex flex-col bg-gradient-radial" style={themeStyles}>
+      <div className="relative min-h-screen flex flex-col bg-background" style={themeStyles}>
         {/* Barra de progresso fixa no topo */}
         <div className="fixed top-0 left-0 right-0 h-1 bg-muted z-20">
           <div
@@ -737,8 +737,8 @@ export function PublicForm({ form, availability }: PublicFormProps) {
           <form onSubmit={handleSubmit} onBlur={() => void savePartial()} className="w-full max-w-xl">
             {!hideBranding && (
               <Link href="/" className="inline-flex items-center gap-2 mb-8 animate-fade-in-up">
-                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-primary" />
+                <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+                <FileText className="w-4 h-4 text-background" />
                 </div>
                 <span className="font-semibold">{tCommon("appName")}</span>
               </Link>
@@ -790,7 +790,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
             )}
 
             {showLastStepExtras && errors._form && (
-              <div className="mt-6 p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+              <div className="mt-6 p-4 rounded-lg bg-red-50 border border-red-200">
                 <p className="text-sm text-destructive">{errors._form}</p>
               </div>
             )}
@@ -850,7 +850,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
   }
 
   return (
-    <div className="min-h-screen py-12 px-4 bg-gradient-radial" style={themeStyles}>
+    <div className="min-h-screen py-12 px-4 bg-background" style={themeStyles}>
       <div className="absolute top-4 right-4">
         <LanguageSwitcher />
       </div>
@@ -859,8 +859,8 @@ export function PublicForm({ form, availability }: PublicFormProps) {
         {!hideBranding && (
           <div className="text-center animate-fade-in-up">
             <Link href="/" className="inline-flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                <FileText className="w-4 h-4 text-primary" />
+              <div className="w-8 h-8 rounded-md bg-foreground flex items-center justify-center">
+                <FileText className="w-4 h-4 text-background" />
               </div>
               <span className="font-semibold">{tCommon("appName")}</span>
             </Link>
@@ -910,7 +910,7 @@ export function PublicForm({ form, availability }: PublicFormProps) {
               )}
 
               {errors._form && (
-                <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/20">
+                <div className="p-4 rounded-lg bg-red-50 border border-red-200">
                   <p className="text-sm text-destructive">{errors._form}</p>
                 </div>
               )}

@@ -542,7 +542,12 @@
     "deleteTitle": "Excluir formulário",
     "deleteConfirm": "Tem certeza que deseja excluir o formulário",
     "deleteWarning": "Esta ação não pode ser desfeita e todas as respostas serão perdidas.",
-    "deleting": "Excluindo..."
+    "deleting": "Excluindo...",
+    "upgrade": "Fazer upgrade",
+    "colName": "Nome",
+    "colStatus": "Status",
+    "colResponses": "Respostas",
+    "colUpdated": "Atualizado"
   },
   "formBuilder": {
     "title": "Editar Formulário",
@@ -722,7 +727,7 @@
       "help": "Salve leads que preenchem um contato mas não enviam.",
       "proHint": "Disponível no plano Pro — capture leads que começam mas não concluem."
     },
-    "documentBanner": "Este formulário gera o documento “{name}” — ver documento e envios",
+    "documentBanner": "Gera o documento “{name}”",
     "moveUp": "Mover para cima",
     "moveDown": "Mover para baixo",
     "fieldMoveError": "Não foi possível reordenar os campos"
@@ -916,7 +921,8 @@
       "otherFile": "Escolher outro arquivo",
       "create": "Criar documento",
       "creating": "Criando…",
-      "error": "Não foi possível ler o documento"
+      "error": "Não foi possível ler o documento",
+      "browse": "Escolher arquivo"
     },
     "detail": {
       "back": "Voltar",
@@ -995,6 +1001,12 @@
       "next": "Próxima",
       "page": "Página {page} de {pages}",
       "autoRefresh": "Atualizando…"
+    },
+    "table": {
+      "name": "Documento",
+      "status": "Status",
+      "submissions": "Envios",
+      "last": "Último envio"
     }
   }
 }

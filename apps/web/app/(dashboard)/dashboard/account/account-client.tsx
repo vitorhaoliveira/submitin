@@ -166,7 +166,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       value: usage.forms,
       limit: maxForms === -1 ? null : maxForms,
       icon: FileText,
-      tint: "bg-primary/10 text-primary",
+      tint: "border bg-background text-muted-foreground",
     },
     {
       key: "responses",
@@ -174,7 +174,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       value: usage.responses,
       limit: maxResponses === -1 ? null : maxResponses,
       icon: MessageSquare,
-      tint: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+      tint: "border bg-background text-muted-foreground",
     },
     {
       key: "published",
@@ -182,21 +182,21 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
       value: usage.published,
       limit: null,
       icon: TrendingUp,
-      tint: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+      tint: "border bg-background text-muted-foreground",
     },
   ];
 
   return (
     <div className="max-w-4xl space-y-8 animate-fade-in-up">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("title")}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground mt-1">{t("subtitle")}</p>
       </div>
 
       {/* Cabeçalho do perfil + plano */}
       <Card className="overflow-hidden">
-        <div className="bg-brand-soft p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="w-16 h-16 shrink-0 rounded-2xl bg-brand-gradient text-white flex items-center justify-center text-xl font-semibold shadow-sm shadow-primary/30">
+        <div className="bg-muted/40 p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="w-16 h-16 shrink-0 rounded-2xl bg-foreground text-white flex items-center justify-center text-xl font-semibold">
             {initials}
           </div>
           <div className="min-w-0 flex-1">
@@ -206,7 +206,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
           <div
             className={`shrink-0 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium ${
               isPro
-                ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
+                ? "bg-foreground text-background"
                 : "bg-muted text-muted-foreground"
             }`}
           >
@@ -237,7 +237,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                       <Icon className="w-4 h-4" />
                     </div>
                   </div>
-                  <p className="text-2xl font-bold mt-2 tabular-nums">
+                  <p className="text-2xl font-semibold mt-2 tabular-nums">
                     {s.value}
                     {s.limit && s.limit > 0 ? (
                       <span className="text-sm font-normal text-muted-foreground">
@@ -251,7 +251,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                   {pct !== null && (
                     <div className="mt-3 h-1.5 w-full rounded-full bg-muted overflow-hidden">
                       <div
-                        className={`h-full rounded-full ${pct >= 100 ? "bg-destructive" : "bg-brand-gradient"}`}
+                        className={`h-full rounded-full ${pct >= 100 ? "bg-destructive" : "bg-foreground"}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
@@ -262,10 +262,10 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
           })}
         </div>
         {!isPro && (
-          <Card className="mt-4 overflow-hidden border-primary/20 bg-brand-soft">
+          <Card className="mt-4 overflow-hidden border-primary/20 bg-muted/40">
             <CardContent className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 shrink-0 rounded-xl bg-brand-gradient text-white flex items-center justify-center">
+                <div className="w-10 h-10 shrink-0 rounded-xl bg-foreground text-white flex items-center justify-center">
                   <Crown className="w-5 h-5" />
                 </div>
                 <div>
@@ -299,8 +299,8 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
               <div
                 className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm ${
                   profileMsg.type === "ok"
-                    ? "bg-green-500/10 text-green-700 dark:text-green-400"
-                    : "bg-destructive/10 text-destructive"
+                    ? "bg-green-500/10 text-green-700"
+                    : "bg-red-50 text-destructive"
                 }`}
               >
                 {profileMsg.type === "ok" ? (
@@ -393,13 +393,13 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="flex items-center gap-2 rounded-lg bg-destructive/10 text-destructive px-3 py-2 text-sm">
+              <div className="flex items-center gap-2 rounded-lg bg-red-50 text-destructive px-3 py-2 text-sm">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 {error}
               </div>
             )}
             {success && (
-              <div className="flex items-center gap-2 rounded-lg bg-green-500/10 text-green-700 dark:text-green-400 px-3 py-2 text-sm">
+              <div className="flex items-center gap-2 rounded-lg bg-green-500/10 text-green-700 px-3 py-2 text-sm">
                 <Check className="w-4 h-4 shrink-0" />
                 {success}
               </div>
@@ -461,7 +461,7 @@ export function AccountClient({ profile, usage }: AccountClientProps) {
                       <li
                         key={req.label}
                         className={`flex items-center gap-2 ${
-                          valid ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+                          valid ? "text-green-600" : "text-muted-foreground"
                         }`}
                       >
                         {valid ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}

@@ -743,9 +743,9 @@ export function FormBuilder({
 
             {/* Aviso: regra sem valor escolhido é ignorada (campo fica sempre visível) */}
             {rule.value.trim().length === 0 && (
-              <div className="flex items-start gap-2 rounded-md bg-amber-500/10 border border-amber-500/20 px-3 py-2">
-                <Info className="w-4 h-4 mt-0.5 shrink-0 text-amber-600 dark:text-amber-400" />
-                <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+              <div className="flex items-start gap-2 rounded-md bg-amber-50 border border-amber-200 px-3 py-2">
+                <Info className="w-4 h-4 mt-0.5 shrink-0 text-amber-600" />
+                <p className="text-xs text-amber-700 leading-relaxed">
                   {t("conditional.emptyValue")}
                 </p>
               </div>
@@ -759,30 +759,21 @@ export function FormBuilder({
   return (
     <div className="space-y-6">
       {guest && (
-        <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-700 text-center">
+        <div className="rounded-lg bg-amber-50 border border-amber-200 px-4 py-2.5 flex items-center justify-center gap-2 text-sm text-amber-700 text-center">
           <Lock className="w-3.5 h-3.5 shrink-0" />
           {t("guestBanner")}
         </div>
       )}
-      {linkedDocument && (
-        <Link
-          href={`/dashboard/documents/${linkedDocument.id}`}
-          className="flex items-center gap-2 rounded-lg border border-primary/20 bg-primary/5 px-4 py-2.5 text-sm text-primary hover:bg-primary/10 transition-colors"
-        >
-          <FileCheck2 className="w-4 h-4 shrink-0" />
-          <span className="min-w-0 truncate">
-            {t("documentBanner").replace("{name}", linkedDocument.name)}
-          </span>
-        </Link>
-      )}
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <Link href={guest ? "/" : linkedDocument ? `/dashboard/documents/${linkedDocument.id}` : "/dashboard/forms"}>
-            <Button variant="ghost" size="icon">
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
-          </Link>
+      <Link
+        href={guest ? "/" : linkedDocument ? `/dashboard/documents/${linkedDocument.id}` : "/dashboard/forms"}
+        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <ArrowLeft className="w-3.5 h-3.5" />
+        {linkedDocument ? linkedDocument.name : tCommon("back")}
+      </Link>
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 !mt-3">
+        <div className="min-w-0 flex-1">
           <div>
             <div className="flex items-center gap-2">
               <Input
@@ -790,18 +781,27 @@ export function FormBuilder({
                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
                   setForm({ ...form, name: e.target.value })
                 }
-                className="text-2xl font-bold h-auto p-0 border-0 bg-transparent focus-visible:ring-0"
+                className="text-2xl font-semibold tracking-tight h-auto p-0 border-0 shadow-none bg-transparent focus-visible:ring-0 focus-visible:border-transparent"
               />
+            </div>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
               <Badge variant={form.published ? "success" : "secondary"}>
                 {form.published ? t("status.published") : t("status.draft")}
               </Badge>
+              {!guest && <span className="font-mono">/f/{form.slug}</span>}
+              {linkedDocument && (
+                <Link
+                  href={`/dashboard/documents/${linkedDocument.id}`}
+                  className="inline-flex items-center gap-1 hover:text-foreground"
+                >
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                  {t("documentBanner").replace("{name}", linkedDocument.name)}
+                </Link>
+              )}
             </div>
-            {!guest && (
-              <p className="text-sm text-muted-foreground font-mono">/f/{form.slug}</p>
-            )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
           <Button
             variant="outline"
             size="icon"
@@ -904,11 +904,11 @@ export function FormBuilder({
               <p>{t("noFields")}</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="divide-y rounded-lg border">
               {fields.map((field, index) => (
                 <div
                   key={field.id}
-                  className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors group"
+                  className="flex items-center gap-3 px-3 py-2.5 hover:bg-muted/40 transition-colors group"
                 >
                   <div className="flex flex-col -my-1">
                     <button
@@ -930,12 +930,12 @@ export function FormBuilder({
                       <ArrowDown className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                  <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center text-primary">
+                  <div className="w-8 h-8 rounded-md border bg-background flex items-center justify-center text-muted-foreground">
                     {fieldTypeIcons[field.type as FieldType]}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium truncate">{field.label}</span>
+                      <span className="text-sm font-medium truncate">{field.label}</span>
                       {field.required && (
                         <Badge variant="outline" className="text-xs">
                           {tCommon("required")}
@@ -948,14 +948,14 @@ export function FormBuilder({
                         </Badge>
                       )}
                     </div>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       {fieldTypeLabels[field.type as FieldType]}
                       {field.variableKey && (
-                        <code className="ml-2 text-xs font-mono text-primary/80">{`{{${field.variableKey}}}`}</code>
+                        <code className="ml-2 text-xs font-mono text-muted-foreground">{`{{${field.variableKey}}}`}</code>
                       )}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -1480,8 +1480,8 @@ export function FormBuilder({
 
             {/* Anti-spam / CAPTCHA - Premium */}
             {!isPremium && (
-              <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
+                <p className="text-sm text-yellow-800">
                   🔒 {t("proFeatureLock")}{" "}
                   <a href="/dashboard/billing" className="underline font-medium">{t("proUpgrade")}</a>
                 </p>
@@ -1582,8 +1582,8 @@ export function FormBuilder({
 
             {/* Branding - PRO */}
             {!isPro && (
-              <div className="p-3 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg mb-4">
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+              <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg mb-4">
+                <p className="text-sm text-yellow-800">
                   🔒 {t("proFeatureLock")}{" "}
                   <a href="/dashboard/billing" className="underline font-medium">{t("proUpgrade")}</a>
                 </p>
@@ -1644,7 +1644,7 @@ export function FormBuilder({
           </DialogHeader>
 
           {!form.published && (
-            <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 text-sm text-destructive">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-destructive">
               ⚠️ {t("notPublishedWarning")}
             </div>
           )}

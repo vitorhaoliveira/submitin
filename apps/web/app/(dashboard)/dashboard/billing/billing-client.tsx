@@ -46,7 +46,7 @@ const COMPARISON: { label: string; free: CellValue; plus: CellValue; premium: Ce
 function ComparisonCell({ value }: { value: CellValue }) {
   if (typeof value === "boolean") {
     return value ? (
-      <Check className="h-4 w-4 text-emerald-600 mx-auto" />
+      <Check className="h-4 w-4 text-foreground mx-auto" />
     ) : (
       <X className="h-4 w-4 text-muted-foreground/40 mx-auto" />
     );
@@ -181,7 +181,7 @@ export function BillingClient() {
         disabled={loadingPlan !== null || !priceConfigured}
         className={
           planKey === "premium"
-            ? "w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600"
+            ? "w-full"
             : "w-full"
         }
       >
@@ -194,7 +194,7 @@ export function BillingClient() {
   return (
     <div className="container max-w-6xl py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Planos e Preços</h1>
+        <h1 className="text-2xl font-semibold tracking-tight mb-1">Planos e Preços</h1>
         <p className="text-muted-foreground">Escolha o plano ideal para suas necessidades</p>
       </div>
 
@@ -203,16 +203,16 @@ export function BillingClient() {
         <div
           className={`mb-6 p-4 border rounded-lg ${
             userPlan.cancelAtPeriodEnd
-              ? "bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-950/20 dark:to-red-950/20 border-orange-200 dark:border-orange-800"
-              : "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/20 dark:to-orange-950/20 border-yellow-200 dark:border-yellow-800"
+              ? "bg-red-50 border-red-200"
+              : "bg-muted/40"
           }`}
         >
           <div className="flex items-center gap-2 mb-1">
             <Crown
               className={`h-5 w-5 ${
                 userPlan.cancelAtPeriodEnd
-                  ? "text-orange-600 dark:text-orange-500"
-                  : "text-yellow-600 dark:text-yellow-500"
+                  ? "text-orange-600"
+                  : "text-yellow-600"
               }`}
             />
             <span className="font-semibold">
@@ -238,26 +238,22 @@ export function BillingClient() {
             <Card
               key={planKey}
               className={
-                isCurrent
-                  ? "border-primary shadow-lg"
-                  : highlight
-                    ? "border-yellow-500/60"
-                    : ""
+                isCurrent ? "border-foreground" : highlight ? "border-foreground/30" : ""
               }
             >
               <CardHeader>
                 <div className="flex justify-between items-start mb-2">
                   <div>
-                    <CardTitle className="text-2xl flex items-center gap-2">
+                    <CardTitle className="text-lg flex items-center gap-2">
                       {plan.name}
-                      {highlight && <Sparkles className="h-5 w-5 text-yellow-500" />}
+                      {highlight && <Sparkles className="h-4 w-4 text-muted-foreground" />}
                     </CardTitle>
                     <CardDescription>{PLAN_DESC[planKey]}</CardDescription>
                   </div>
                   {isCurrent && <Badge variant="default">Plano atual</Badge>}
                 </div>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">{formatBRL(plan.price)}</span>
+                  <span className="text-3xl font-semibold tracking-tight">{formatBRL(plan.price)}</span>
                   {plan.price > 0 && <span className="text-muted-foreground ml-2">/ mês</span>}
                 </div>
               </CardHeader>
@@ -266,7 +262,7 @@ export function BillingClient() {
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start gap-2">
                       <Check
-                        className={`h-5 w-5 shrink-0 mt-0.5 ${highlight ? "text-yellow-600" : "text-emerald-600"}`}
+                        className={`h-5 w-5 shrink-0 mt-0.5 text-foreground`}
                       />
                       <span className="text-sm">{feature}</span>
                     </li>

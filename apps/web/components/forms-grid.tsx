@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import { Badge } from "@submitin/ui/components/badge";
 import { maxFormsFor } from "@/lib/stripe";
 import {
@@ -26,7 +25,6 @@ import {
 } from "@submitin/ui/components/dialog";
 import {
   FileText,
-  MessageSquare,
   Plus,
   MoreVertical,
   Eye,
@@ -39,6 +37,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { PageHeader } from "@/components/page-header";
 import { formatRelativeDate } from "@/lib/utils";
 
 interface Form {
@@ -150,33 +149,33 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground">
+      <PageHeader
+        title={t("title")}
+        description={
+          <>
             {t("subtitle")}
             {!isUnlimited && (
-              <span className="ml-2 text-xs bg-muted px-2 py-1 rounded">
-                {forms.length}/{maxForms} formulários
+              <span className="ml-2 text-xs text-muted-foreground tabular-nums">
+                · {forms.length}/{maxForms}
               </span>
             )}
-          </p>
-        </div>
-        {canCreateForm ? (
-          <Link href="/dashboard/forms/new">
-            <Button className="gap-2">
-              <Plus className="w-4 h-4" />
-              {tDashboard("createForm")}
-            </Button>
-          </Link>
-        ) : (
-          <Link href="/dashboard/billing">
-            <Button variant="default" className="gap-2">
-              Upgrade para Pro
-            </Button>
-          </Link>
-        )}
-      </div>
+          </>
+        }
+        actions={
+          canCreateForm ? (
+            <Link href="/dashboard/forms/new">
+              <Button>
+                <Plus />
+                {tDashboard("createForm")}
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/dashboard/billing">
+              <Button>{t("upgrade")}</Button>
+            </Link>
+          )
+        }
+      />
 
       {forms.length > 0 && (
         <div className="relative max-w-sm">
@@ -191,73 +190,73 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
       )}
 
       {forms.length === 0 ? (
-        <Card className="text-center py-16">
-          <CardContent>
-            <FileText className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="font-semibold text-xl mb-2">{tDashboard("noForms.title")}</h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              {tDashboard("noForms.subtitle")}
-            </p>
-            <Link href="/dashboard/forms/new">
-              <Button size="lg" className="gap-2">
-                <Plus className="w-4 h-4" />
-                {t("createFirst")}
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border border-dashed py-16 px-6 text-center">
+          <FileText className="w-8 h-8 mx-auto text-muted-foreground mb-3" />
+          <p className="font-medium">{tDashboard("noForms.title")}</p>
+          <p className="text-sm text-muted-foreground mt-1 mb-5 max-w-md mx-auto">
+            {tDashboard("noForms.subtitle")}
+          </p>
+          <Link href="/dashboard/forms/new">
+            <Button>
+              <Plus />
+              {t("createFirst")}
+            </Button>
+          </Link>
+        </div>
       ) : filteredForms.length === 0 ? (
-        <Card className="text-center py-12">
-          <CardContent>
-            <Search className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <h3 className="font-semibold text-lg mb-2">{tCommon("noResults")}</h3>
-            <p className="text-muted-foreground">
-              {t("noResultsFor")} &quot;{search}&quot;
-            </p>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border py-12 text-center">
+          <p className="font-medium">{tCommon("noResults")}</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            {t("noResultsFor")} &quot;{search}&quot;
+          </p>
+        </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredForms.map((form, index) => (
-            <Card
-              key={form.id}
-              className="group animate-fade-in-up transition-all hover:-translate-y-0.5 hover:border-primary/30"
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between gap-2">
-                  <Link
-                    href={`/dashboard/forms/${form.id}`}
-                    className="flex-1 min-w-0"
-                  >
-                    <CardTitle className="text-lg truncate hover:text-primary transition-colors">
-                      {form.name}
-                    </CardTitle>
-                  </Link>
-                  <div className="flex items-center gap-2">
+        <div className="overflow-hidden rounded-xl border">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
+              <tr>
+                <th className="px-4 py-2.5 font-medium">{t("colName")}</th>
+                <th className="hidden sm:table-cell px-4 py-2.5 font-medium">{t("colStatus")}</th>
+                <th className="hidden md:table-cell px-4 py-2.5 font-medium text-right">{t("colResponses")}</th>
+                <th className="hidden lg:table-cell px-4 py-2.5 font-medium text-right">{t("colUpdated")}</th>
+                <th className="w-12" />
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {filteredForms.map((form) => (
+                <tr key={form.id} className="group transition-colors hover:bg-muted/40">
+                  <td className="px-4 py-3 max-w-0 w-full">
+                    <Link href={`/dashboard/forms/${form.id}`} className="block min-w-0">
+                      <span className="block truncate font-medium">{form.name}</span>
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {form.description || `${form._count.fields} ${t("fields")}`}
+                      </span>
+                    </Link>
+                  </td>
+                  <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap">
                     <Badge variant={form.published ? "success" : "secondary"}>
                       {form.published ? tDashboard("formCard.published") : tDashboard("formCard.draft")}
                     </Badge>
+                  </td>
+                  <td className="hidden md:table-cell px-4 py-3 text-right tabular-nums text-muted-foreground">
+                    {form._count.responses}
+                  </td>
+                  <td className="hidden lg:table-cell px-4 py-3 text-right whitespace-nowrap text-muted-foreground">
+                    {formatRelativeDate(form.updatedAt)}
+                  </td>
+                  <td className="px-2 py-3 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
+                        <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={tCommon("edit")}>
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                          onClick={() => router.push(`/dashboard/forms/${form.id}`)}
-                        >
+                        <DropdownMenuItem onClick={() => router.push(`/dashboard/forms/${form.id}`)}>
                           <Edit className="w-4 h-4 mr-2" />
                           {tCommon("edit")}
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => router.push(`/dashboard/forms/${form.id}/responses`)}
-                        >
+                        <DropdownMenuItem onClick={() => router.push(`/dashboard/forms/${form.id}/responses`)}>
                           <Eye className="w-4 h-4 mr-2" />
                           {t("viewResponses")}
                         </DropdownMenuItem>
@@ -282,11 +281,7 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
                         </DropdownMenuItem>
                         {form.published && (
                           <DropdownMenuItem asChild>
-                            <a
-                              href={`/f/${form.slug}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
+                            <a href={`/f/${form.slug}`} target="_blank" rel="noopener noreferrer">
                               <ExternalLink className="w-4 h-4 mr-2" />
                               {t("openForm")}
                             </a>
@@ -302,28 +297,11 @@ export function FormsGrid({ forms: initialForms, userPlan }: FormsGridProps) {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                  </div>
-                </div>
-                {form.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                    {form.description}
-                  </p>
-                )}
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <MessageSquare className="w-4 h-4" />
-                      {form._count.responses}
-                    </span>
-                    <span>{form._count.fields} {t("fields")}</span>
-                  </div>
-                  <span>{formatRelativeDate(form.updatedAt)}</span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

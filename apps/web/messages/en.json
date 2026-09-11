@@ -542,7 +542,12 @@
     "deleteTitle": "Delete form",
     "deleteConfirm": "Are you sure you want to delete the form",
     "deleteWarning": "This action cannot be undone and all responses will be lost.",
-    "deleting": "Deleting..."
+    "deleting": "Deleting...",
+    "upgrade": "Upgrade",
+    "colName": "Name",
+    "colStatus": "Status",
+    "colResponses": "Responses",
+    "colUpdated": "Updated"
   },
   "formBuilder": {
     "title": "Edit Form",
@@ -722,7 +727,7 @@
       "help": "Save leads who fill in a contact but do not submit.",
       "proHint": "Available on the Pro plan — capture leads who start but do not finish."
     },
-    "documentBanner": "This form generates the document “{name}” — view document and submissions",
+    "documentBanner": "Generates the document “{name}”",
     "moveUp": "Move up",
     "moveDown": "Move down",
     "fieldMoveError": "Could not reorder fields"
@@ -916,7 +921,8 @@
       "otherFile": "Choose another file",
       "create": "Create document",
       "creating": "Creating…",
-      "error": "Could not read the document"
+      "error": "Could not read the document",
+      "browse": "Browse files"
     },
     "detail": {
       "back": "Back",
@@ -995,6 +1001,12 @@
       "next": "Next",
       "page": "Page {page} of {pages}",
       "autoRefresh": "Refreshing…"
+    },
+    "table": {
+      "name": "Document",
+      "status": "Status",
+      "submissions": "Submissions",
+      "last": "Last submission"
     }
   }
 }

@@ -12,7 +12,6 @@ import { Label } from "@submitin/ui/components/label";
 import { Textarea } from "@submitin/ui/components/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@submitin/ui/components/card";
 import {
-  ArrowLeft,
   Loader2,
   Plus,
   MessageSquare,
@@ -23,6 +22,7 @@ import {
   FileText,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { PageHeader } from "@/components/page-header";
 import { createFormSchema, type CreateFormInput } from "@/lib/validations";
 import { getFormTemplates, type FormTemplate } from "@/lib/form-templates";
 
@@ -38,6 +38,7 @@ export function NewFormClient() {
   const router = useRouter();
   const t = useTranslations("newForm");
   const tCommon = useTranslations("common");
+  const tNav = useTranslations("nav");
   const locale = useLocale();
   const templates = getFormTemplates(locale);
   const [isLoading, setIsLoading] = useState(false);
@@ -111,22 +112,17 @@ export function NewFormClient() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <div className="flex items-center gap-4">
-        <Link href="/dashboard/forms">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-          <p className="text-muted-foreground">{t("subtitle")}</p>
-        </div>
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("subtitle")}
+        backHref="/dashboard/forms"
+        backLabel={tNav("forms")}
+      />
 
       {/* Templates */}
       <div>
         <div className="mb-4">
-          <h2 className="text-lg font-semibold">{t("templatesTitle")}</h2>
+          <h2 className="text-sm font-medium">{t("templatesTitle")}</h2>
           <p className="text-sm text-muted-foreground">{t("templatesSubtitle")}</p>
         </div>
 

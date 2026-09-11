@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
-import { Card, CardContent } from "@submitin/ui/components/card";
-import { ArrowLeft, Download, FileText, Inbox, Loader2, RotateCw, Search } from "lucide-react";
+import { Download, FileText, Inbox, Loader2, RotateCw, Search } from "lucide-react";
+import { PageHeader } from "@/components/page-header";
 import { useLocale, useTranslations } from "@/lib/i18n-context";
 import { toast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/utils";
@@ -97,19 +96,12 @@ export function SubmissionsClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Link href={`/dashboard/documents/${document.id}`}>
-          <Button variant="ghost" size="icon" aria-label={document.name}>
-            <ArrowLeft className="w-4 h-4" />
-          </Button>
-        </Link>
-        <div className="min-w-0">
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{t("submissions.title")}</h1>
-          <p className="text-muted-foreground truncate">
-            {fmt(t("submissions.subtitle"), { name: document.name })}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        backHref={`/dashboard/documents/${document.id}`}
+        backLabel={document.name}
+        title={t("submissions.title")}
+        description={fmt(t("submissions.subtitle"), { name: document.name })}
+      />
 
       <form
         onSubmit={(e) => {
@@ -128,19 +120,21 @@ export function SubmissionsClient({
           />
         </div>
         <div className="grid grid-cols-2 sm:flex gap-2">
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <label className="flex min-w-0 flex-col items-stretch gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-2 sm:text-sm">
             <span className="shrink-0">{t("submissions.from")}</span>
             <Input
               type="date"
               value={form.from}
+              className="min-w-0"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, from: e.target.value })}
             />
           </label>
-          <label className="flex items-center gap-2 text-sm text-muted-foreground">
+          <label className="flex min-w-0 flex-col items-stretch gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-2 sm:text-sm">
             <span className="shrink-0">{t("submissions.to")}</span>
             <Input
               type="date"
               value={form.to}
+              className="min-w-0"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setForm({ ...form, to: e.target.value })}
             />
           </label>
@@ -148,7 +142,7 @@ export function SubmissionsClient({
             value={form.status}
             onChange={(e) => setForm({ ...form, status: e.target.value })}
             aria-label={t("submissions.status")}
-            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm"
           >
             <option value="">{t("submissions.allStatuses")}</option>
             {STATUSES.map((s) => (
@@ -171,14 +165,12 @@ export function SubmissionsClient({
       </form>
 
       {rows.length === 0 ? (
-        <Card className="text-center py-14">
-          <CardContent>
-            <Inbox className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-            <p className="text-muted-foreground">
-              {hasFilters ? t("submissions.noResults") : t("submissions.empty")}
-            </p>
-          </CardContent>
-        </Card>
+        <div className="rounded-xl border border-dashed py-14 text-center">
+          <Inbox className="w-6 h-6 mx-auto text-muted-foreground mb-3" />
+          <p className="text-sm text-muted-foreground">
+            {hasFilters ? t("submissions.noResults") : t("submissions.empty")}
+          </p>
+        </div>
       ) : (
         <>
           <div className="flex items-center justify-between text-sm text-muted-foreground">
@@ -191,25 +183,28 @@ export function SubmissionsClient({
             )}
           </div>
 
-          <Card className="overflow-hidden">
+          <div className="overflow-hidden rounded-xl border">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-muted/50 text-left text-muted-foreground">
+                <thead className="bg-muted/40 text-left text-xs text-muted-foreground">
                   <tr>
-                    <th className="px-4 py-3 font-medium">{t("submissions.date")}</th>
-                    <th className="px-4 py-3 font-medium">{t("submissions.identifier")}</th>
-                    <th className="px-4 py-3 font-medium">{t("submissions.status")}</th>
-                    <th className="px-4 py-3 font-medium text-right">{t("submissions.actions")}</th>
+                    <th className="hidden sm:table-cell px-4 py-2.5 font-medium">{t("submissions.date")}</th>
+                    <th className="px-4 py-2.5 font-medium">{t("submissions.identifier")}</th>
+                    <th className="px-4 py-2.5 font-medium">{t("submissions.status")}</th>
+                    <th className="px-4 py-2.5 font-medium text-right">{t("submissions.actions")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.map((row) => (
-                    <tr key={row.id} className="border-t align-top">
-                      <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
+                    <tr key={row.id} className="border-t align-top transition-colors hover:bg-muted/40">
+                      <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-muted-foreground">
                         {formatDate(row.createdAt, dateLocale)}
                       </td>
-                      <td className="px-4 py-3 min-w-[10rem]">
+                      <td className="px-4 py-3">
                         <span className="font-medium">{row.identifier || "—"}</span>
+                        <span className="block sm:hidden text-xs text-muted-foreground">
+                          {formatDate(row.createdAt, dateLocale)}
+                        </span>
                         {row.error && row.status !== "concluida" && (
                           <p className="mt-1 text-xs text-destructive/90 max-w-md">{row.error}</p>
                         )}
@@ -261,7 +256,7 @@ export function SubmissionsClient({
                 </tbody>
               </table>
             </div>
-          </Card>
+          </div>
 
           {pages > 1 && (
             <div className="flex items-center justify-between gap-2">

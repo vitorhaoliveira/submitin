@@ -4,58 +4,31 @@
 
 @layer base {
   :root {
-    /* Índigo Real — tema claro (fundo branco) sério com personalidade própria */
+    /* Neutro: fundo branco, texto quase preto, cinzas zinc. Uma única cor de ação (preto). */
     --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    --foreground: 240 10% 4%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 240 10% 4%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
-    --primary: 243 75% 59%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 222 47% 11%;
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
-    /* accent neutro e sutil para hovers; o índigo/violeta dos gradientes vem das classes abaixo */
-    --accent: 220 14% 96%;
-    --accent-foreground: 222 47% 11%;
+    --popover-foreground: 240 10% 4%;
+    --primary: 240 6% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 6% 10%;
     --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 243 75% 59%;
-    --radius: 0.75rem;
-  }
-
-  .dark {
-    --background: 222 47% 7%;
-    --foreground: 210 20% 96%;
-    --card: 222 45% 9%;
-    --card-foreground: 210 20% 96%;
-    --popover: 222 45% 9%;
-    --popover-foreground: 210 20% 96%;
-    --primary: 243 75% 66%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 222 30% 16%;
-    --secondary-foreground: 210 20% 96%;
-    --muted: 222 30% 16%;
-    --muted-foreground: 215 16% 65%;
-    --accent: 222 30% 18%;
-    --accent-foreground: 210 20% 96%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 222 25% 20%;
-    --input: 222 25% 20%;
-    --ring: 243 75% 66%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 240 6% 10%;
+    --radius: 0.625rem;
   }
 
   html {
     color-scheme: light;
-  }
-
-  html.dark {
-    color-scheme: dark;
   }
 }
 
@@ -93,15 +66,15 @@ html {
   background: hsl(var(--muted-foreground));
 }
 
-/* Focus visible */
+/* Focus visible (fallback para elementos sem estilo próprio de foco) */
 :focus-visible {
-  outline: 2px solid hsl(var(--ring));
+  outline: 2px solid hsl(var(--ring) / 0.5);
   outline-offset: 2px;
 }
 
 /* Selection */
 ::selection {
-  background: hsl(var(--primary) / 0.3);
+  background: hsl(var(--foreground) / 0.12);
   color: hsl(var(--foreground));
 }
 
@@ -109,7 +82,7 @@ html {
 @keyframes fade-in-up {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -118,7 +91,7 @@ html {
 }
 
 .animate-fade-in-up {
-  animation: fade-in-up 0.5s ease-out forwards;
+  animation: fade-in-up 0.3s ease-out forwards;
 }
 
 .animation-delay-100 {
@@ -148,7 +121,7 @@ html {
 /* Pause animation until visible (respect entrance only) */
 .animate-fade-in-up {
   opacity: 0;
-  animation: fade-in-up 0.5s ease-out forwards;
+  animation: fade-in-up 0.3s ease-out forwards;
 }
 
 /* Subtle pulsing glow for accents */
@@ -254,14 +227,6 @@ html {
   backdrop-filter: blur(12px);
   border: 1px solid hsl(var(--border) / 0.8);
   box-shadow: 0 1px 3px hsl(222 47% 11% / 0.04), 0 1px 2px hsl(222 47% 11% / 0.03);
-}
-
-/* Glass effect (escuro): superfície translúcida sobre o card escuro.
-   Sem isto o glass fica branco no dark mode e o texto some (claro sobre claro). */
-.dark .glass {
-  background: hsl(var(--card) / 0.6);
-  border: 1px solid hsl(var(--border) / 0.7);
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.35), 0 1px 2px hsl(0 0% 0% / 0.25);
 }
 
 /* Success badge: pop + soft glow ring expanding outward */

@@ -35,6 +35,7 @@ import { useLocale, useTranslations } from "@/lib/i18n-context";
 import { toast } from "@/hooks/use-toast";
 import { formatDate } from "@/lib/utils";
 import { fmt, useFieldTypeLabel } from "./shared";
+import { PageHeader } from "@/components/page-header";
 
 type Props = {
   document: { id: string; name: string; submissions: number };
@@ -154,79 +155,90 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
   return (
     <div className="max-w-4xl space-y-6">
       {/* Cabeçalho */}
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-3 min-w-0">
-          <Link href="/dashboard/documents">
-            <Button variant="ghost" size="icon" aria-label={t("detail.back")}>
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
+      {editingName ? (
+        <div className="space-y-3">
+          <Link
+            href="/dashboard/documents"
+            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            {t("title")}
           </Link>
-          {editingName ? (
-            <div className="flex items-center gap-2 flex-1">
-              <Input
-                autoFocus
-                value={name}
-                maxLength={100}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && void saveName()}
-                className="text-xl font-bold"
-              />
-              <Button size="icon" variant="ghost" onClick={saveName} aria-label={tCommon("save")}>
-                <Check className="w-4 h-4" />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex flex-wrap items-center gap-2 min-w-0">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight break-words">{name}</h1>
+          <div className="flex items-center gap-2 max-w-xl">
+            <Input
+              autoFocus
+              value={name}
+              maxLength={100}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+              onKeyDown={(e: React.KeyboardEvent) => e.key === "Enter" && void saveName()}
+              className="text-base font-semibold"
+            />
+            <Button size="icon" variant="outline" onClick={saveName} aria-label={tCommon("save")}>
+              <Check />
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <PageHeader
+          backHref="/dashboard/documents"
+          backLabel={t("title")}
+          title={name}
+          meta={
+            <>
               <Button
                 size="icon"
                 variant="ghost"
-                className="shrink-0"
+                className="h-7 w-7 text-muted-foreground"
                 onClick={() => setEditingName(true)}
                 aria-label={t("detail.rename")}
               >
-                <Pencil className="w-4 h-4" />
+                <Pencil className="!size-3.5" />
               </Button>
-              <Badge variant={published ? "success" : "secondary"} className="shrink-0">
+              <Badge variant={published ? "success" : "secondary"}>
                 {published ? t("card.published") : t("card.draft")}
               </Badge>
-            </div>
-          )}
-        </div>
-        <div className="flex flex-wrap gap-2 sm:pl-12">
-          <Link href={`/dashboard/documents/${document.id}/envios`}>
-            <Button className="gap-2">
-              <Inbox className="w-4 h-4" />
-              {t("detail.submissions")} ({document.submissions})
-            </Button>
-          </Link>
-          <Link href={`/dashboard/forms/${form.id}`}>
-            <Button variant="outline" className="gap-2">
-              <Pencil className="w-4 h-4" />
-              {t("detail.editFields")}
-            </Button>
-          </Link>
-          <Button
-            variant="outline"
-            size="icon"
-            className="text-destructive"
-            onClick={() => setShowDelete(true)}
-            aria-label={t("detail.delete")}
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
+            </>
+          }
+          actions={
+            <>
+              <Link href={`/dashboard/forms/${form.id}`}>
+                <Button variant="outline">
+                  <Pencil />
+                  {t("detail.editFields")}
+                </Button>
+              </Link>
+              <Link href={`/dashboard/documents/${document.id}/envios`}>
+                <Button>
+                  <Inbox />
+                  {t("detail.submissions")}
+                  <span className="rounded bg-background/20 px-1.5 text-xs tabular-nums">
+                    {document.submissions}
+                  </span>
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
+                size="icon"
+                className="text-muted-foreground hover:text-red-600"
+                onClick={() => setShowDelete(true)}
+                aria-label={t("detail.delete")}
+              >
+                <Trash2 />
+              </Button>
+            </>
+          }
+        />
+      )}
 
       {/* Link público */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">{t("detail.link.title")}</CardTitle>
+          <CardTitle>{t("detail.link.title")}</CardTitle>
           <CardDescription>{t("detail.link.desc")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           {!published && (
-            <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+            <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
               <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
               {t("detail.link.unpublished")}
             </div>
@@ -269,7 +281,7 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
       <Card>
         <CardHeader className="flex flex-row items-start justify-between gap-4">
           <div>
-            <CardTitle className="text-lg">{t("detail.fields.title")}</CardTitle>
+            <CardTitle>{t("detail.fields.title")}</CardTitle>
             <CardDescription>{t("detail.fields.desc")}</CardDescription>
           </div>
           <Link href={`/dashboard/forms/${form.id}`}>
@@ -280,7 +292,7 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
         </CardHeader>
         <CardContent className="space-y-3">
           {keysWithoutField.length > 0 && (
-            <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+            <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
               <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
               {fmt(t("detail.fields.missing"), { keys: keysWithoutField.join(", ") })}
             </div>
@@ -301,7 +313,7 @@ export function DocumentDetailClient({ document, form, template, delivery }: Pro
                 )}
                 <span className="text-muted-foreground">{fieldTypeLabel(field.type)}</span>
                 {field.variableKey && (
-                  <code className="ml-auto text-xs font-mono text-primary/80">{`{{${field.variableKey}}}`}</code>
+                  <code className="ml-auto text-xs font-mono text-muted-foreground">{`{{${field.variableKey}}}`}</code>
                 )}
               </li>
             ))}
@@ -375,7 +387,7 @@ function DeliveryCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{t("detail.delivery.title")}</CardTitle>
+        <CardTitle>{t("detail.delivery.title")}</CardTitle>
         <CardDescription>{t("detail.delivery.desc")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
@@ -480,7 +492,7 @@ function TemplateCard({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">{t("detail.template.title")}</CardTitle>
+        <CardTitle>{t("detail.template.title")}</CardTitle>
         <CardDescription>{t("detail.template.replaceDesc")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -496,7 +508,7 @@ function TemplateCard({
           </div>
         )}
         {template && template.missingFonts.length > 0 && (
-          <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5 text-sm text-amber-800">
             <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
             {fmt(t("newPage.missingFonts"), { fonts: template.missingFonts.join(", ") })}
           </div>
