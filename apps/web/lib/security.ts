@@ -15,8 +15,6 @@ export const MAX_FIELDS_PER_SUBMISSION = 50;
 // Limite de formulários por usuário (conta gratuita)
 export const MAX_FORMS_PER_USER = 10;
 
-// Limite de respostas por formulário
-export const MAX_RESPONSES_PER_FORM = 1000;
 
 // Limite de campos por formulário
 export const MAX_FIELDS_PER_FORM = 50;
