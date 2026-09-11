@@ -111,7 +111,7 @@ export function DocumentStory() {
           className="mt-12 h-12 px-7 text-base bg-foreground text-background hover:bg-foreground/90"
           asChild
         >
-          <Link href="/register">
+          <Link href="/dashboard/documents/new">
             {t("story.cta")}
             <ArrowRight />
           </Link>

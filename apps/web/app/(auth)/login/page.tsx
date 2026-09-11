@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { safeNext } from "@/lib/safe-next";
 import { useTranslations } from "@/lib/i18n-context";
 import { Button } from "@submitin/ui/components/button";
 import { Input } from "@submitin/ui/components/input";
@@ -23,6 +24,8 @@ export default function LoginPage() {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
   const searchParams = useSearchParams();
+  // Destino após entrar (ex.: salvar o documento montado como visitante).
+  const next = safeNext(searchParams.get("next"));
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +61,8 @@ export default function LoginPage() {
       if (result?.error) {
         setError(t("errors.invalidCredentials"));
       } else if (result?.ok) {
-        router.push("/dashboard");
+        router.push(next ?? "/dashboard");
+        router.refresh();
       }
     } catch (err) {
       console.error("Erro ao fazer login:", err);
@@ -166,7 +170,7 @@ export default function LoginPage() {
               <p className="text-sm text-center text-muted-foreground">
                 {t("login.noAccount")}{" "}
                 <Link
-                  href="/register"
+                  href={next ? `/register?next=${encodeURIComponent(next)}` : "/register"}
                   className="text-primary hover:underline font-medium"
                 >
                   {t("login.createAccount")}

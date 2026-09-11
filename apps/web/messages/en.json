@@ -1364,6 +1364,16 @@
       "fixa": "Fixed",
       "pre_preenchida": "Prefilled",
       "automatica": "Automatic"
+    },
+    "guest": {
+      "back": "Home",
+      "claiming": "Saving the document you set up…",
+      "noFile": "Don't have a .docx ready?",
+      "sample": "Download a sample contract",
+      "readyTitle": "Your form is ready.",
+      "readyText": "Create your free account to save it, publish the link and get your first PDF. Takes under a minute, no card needed.",
+      "signup": "Create free account and save",
+      "haveAccount": "I already have an account"
     }
   }
 }

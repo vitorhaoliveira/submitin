@@ -27,7 +27,7 @@ export async function CtaSection() {
               className="w-full sm:w-auto h-12 px-7 text-base bg-brand text-brand-foreground hover:bg-brand/90"
               asChild
             >
-              <Link href="/register">
+              <Link href="/dashboard/documents/new">
                 {t("cta.button")}
                 <ArrowRight />
               </Link>

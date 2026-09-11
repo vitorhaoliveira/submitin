@@ -39,7 +39,7 @@ export function LandingHeader() {
             <Link href="/login">{t("nav.login")}</Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href="/register">
+            <Link href="/dashboard/documents/new">
               {t("nav.getStarted")}
               <ArrowRight />
             </Link>
@@ -76,7 +76,7 @@ export function LandingHeader() {
                 </Link>
               </Button>
               <Button asChild>
-                <Link href="/register" onClick={() => setOpen(false)}>
+                <Link href="/dashboard/documents/new" onClick={() => setOpen(false)}>
                   {t("nav.getStarted")}
                   <ArrowRight />
                 </Link>
