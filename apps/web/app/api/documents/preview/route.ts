@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import { checkRateLimit, getClientIP } from "@/lib/security";
 import { documentErrorResponse, readTemplateUpload } from "@/lib/documents/service";
+import { findModel } from "@/lib/templates/catalog";
+import { applyModelOverrides } from "@/lib/templates/model-fields";
 
 /**
  * POST /api/documents/preview (multipart: file)
@@ -15,10 +17,16 @@ export async function POST(request: Request) {
       return Response.json({ error: "Muitas tentativas. Aguarde um momento." }, { status: 429 });
     }
 
-    const { variables, unsupportedTags, missingFonts, fileName } = await readTemplateUpload(
-      await request.formData()
-    );
-    return Response.json({ fileName, variables, unsupportedTags, missingFonts });
+    const formData = await request.formData();
+    const { variables, unsupportedTags, missingFonts, fileName } = await readTemplateUpload(formData);
+    // Modelo pronto: mostra as perguntas e naturezas como vão ficar.
+    const model = findModel(String(formData.get("modelo") ?? ""));
+    return Response.json({
+      fileName,
+      variables: model ? applyModelOverrides(model, variables) : variables,
+      unsupportedTags,
+      missingFonts,
+    });
   } catch (err) {
     return documentErrorResponse(err, "Erro ao analisar o documento");
   }
