@@ -119,10 +119,10 @@ export default async function DashboardPage() {
           </h1>
           <p className="text-sm text-muted-foreground mt-1">{t("overview")}</p>
         </div>
-        <Link href="/dashboard/forms/new">
+        <Link href="/dashboard/documents/new">
           <Button>
             <Plus />
-            {t("createForm")}
+            {tDocs("new")}
           </Button>
         </Link>
       </div>
